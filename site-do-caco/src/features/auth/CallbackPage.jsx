@@ -1,0 +1,68 @@
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { authService } from '@/shared/services/authService';
+import { useToast } from '@/components/ui/use-toast.jsx';
+
+export function CallbackPage() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [processing, setProcessing] = useState(true);
+
+  useEffect(() => {
+    const processCallback = async () => {
+      try {
+        const token = searchParams.get('token');
+        const expiresIn = searchParams.get('expiresIn');
+
+        if (!token) {
+          throw new Error('Token não recebido');
+        }
+
+        // Converte expiresIn para número (milissegundos)
+        const expiresInMs = expiresIn ? parseInt(expiresIn, 10) : undefined;
+
+        // Processa o login com o token recebido
+        await authService.loginWithToken(token, expiresInMs);
+
+        toast({
+          title: 'Login realizado com sucesso!',
+          description: 'Bem-vindo de volta ao CACo!',
+        });
+
+        // Redireciona para a home
+        navigate('/', { replace: true });
+      } catch (error) {
+        console.error('Erro no callback OAuth:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Erro na autenticação',
+          description: error.message || 'Não foi possível completar o login.',
+        });
+
+        // Redireciona para login com erro
+        navigate('/login?error=server_error', { replace: true });
+      } finally {
+        setProcessing(false);
+      }
+    };
+
+    processCallback();
+  }, [searchParams, navigate, toast]);
+
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        {processing ? (
+          <>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+            <p className="text-lg font-medium">Processando autenticação...</p>
+            <p className="text-sm text-muted-foreground mt-2">Aguarde um momento</p>
+          </>
+        ) : (
+          <p className="text-lg font-medium">Redirecionando...</p>
+        )}
+      </div>
+    </div>
+  );
+}
