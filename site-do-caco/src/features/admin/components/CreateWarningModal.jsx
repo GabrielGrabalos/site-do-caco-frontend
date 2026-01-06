@@ -148,8 +148,8 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
                 const colors = {
                   LOW: 'border-blue-300 bg-blue-50 hover:bg-blue-100 data-[selected=true]:bg-blue-200 data-[selected=true]:border-blue-500',
                   MEDIUM: 'border-yellow-300 bg-yellow-50 hover:bg-yellow-100 data-[selected=true]:bg-yellow-200 data-[selected=true]:border-yellow-500',
-                  HIGH: 'border-orange-300 bg-orange-50 hover:bg-orange-100 data-[selected=true]:bg-orange-200 data-[selected=true]:border-orange-500',
-                  CRITICAL: 'border-red-300 bg-red-50 hover:bg-red-100 data-[selected=true]:bg-red-200 data-[selected=true]:border-red-500',
+                  HIGH: 'border-red-300 bg-red-50 hover:bg-red-100 data-[selected=true]:bg-red-200 data-[selected=true]:border-red-500',
+                  CRITICAL: 'border-gray-700 bg-gray-200 hover:bg-gray-300 data-[selected=true]:bg-gray-400 data-[selected=true]:border-gray-900',
                 };
 
                 return (
@@ -194,6 +194,7 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
                 value={formData.startTime}
                 onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                 placeholder="00:00"
+                step="60"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Deixe vazio para 00:00
@@ -228,6 +229,7 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
                 value={formData.endTime}
                 onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                 placeholder="23:59"
+                step="60"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Deixe vazio para 23:59
@@ -242,10 +244,10 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
                 Preview
               </label>
               <div className={`rounded-lg border-2 p-4 ${
-                formData.severityLevel === 'CRITICAL' ? 'bg-red-50 border-red-300' :
-                formData.severityLevel === 'HIGH' ? 'bg-orange-50 border-orange-300' :
-                formData.severityLevel === 'MEDIUM' ? 'bg-yellow-50 border-yellow-300' :
-                'bg-blue-50 border-blue-300'
+                formData.severityLevel === 'CRITICAL' ? 'bg-gray-200 border-gray-900 text-gray-950' :
+                formData.severityLevel === 'HIGH' ? 'bg-red-100 border-red-400 text-red-950' :
+                formData.severityLevel === 'MEDIUM' ? 'bg-yellow-100 border-yellow-400 text-yellow-950' :
+                'bg-blue-100 border-blue-400 text-blue-950'
               }`}>
                 <div className="prose prose-sm max-w-none">
                   <div dangerouslySetInnerHTML={{ 

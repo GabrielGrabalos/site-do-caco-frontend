@@ -419,8 +419,8 @@ export function AdminDashboard() {
                   onClick={() => setActiveFilter('CRITICAL')}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     activeFilter === 'CRITICAL'
-                      ? 'bg-red-500 text-white'
-                      : 'bg-red-100 text-red-700 hover:bg-red-200'
+                      ? 'bg-gray-300 text-gray-900 border border-gray-900'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   Crítico ({allActiveWarnings.filter(w => w.severityLevel === 'CRITICAL').length})
@@ -429,8 +429,8 @@ export function AdminDashboard() {
                   onClick={() => setActiveFilter('HIGH')}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     activeFilter === 'HIGH'
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-red-100 text-red-700 hover:bg-red-200'
                   }`}
                 >
                   Alto ({allActiveWarnings.filter(w => w.severityLevel === 'HIGH').length})
@@ -525,8 +525,8 @@ export function AdminDashboard() {
                   onClick={() => setExpiredFilter('CRITICAL')}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     expiredFilter === 'CRITICAL'
-                      ? 'bg-red-500 text-white'
-                      : 'bg-red-100 text-red-700 hover:bg-red-200'
+                      ? 'bg-gray-300 text-gray-900 border border-gray-900'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   Crítico ({allExpiredWarnings.filter(w => w.severityLevel === 'CRITICAL').length})
@@ -535,8 +535,8 @@ export function AdminDashboard() {
                   onClick={() => setExpiredFilter('HIGH')}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     expiredFilter === 'HIGH'
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-red-100 text-red-700 hover:bg-red-200'
                   }`}
                 >
                   Alto ({allExpiredWarnings.filter(w => w.severityLevel === 'HIGH').length})

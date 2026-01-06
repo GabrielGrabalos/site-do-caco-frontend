@@ -9,13 +9,12 @@ export function WarningItem({ warning, onEdit, onDelete }) {
   
   const formatDateTime = (isoString) => {
     const date = new Date(isoString);
-    return date.toLocaleString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
   };
 
   const getSeverityBadge = () => {
@@ -27,8 +26,8 @@ export function WarningItem({ warning, onEdit, onDelete }) {
     };
     
     const colors = {
-      CRITICAL: 'bg-red-100 text-red-800 border-red-300',
-      HIGH: 'bg-orange-100 text-orange-800 border-orange-300',
+      CRITICAL: 'bg-gray-200 text-gray-900 border-gray-900',
+      HIGH: 'bg-red-100 text-red-800 border-red-300',
       MEDIUM: 'bg-yellow-100 text-yellow-800 border-yellow-300',
       LOW: 'bg-blue-100 text-blue-800 border-blue-300',
     };

@@ -31,16 +31,21 @@ export function HomePage() {
       {/* Banner Carousel */}
       <BannerCarousel banners={data?.banners || []} />
 
+      {/* Warning Alerts */}
+      {data?.warnings && data.warnings.length > 0 && (
+        <div className="space-y-3">
+          {data.warnings.map((warning) => (
+            <WarningAlert
+              key={warning.id}
+              warning={warning}
+              onDismiss={dismissWarning}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Navigation Buttons */}
       <NavButtons />
-
-      {/* Warning Alert */}
-      {data?.warnings && data.warnings.length > 0 && (
-        <WarningAlert
-          warning={data.warnings[0]}
-          onDismiss={dismissWarning}
-        />
-      )}
 
       {/* Latest News */}
       {data?.latestNews && data.latestNews.length > 0 && (
