@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/shared/services/apiClient';
+import { Banner } from './models/Banner';
 
 export function useAdminBannersVM() {
   const [activeBanners, setActiveBanners] = useState([]);
@@ -22,8 +23,9 @@ export function useAdminBannersVM() {
         apiClient.get('admin/banners/inactive'),
       ]);
       
-      setActiveBanners(activeData);
-      setInactiveBanners(inactiveData);
+      // Converte DTOs para instâncias de Banner
+      setActiveBanners(Banner.fromDTOArray(activeData));
+      setInactiveBanners(Banner.fromDTOArray(inactiveData));
     } catch (err) {
       setError(err.message || 'Erro ao carregar banners');
     } finally {
@@ -32,21 +34,15 @@ export function useAdminBannersVM() {
   };
 
   const createBanner = async (bannerData) => {
-    // Cria ID temporário para o banner enquanto está sendo criado
-    const tempId = `temp-${Date.now()}`;
-    
     // Cria preview da imagem localmente
     const imagePreview = URL.createObjectURL(bannerData.imageFile);
     
-    // Adiciona banner temporário com flag de loading (sempre ativo por padrão)
-    const tempBanner = {
-      id: tempId,
+    // Cria banner temporário usando o Model
+    const tempBanner = Banner.createTemporary({
       title: bannerData.title,
       imageUrl: imagePreview,
       targetLink: bannerData.targetLink,
-      isLoading: true,
-      uploadProgress: 0,
-    };
+    });
     
     setActiveBanners([...activeBanners, tempBanner]);
     
@@ -64,22 +60,23 @@ export function useAdminBannersVM() {
       const onProgress = (percentual) => {
         setActiveBanners(current => 
           current.map(b => 
-            b.id === tempId 
-              ? { ...b, uploadProgress: percentual }
+            b.id === tempBanner.id 
+              ? b.clone({ uploadProgress: percentual })
               : b
           )
         );
       };
       
-      const newBanner = await apiClient.postFormDataWithProgress(
+      const newBannerDTO = await apiClient.postFormDataWithProgress(
         'admin/banners', 
         formData, 
         onProgress
       );
       
-      // Substitui o banner temporário pelo real
+      // Converte DTO para instância de Banner e substitui o temporário
+      const newBanner = Banner.fromDTO(newBannerDTO);
       setActiveBanners(current => 
-        current.map(b => b.id === tempId ? newBanner : b)
+        current.map(b => b.id === tempBanner.id ? newBanner : b)
       );
       
       // Libera a URL temporária
@@ -88,7 +85,7 @@ export function useAdminBannersVM() {
       return { success: true, data: newBanner };
     } catch (err) {
       // Remove o banner temporário em caso de erro
-      setActiveBanners(current => current.filter(b => b.id !== tempId));
+      setActiveBanners(current => current.filter(b => b.id !== tempBanner.id));
       URL.revokeObjectURL(imagePreview);
       
       return { success: false, error: err.message };
@@ -165,7 +162,10 @@ export function useAdminBannersVM() {
       }
       // Senão, não precisa enviar a imagem (mantém a existente no backend)
       
-      const updatedBanner = await apiClient.putFormData(`admin/banners/${id}`, formData);
+      const updatedBannerDTO = await apiClient.putFormData(`admin/banners/${id}`, formData);
+      
+      // Converte DTO para instância de Banner
+      const updatedBanner = Banner.fromDTO(updatedBannerDTO);
       
       // Atualiza o banner na lista correta
       setActiveBanners(activeBanners.map(b => b.id === id ? updatedBanner : b));
