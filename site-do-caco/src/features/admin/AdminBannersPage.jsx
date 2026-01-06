@@ -1,8 +1,4 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Users, FileText, Calendar, Image, Plus, GripVertical, Trash2 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast.jsx';
 import {
   DndContext,
   closestCenter,
@@ -21,6 +17,10 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useAdminBannersVM } from './useAdminBannersVM';
 import { CreateBannerModal } from './components/CreateBannerModal';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Plus, GripVertical, Trash2 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast.jsx';
 
 function SortableBannerItem({ banner, onDelete }) {
   const {
@@ -71,14 +71,7 @@ function SortableBannerItem({ banner, onDelete }) {
   );
 }
 
-export function AdminDashboard() {
-  const stats = [
-    { title: 'Usuários', value: '1,234', icon: Users, color: 'text-blue-600' },
-    { title: 'Notícias', value: '45', icon: FileText, color: 'text-green-600' },
-    { title: 'Eventos', value: '12', icon: Calendar, color: 'text-purple-600' },
-    { title: 'Figurinhas', value: '28', icon: Image, color: 'text-orange-600' },
-  ];
-
+export function AdminBannersPage() {
   const { banners, loading, creating, createBanner, reorderBanners, deleteBanner } = useAdminBannersVM();
   const [modalOpen, setModalOpen] = useState(false);
   const { toast } = useToast();
@@ -140,28 +133,6 @@ export function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Dashboard Admin</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.title}
-                </CardTitle>
-                <Icon className={`h-4 w-4 ${stat.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Seção de Banners */}
       <Card>
         <CardHeader>
           <CardTitle>Gerenciar Banners</CardTitle>
