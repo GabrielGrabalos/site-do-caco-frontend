@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 
 export function BannerCarousel({ banners = [] }) {
   const [current, setCurrent] = useState(0);
+  const [lastInteraction, setLastInteraction] = useState(Date.now());
 
   useEffect(() => {
     if (banners.length === 0) return;
@@ -13,7 +14,7 @@ export function BannerCarousel({ banners = [] }) {
     }, 5000);
 
     return () => clearInterval(timer);
-  }, [banners.length]);
+  }, [banners.length, lastInteraction]); // Reseta timer quando lastInteraction muda
 
   if (banners.length === 0) {
     return (
@@ -28,10 +29,17 @@ export function BannerCarousel({ banners = [] }) {
 
   const goToPrevious = () => {
     setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
+    setLastInteraction(Date.now()); // Reseta timer
   };
 
   const goToNext = () => {
     setCurrent((prev) => (prev + 1) % banners.length);
+    setLastInteraction(Date.now()); // Reseta timer
+  };
+
+  const goToIndex = (index) => {
+    setCurrent(index);
+    setLastInteraction(Date.now()); // Reseta timer
   };
 
   return (
@@ -91,7 +99,7 @@ export function BannerCarousel({ banners = [] }) {
                 className={`w-2 h-2 rounded-full transition-all ${
                   index === current ? 'bg-white w-8' : 'bg-white/50'
                 }`}
-                onClick={() => setCurrent(index)}
+                onClick={() => goToIndex(index)}
               />
             ))}
           </div>

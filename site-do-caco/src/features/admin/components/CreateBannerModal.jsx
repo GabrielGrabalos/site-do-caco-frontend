@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,16 +7,62 @@ import { Upload, Crop, Save } from 'lucide-react';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '@/shared/utils/imageCrop';
 
-export function CreateBannerModal({ open, onClose, onCreate, loading }) {
+export function CreateBannerModal({ open, onClose, onCreate, loading, preservedData }) {
   const [step, setStep] = useState(1); // 1: upload, 2: crop, 3: form
   const [title, setTitle] = useState('');
   const [targetLink, setTargetLink] = useState('');
+  const [originalFile, setOriginalFile] = useState(null); // Arquivo original
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
+  const [croppedFile, setCroppedFile] = useState(null); // File object da imagem recortada
+  const [isEditingExistingImage, setIsEditingExistingImage] = useState(false); // Flag para saber se está editando
   const { toast } = useToast();
+
+  // Restaura dados preservados quando o modal reabre após erro
+  // OU limpa tudo quando abre sem dados preservados (novo banner)
+  useEffect(() => {
+    if (open) {
+      if (preservedData) {
+        // Modo edição - já tem imageUrl (não precisa de nova imagem)
+        if (preservedData.imageUrl && !preservedData.imageFile) {
+          setTitle(preservedData.title || '');
+          setTargetLink(preservedData.targetLink || '');
+          setCroppedImage(preservedData.imageUrl);
+          setIsEditingExistingImage(true);
+          setStep(3); // Vai direto pro formulário com a imagem existente
+        }
+        // Restaura dados após erro
+        else if (preservedData.imageFile) {
+          setTitle(preservedData.title || '');
+          setTargetLink(preservedData.targetLink || '');
+          setCroppedFile(preservedData.imageFile);
+          
+          // Recria preview da imagem
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setCroppedImage(reader.result);
+            setStep(3); // Vai direto pro formulário
+          };
+          reader.readAsDataURL(preservedData.imageFile);
+        }
+      } else {
+        // Limpa tudo para novo banner
+        setStep(1);
+        setTitle('');
+        setTargetLink('');
+        setOriginalFile(null);
+        setImageSrc(null);
+        setCroppedImage(null);
+        setCroppedFile(null);
+        setIsEditingExistingImage(false);
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+      }
+    }
+  }, [preservedData, open]);
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -35,6 +81,9 @@ export function CreateBannerModal({ open, onClose, onCreate, loading }) {
       return;
     }
 
+    setIsEditingExistingImage(false); // Agora está usando uma nova imagem
+    setOriginalFile(file); // Guarda o arquivo original
+
     const reader = new FileReader();
     reader.onload = () => {
       setImageSrc(reader.result);
@@ -47,7 +96,15 @@ export function CreateBannerModal({ open, onClose, onCreate, loading }) {
     try {
       const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
       
-      // Converte blob para base64
+      // Converte blob para File object
+      const fileName = originalFile?.name || 'banner.jpg';
+      const croppedFileObj = new File([croppedImageBlob], fileName, { 
+        type: 'image/jpeg' 
+      });
+      setCroppedFile(croppedFileObj);
+      setIsEditingExistingImage(false); // Agora tem uma nova imagem recortada
+      
+      // Também cria preview em base64
       const reader = new FileReader();
       reader.onloadend = () => {
         setCroppedImage(reader.result);
@@ -63,10 +120,35 @@ export function CreateBannerModal({ open, onClose, onCreate, loading }) {
     }
   };
 
+  // Função para carregar imagem da URL e permitir recorte
+  const handleRecropExistingImage = async () => {
+    try {
+      const response = await fetch(preservedData.imageUrl);
+      const blob = await response.blob();
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageSrc(reader.result);
+        setIsEditingExistingImage(true);
+        setStep(2);
+      };
+      reader.readAsDataURL(blob);
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao carregar imagem',
+        description: 'Não foi possível carregar a imagem para recorte.',
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!croppedImage) {
+    // Se estamos editando e temos imageUrl (sem novo arquivo), não é necessário croppedFile
+    const isEditingWithoutNewImage = preservedData?.imageUrl && !croppedFile;
+    
+    if (!croppedFile && !isEditingWithoutNewImage) {
       toast({
         variant: 'destructive',
         title: 'Imagem necessária',
@@ -75,34 +157,42 @@ export function CreateBannerModal({ open, onClose, onCreate, loading }) {
       return;
     }
 
-    const result = await onCreate({
-      title,
-      imageUrl: croppedImage, // Base64 da imagem recortada
-      targetLink: targetLink || null,
-      active: true,
-    });
-
-    if (result.success) {
-      handleClose();
-      toast({
-        title: 'Banner criado!',
-        description: 'O banner foi adicionado com sucesso.',
-      });
-    } else {
+    if (!title.trim()) {
       toast({
         variant: 'destructive',
-        title: 'Erro ao criar banner',
-        description: result.error,
+        title: 'Título necessário',
+        description: 'Por favor, informe um título para o banner.',
       });
+      return;
     }
+
+    if (!targetLink.trim()) {
+      toast({
+        variant: 'destructive',
+        title: 'Link necessário',
+        description: 'Por favor, informe um link de redirecionamento.',
+      });
+      return;
+    }
+
+    // Chama onCreate e deixa o componente pai gerenciar o fechamento e reabertura
+    await onCreate({
+      title: title.trim(),
+      imageFile: croppedFile, // File object
+      targetLink: targetLink.trim(),
+      active: true,
+    });
   };
 
   const handleClose = () => {
     setStep(1);
     setTitle('');
     setTargetLink('');
+    setOriginalFile(null);
     setImageSrc(null);
     setCroppedImage(null);
+    setCroppedFile(null);
+    setIsEditingExistingImage(false);
     setCrop({ x: 0, y: 0 });
     setZoom(1);
     onClose();
@@ -112,7 +202,9 @@ export function CreateBannerModal({ open, onClose, onCreate, loading }) {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Criar Novo Banner</DialogTitle>
+          <DialogTitle>
+            {preservedData?.imageUrl ? 'Editar Banner' : 'Criar Novo Banner'}
+          </DialogTitle>
         </DialogHeader>
 
         {step === 1 && (
@@ -166,7 +258,20 @@ export function CreateBannerModal({ open, onClose, onCreate, loading }) {
             </div>
 
             <div className="flex gap-3">
-              <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => {
+                  // Se tem croppedFile OU está editando uma imagem existente, volta para o formulário
+                  // Caso contrário, volta para seleção de arquivo
+                  if (croppedFile || isEditingExistingImage) {
+                    setStep(3);
+                  } else {
+                    setStep(1);
+                  }
+                }} 
+                className="flex-1"
+              >
                 Voltar
               </Button>
               <Button type="button" onClick={handleCropConfirm} className="flex-1">
@@ -189,14 +294,59 @@ export function CreateBannerModal({ open, onClose, onCreate, loading }) {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setStep(2)}
-              >
-                Recortar Novamente
-              </Button>
+              
+              {/* Se tem croppedFile, mostra opções de recortar novamente */}
+              {croppedFile && (
+                <>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setIsEditingExistingImage(false);
+                      setStep(2);
+                    }}
+                  >
+                    Recortar Novamente
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setIsEditingExistingImage(false);
+                      setStep(1);
+                    }}
+                  >
+                    Escolher Outra Imagem
+                  </Button>
+                </>
+              )}
+              
+              {/* Se é edição e não tem novo arquivo, mostra opção de mudar imagem */}
+              {!croppedFile && preservedData?.imageUrl && (
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRecropExistingImage}
+                  >
+                    Recortar Novamente
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setIsEditingExistingImage(true);
+                      setStep(1);
+                    }}
+                  >
+                    Mudar Imagem
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Formulário */}
@@ -216,16 +366,17 @@ export function CreateBannerModal({ open, onClose, onCreate, loading }) {
 
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  URL de Redirecionamento
+                  URL de Redirecionamento *
                 </label>
                 <Input
                   type="text"
                   value={targetLink}
                   onChange={(e) => setTargetLink(e.target.value)}
                   placeholder="Ex: /eventos/123 ou https://..."
+                  required
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Opcional. Para onde o usuário vai ao clicar no banner.
+                  Para onde o usuário vai ao clicar no banner.
                 </p>
               </div>
             </div>
@@ -236,7 +387,10 @@ export function CreateBannerModal({ open, onClose, onCreate, loading }) {
               </Button>
               <Button type="submit" disabled={loading} className="flex-1">
                 <Save className="h-4 w-4 mr-2" />
-                {loading ? 'Criando...' : 'Criar Banner'}
+                {loading 
+                  ? (preservedData?.imageUrl ? 'Salvando...' : 'Criando...') 
+                  : (preservedData?.imageUrl ? 'Salvar Alterações' : 'Criar Banner')
+                }
               </Button>
             </div>
           </form>
