@@ -15,15 +15,8 @@ export function useHomeVM() {
       setLoading(true);
       const dashboardData = await contentService.getDashboard();
       
-      // Filtrar warnings já dismissed
-      const dismissedWarnings = JSON.parse(
-        localStorage.getItem('dismissedWarnings') || '[]'
-      );
-      const activeWarnings = dashboardData.warnings.filter(
-        w => !dismissedWarnings.includes(w.id)
-      );
-      
-      setData({ ...dashboardData, warnings: activeWarnings });
+      // Não filtrar warnings dismissed - quando atualizar a página, voltam a aparecer
+      setData(dashboardData);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -32,12 +25,7 @@ export function useHomeVM() {
   };
 
   const dismissWarning = (id) => {
-    const dismissedWarnings = JSON.parse(
-      localStorage.getItem('dismissedWarnings') || '[]'
-    );
-    dismissedWarnings.push(id);
-    localStorage.setItem('dismissedWarnings', JSON.stringify(dismissedWarnings));
-    
+    // Apenas remove do estado local, sem salvar no localStorage
     setData(prev => ({
       ...prev,
       warnings: prev.warnings.filter(w => w.id !== id),
