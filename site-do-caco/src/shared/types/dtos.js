@@ -83,9 +83,9 @@
 /**
  * @typedef {Object} CreateBannerDTO
  * @property {string} title - Título do banner (obrigatório)
- * @property {string} imageUrl - URL da imagem (obrigatório)
- * @property {string} [targetLink] - Link de destino (opcional)
- * @property {boolean} [active] - Se o banner está ativo
+ * @property {File} imageFile - Arquivo de imagem (obrigatório, será enviado como MultipartFile)
+ * @property {string} targetLink - Link de destino (obrigatório)
+ * @property {boolean} [active] - Se o banner está ativo (padrão true)
  */
 
 /**
