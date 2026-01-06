@@ -7,50 +7,50 @@ export function WarningAlert({ warning, onDismiss }) {
   const getSeverityColor = () => {
     switch (warning.severityLevel) {
       case 'CRITICAL':
-        return 'bg-red-50 border-red-300 text-red-900';
+        return 'bg-gray-200 border-gray-900 text-gray-950';
       case 'HIGH':
-        return 'bg-orange-50 border-orange-300 text-orange-900';
+        return 'bg-red-100 border-red-400 text-red-950';
       case 'MEDIUM':
-        return 'bg-yellow-50 border-yellow-300 text-yellow-900';
+        return 'bg-yellow-100 border-yellow-400 text-yellow-950';
       case 'LOW':
-        return 'bg-blue-50 border-blue-300 text-blue-900';
+        return 'bg-blue-100 border-blue-400 text-blue-950';
       default:
-        return 'bg-gray-50 border-gray-300 text-gray-900';
+        return 'bg-gray-100 border-gray-400 text-gray-950';
     }
   };
 
   const getIconColor = () => {
     switch (warning.severityLevel) {
       case 'CRITICAL':
-        return 'text-red-600';
+        return 'text-gray-900';
       case 'HIGH':
-        return 'text-orange-600';
+        return 'text-red-700';
       case 'MEDIUM':
-        return 'text-yellow-600';
+        return 'text-yellow-700';
       case 'LOW':
-        return 'text-blue-600';
+        return 'text-blue-700';
       default:
-        return 'text-gray-600';
+        return 'text-gray-700';
     }
   };
 
   return (
-    <div className={`rounded-lg border-2 p-6 shadow-sm ${getSeverityColor()}`}>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex gap-3 flex-1">
-          <AlertCircle className={`h-6 w-6 flex-shrink-0 mt-1 ${getIconColor()}`} />
-          <div className="flex-1">
-            <div className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+    <div className={`rounded-lg border-2 p-3 shadow-sm ${getSeverityColor()}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex gap-2 flex-1">
+          <AlertCircle className={`h-4 w-4 flex-shrink-0 mt-0.5 ${getIconColor()}`} />
+          <div className="flex-1 min-w-0">
+            <div className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>p]:leading-tight text-sm">
               <ReactMarkdown>{warning.markdownText}</ReactMarkdown>
             </div>
           </div>
         </div>
         <button
           onClick={() => onDismiss(warning.id)}
-          className="p-1 hover:bg-black/10 rounded transition-colors flex-shrink-0"
+          className="p-0.5 hover:bg-black/10 rounded transition-colors flex-shrink-0"
           aria-label="Fechar aviso"
         >
-          <X className="h-5 w-5" />
+          <X className="h-4 w-4" />
         </button>
       </div>
     </div>
