@@ -198,6 +198,69 @@ class ApiClient {
   }
 
   /**
+   * PUT request com FormData e progresso
+   */
+  putFormDataWithProgress(endpoint, formData, onProgress = null) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      // Setup de progresso
+      if (onProgress) {
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            const percentComplete = Math.round((e.loaded / e.total) * 100);
+            onProgress(percentComplete);
+          }
+        });
+      }
+
+      // Handler de sucesso
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const response = xhr.responseText ? JSON.parse(xhr.responseText) : null;
+            resolve(response);
+          } catch (err) {
+            reject(new Error('Erro ao processar resposta'));
+          }
+        } else {
+          try {
+            const errorData = JSON.parse(xhr.responseText);
+            reject(new Error(errorData.message || `Erro HTTP ${xhr.status}`));
+          } catch {
+            reject(new Error(`Erro HTTP ${xhr.status}: ${xhr.statusText}`));
+          }
+        }
+      });
+
+      // Handler de erro
+      xhr.addEventListener('error', () => {
+        reject(new Error('Erro de rede ao enviar arquivo'));
+      });
+
+      // Handler de timeout
+      xhr.addEventListener('timeout', () => {
+        reject(new Error('Timeout ao enviar arquivo'));
+      });
+
+      // Configura e envia
+      xhr.open('PUT', this.buildUrl(endpoint));
+      
+      // Adiciona headers (exceto Content-Type, que é definido automaticamente para FormData)
+      const headers = this.getHeaders({}, true);
+      if (headers) {
+        Object.entries(headers).forEach(([key, value]) => {
+          if (key.toLowerCase() !== 'content-type') {
+            xhr.setRequestHeader(key, value);
+          }
+        });
+      }
+
+      xhr.send(formData);
+    });
+  }
+
+  /**
    * PUT request
    */
   async put(endpoint, data = null, options = {}) {

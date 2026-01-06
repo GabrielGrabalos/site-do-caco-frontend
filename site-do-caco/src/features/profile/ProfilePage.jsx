@@ -8,35 +8,59 @@ import { useToast } from '@/components/ui/use-toast.jsx';
 import { User, Camera, Save } from 'lucide-react';
 import { AlbumGrid } from '@/features/stickers/components/AlbumGrid';
 import { RedeemInput } from '@/features/stickers/components/RedeemInput';
+import { EditAvatarModal } from './components/EditAvatarModal';
 
 export function ProfilePage() {
-  const { user, loading, updating, updateProfile } = useProfileVM();
+  const { user, loading, updating, uploadProgress, updateProfile } = useProfileVM();
   const stickerVM = useStickerAlbumVM();
   const { toast } = useToast();
   
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingAvatar, setIsEditingAvatar] = useState(false);
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    avatarUrl: '',
   });
 
   const handleEdit = () => {
     setFormData({
       name: user.name || '',
-      avatarUrl: user.avatarUrl || '',
     });
+    setSelectedAvatarFile(null);
+    setAvatarPreview(null);
     setIsEditing(true);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setFormData({ name: '', avatarUrl: '' });
+    setFormData({ name: '' });
+    setSelectedAvatarFile(null);
+    setAvatarPreview(null);
+  };
+
+  const handleAvatarSelected = (avatarFile) => {
+    setSelectedAvatarFile(avatarFile);
+    
+    // Cria preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreview(reader.result);
+    };
+    reader.readAsDataURL(avatarFile);
+    
+    setIsEditingAvatar(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const result = await updateProfile(formData);
+    // Se tem arquivo de avatar selecionado, envia com FormData
+    const dataToSend = selectedAvatarFile 
+      ? { name: formData.name, avatarFile: selectedAvatarFile }
+      : formData;
+    
+    const result = await updateProfile(dataToSend);
     
     if (result.success) {
       toast({
@@ -44,6 +68,8 @@ export function ProfilePage() {
         description: 'Suas informações foram atualizadas com sucesso.',
       });
       setIsEditing(false);
+      setSelectedAvatarFile(null);
+      setAvatarPreview(null);
     } else {
       toast({
         variant: 'destructive',
@@ -75,11 +101,17 @@ export function ProfilePage() {
           {isEditing ? (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="flex flex-col items-center gap-4">
-                {/* Avatar Preview */}
+                {/* Avatar Preview com botão de edição */}
                 <div className="relative">
-                  {formData.avatarUrl ? (
+                  {avatarPreview ? (
                     <img
-                      src={formData.avatarUrl}
+                      src={avatarPreview}
+                      alt="Avatar preview"
+                      className="w-32 h-32 rounded-full object-cover border-4 border-primary"
+                    />
+                  ) : user?.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
                       alt="Avatar"
                       className="w-32 h-32 rounded-full object-cover border-4 border-primary"
                     />
@@ -88,9 +120,13 @@ export function ProfilePage() {
                       <User className="h-16 w-16 text-primary" />
                     </div>
                   )}
-                  <div className="absolute bottom-0 right-0 bg-primary text-white rounded-full p-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingAvatar(true)}
+                    className="absolute bottom-0 right-0 bg-primary text-white rounded-full p-2 hover:bg-primary/90 transition-colors"
+                  >
                     <Camera className="h-5 w-5" />
-                  </div>
+                  </button>
                 </div>
 
                 {/* Form Fields */}
@@ -105,26 +141,28 @@ export function ProfilePage() {
                       required
                     />
                   </div>
-                  
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">URL da Foto</label>
-                    <Input
-                      type="url"
-                      value={formData.avatarUrl}
-                      onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
-                      placeholder="https://exemplo.com/foto.jpg"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Cole o link de uma imagem para seu avatar
-                    </p>
-                  </div>
+
+                  {/* Indicador de progresso */}
+                  {updating && uploadProgress > 0 && (
+                    <div className="space-y-2">
+                      <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                        <div
+                          className="bg-primary h-full transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                      <p className="text-sm text-muted-foreground text-center">
+                        Enviando: {uploadProgress}%
+                      </p>
+                    </div>
+                  )}
 
                   <div className="flex gap-3">
                     <Button type="submit" disabled={updating} className="flex-1">
                       <Save className="h-4 w-4 mr-2" />
                       {updating ? 'Salvando...' : 'Salvar'}
                     </Button>
-                    <Button type="button" variant="outline" onClick={handleCancel}>
+                    <Button type="button" variant="outline" onClick={handleCancel} disabled={updating}>
                       Cancelar
                     </Button>
                   </div>
@@ -152,7 +190,7 @@ export function ProfilePage() {
                 <p className="text-muted-foreground">{user?.email}</p>
                 {user?.role === 'ADMIN' && (
                   <span className="inline-block mt-2 px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full">
-                    Administrador
+                    Admin
                   </span>
                 )}
               </div>
@@ -226,6 +264,14 @@ export function ProfilePage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Modal de Edição de Avatar */}
+      <EditAvatarModal
+        open={isEditingAvatar}
+        onClose={() => setIsEditingAvatar(false)}
+        onSave={handleAvatarSelected}
+        currentAvatarUrl={avatarPreview || user?.avatarUrl}
+      />
     </div>
   );
 }
