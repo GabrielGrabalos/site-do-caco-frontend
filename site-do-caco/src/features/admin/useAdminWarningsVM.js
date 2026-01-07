@@ -154,6 +154,43 @@ export function useAdminWarningsVM() {
     }
   };
 
+  const expireWarning = async (id) => {
+    try {
+      // Encontra o aviso antes de expirar
+      const warningToExpire = activeWarnings.find(w => w.id === id);
+      if (!warningToExpire) return false;
+      
+      await warningService.expireWarning(id);
+      
+      // Atualiza a data de expiração para agora
+      const expiredWarning = {
+        ...warningToExpire,
+        expiresAt: new Date().toISOString(),
+      };
+      
+      // Remove dos avisos ativos e adiciona aos expirados
+      setActiveWarnings(prev => prev.filter(w => w.id !== id));
+      setExpiredWarnings(prev => {
+        const updated = [expiredWarning, ...prev];
+        return updated.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      });
+      
+      toast({
+        title: 'Aviso expirado',
+        description: 'O aviso foi marcado como expirado.',
+      });
+      
+      return true;
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao expirar aviso',
+        description: error.message,
+      });
+      return false;
+    }
+  };
+
   // Filtra warnings baseado no filtro selecionado
   const getFilteredWarnings = (warnings, filter) => {
     if (filter === 'ALL') return warnings;
@@ -174,5 +211,6 @@ export function useAdminWarningsVM() {
     createWarning,
     updateWarning,
     deleteWarning,
+    expireWarning,
   };
 }

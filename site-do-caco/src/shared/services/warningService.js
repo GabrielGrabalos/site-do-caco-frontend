@@ -47,7 +47,13 @@ class WarningService {
   async deleteWarning(id) {
     return apiClient.delete(`/admin/warnings/${id}`);
   }
-}
 
+  /**
+   * Força um aviso a expirar (admin)
+   */
+  async expireWarning(id) {
+    return apiClient.put(`/admin/warnings/${id}/expire`);
+  }
+}
 // Instância singleton do serviço
 export const warningService = new WarningService();
