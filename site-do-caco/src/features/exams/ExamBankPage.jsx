@@ -1,11 +1,24 @@
-import { Search } from 'lucide-react';
 import { useExamBankVM } from './useExamBankVM';
-import { SubjectFolder } from './components/SubjectFolder';
-import { Input } from '@/components/ui/input';
+import { ExamFilters } from './components/ExamFilters';
+import { ExamCard } from './components/ExamCard';
+import { FileQuestion, Plus } from 'lucide-react';
 
 export function ExamBankPage() {
-  const { examsBySubject, loading, error, searchQuery, setSearchQuery } =
-    useExamBankVM();
+  const {
+    subjects,
+    exams,
+    loading,
+    error,
+    selectedSubject,
+    setSelectedSubject,
+    selectedYear,
+    setSelectedYear,
+    selectedType,
+    setSelectedType,
+    availableYears,
+    clearFilters,
+    hasActiveFilters,
+  } = useExamBankVM();
 
   if (loading) {
     return (
@@ -26,47 +39,61 @@ export function ExamBankPage() {
     );
   }
 
-  const subjects = Object.keys(examsBySubject).sort();
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Banco de Provas</h1>
-        <p className="text-muted-foreground mb-6">
-          Acesse provas anteriores organizadas por disciplina
-        </p>
-
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Buscar disciplina..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-      </div>
-
-      {subjects.length === 0 ? (
-        <div className="text-center py-12">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">Banco de Provas</h1>
           <p className="text-muted-foreground">
-            {searchQuery
-              ? 'Nenhuma disciplina encontrada com esse nome'
-              : 'Nenhuma prova disponível no momento'}
+            Acesse provas anteriores organizadas por disciplina, ano e tipo
+          </p>
+        </div>
+
+      <ExamFilters
+        subjects={subjects}
+        selectedSubject={selectedSubject}
+        setSelectedSubject={setSelectedSubject}
+        selectedYear={selectedYear}
+        setSelectedYear={setSelectedYear}
+        selectedType={selectedType}
+        setSelectedType={setSelectedType}
+        availableYears={availableYears}
+        clearFilters={clearFilters}
+        hasActiveFilters={hasActiveFilters}
+      />
+
+      {exams.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <FileQuestion size={64} className="text-gray-300 mb-4" />
+          <h3 className="text-xl font-semibold text-gray-600 mb-2">
+            Nenhuma prova encontrada
+          </h3>
+          <p className="text-gray-500 mb-4">
+            {hasActiveFilters
+              ? 'Tente ajustar os filtros para ver mais resultados'
+              : 'Ainda não há provas cadastradas'}
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {subjects.map((subject) => (
-            <SubjectFolder
-              key={subject}
-              subject={subject}
-              exams={examsBySubject[subject]}
-            />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {exams.map((exam) => (
+            <ExamCard key={exam.id} exam={exam} />
           ))}
         </div>
       )}
+
+      {/* Link para adicionar prova */}
+      <div className="mt-12 pt-8 border-t border-gray-200 text-center">
+        <a
+          href="https://forms.gle/YOUR_GOOGLE_FORM_ID"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+        >
+          Quer adicionar uma prova? Clique aqui
+        </a>
+      </div>
+      </div>
     </div>
   );
 }
