@@ -36,10 +36,15 @@ import {
 } from '@dnd-kit/sortable';
 import { useAdminBannersVM } from './useAdminBannersVM';
 import { useAdminWarningsVM } from './useAdminWarningsVM';
+import { useAdminExamsVM } from './useAdminExamsVM';
 import { CreateBannerModal } from './components/CreateBannerModal';
 import { CreateWarningModal } from './components/CreateWarningModal';
 import { BannerItem } from './components/BannerItem';
 import { WarningItem } from './components/WarningItem';
+import { SubjectTabs } from './components/SubjectTabs';
+import { CreateSubjectModal } from './components/CreateSubjectModal';
+import { CreateExamModal } from './components/CreateExamModal';
+import { ExamList } from './components/ExamList';
 
 export function AdminDashboard() {
   const stats = [
@@ -77,6 +82,21 @@ export function AdminDashboard() {
     deleteWarning,
     expireWarning,
   } = useAdminWarningsVM();
+
+  const {
+    subjects,
+    selectedSubject,
+    setSelectedSubject,
+    exams,
+    loading: loadingExams,
+    loadingExams: loadingExamsList,
+    creating: creatingExam,
+    createSubject,
+    deleteSubject,
+    createExam,
+    updateExam,
+    deleteExam,
+  } = useAdminExamsVM();
   
   const [modalOpen, setModalOpen] = useState(false);
   const [preservedModalData, setPreservedModalData] = useState(null);
@@ -89,6 +109,13 @@ export function AdminDashboard() {
   const [editingWarning, setEditingWarning] = useState(null);
   const [deleteWarningDialogOpen, setDeleteWarningDialogOpen] = useState(false);
   const [warningToDelete, setWarningToDelete] = useState(null);
+
+  // Estados para exames
+  const [subjectModalOpen, setSubjectModalOpen] = useState(false);
+  const [examModalOpen, setExamModalOpen] = useState(false);
+  const [editingExam, setEditingExam] = useState(null);
+  const [deleteExamDialogOpen, setDeleteExamDialogOpen] = useState(false);
+  const [examToDelete, setExamToDelete] = useState(null);
   
   const { toast } = useToast();
 
@@ -268,6 +295,62 @@ export function AdminDashboard() {
     setModalOpen(false);
     setPreservedModalData(null);
     setEditingBanner(null);
+  };
+
+  // ==================== Handlers de Exames ====================
+
+  const handleEditExam = (exam) => {
+    setEditingExam(exam);
+    setExamModalOpen(true);
+  };
+
+  const handleCloseExamModal = () => {
+    setExamModalOpen(false);
+    setEditingExam(null);
+  };
+
+  const handleDeleteExam = (examId) => {
+    setExamToDelete(examId);
+    setDeleteExamDialogOpen(true);
+  };
+
+  const confirmDeleteExam = async () => {
+    if (!examToDelete) return;
+    
+    const result = await deleteExam(examToDelete);
+    
+    if (result.success) {
+      toast({
+        title: 'Prova excluída',
+        description: 'A prova foi removida com sucesso.',
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao excluir',
+        description: result.error,
+      });
+    }
+    
+    setDeleteExamDialogOpen(false);
+    setExamToDelete(null);
+  };
+
+  const handleDeleteSubject = async (subjectCode) => {
+    const result = await deleteSubject(subjectCode);
+    
+    if (result.success) {
+      toast({
+        title: 'Disciplina excluída',
+        description: 'A disciplina e todas as suas provas foram removidas.',
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao excluir',
+        description: result.error,
+      });
+    }
   };
 
   if (loading) {
@@ -626,6 +709,42 @@ export function AdminDashboard() {
         </AccordionItem>
       </Accordion>
 
+      {/* Seção de Exames */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg md:text-xl">Banco de Provas</CardTitle>
+          <p className="text-xs md:text-sm text-muted-foreground">
+            Gerencie as disciplinas e adicione provas por matéria.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {loadingExams ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+            </div>
+          ) : (
+            <>
+              <SubjectTabs
+                subjects={subjects}
+                selectedSubject={selectedSubject}
+                onSelectSubject={setSelectedSubject}
+                onAddSubject={() => setSubjectModalOpen(true)}
+                onDeleteSubject={handleDeleteSubject}
+              />
+
+              <ExamList
+                exams={exams}
+                loading={loadingExamsList}
+                onAddExam={() => setExamModalOpen(true)}
+                onDeleteExam={handleDeleteExam}
+                onEditExam={handleEditExam}
+                selectedSubject={selectedSubject}
+              />
+            </>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Dialog de confirmação de exclusão de banner */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
@@ -690,6 +809,48 @@ export function AdminDashboard() {
         loading={creatingWarning}
         editingWarning={editingWarning}
       />
+
+      {/* Modal de criação de disciplina */}
+      <CreateSubjectModal
+        open={subjectModalOpen}
+        onClose={() => setSubjectModalOpen(false)}
+        onCreate={createSubject}
+        loading={creatingExam}
+      />
+
+      {/* Modal de criação de prova */}
+      <CreateExamModal
+        open={examModalOpen}
+        onClose={handleCloseExamModal}
+        onCreate={createExam}
+        onUpdate={updateExam}
+        loading={creatingExam}
+        selectedSubject={selectedSubject}
+        editingExam={editingExam}
+      />
+
+      {/* Dialog de confirmação de exclusão de prova */}
+      <AlertDialog open={deleteExamDialogOpen} onOpenChange={setDeleteExamDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir esta prova? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setExamToDelete(null)}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteExam}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

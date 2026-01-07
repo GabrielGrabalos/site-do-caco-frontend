@@ -81,6 +81,17 @@ export function CreateBannerModal({ open, onClose, onCreate, loading, preservedD
       return;
     }
 
+    // Limite de 8MB para banner
+    const maxSize = 8 * 1024 * 1024; // 8MB em bytes
+    if (file.size > maxSize) {
+      toast({
+        variant: 'destructive',
+        title: 'Arquivo muito grande',
+        description: 'A imagem deve ter no máximo 8 MB.',
+      });
+      return;
+    }
+
     setIsEditingExistingImage(false); // Agora está usando uma nova imagem
     setOriginalFile(file); // Guarda o arquivo original
 
@@ -212,7 +223,7 @@ export function CreateBannerModal({ open, onClose, onCreate, loading, preservedD
             <div className="border-2 border-dashed border-primary/30 rounded-lg p-12 text-center hover:border-primary/50 transition-colors">
               <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-sm text-muted-foreground mb-4">
-                Clique para fazer upload da imagem do banner
+                Clique para fazer upload da imagem do banner (máx. 8 MB)
               </p>
               <input
                 type="file"
