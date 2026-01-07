@@ -47,8 +47,8 @@ export function ArticleItem({ article, onDelete, onEdit, onSelect, isSelected = 
         )}
         <div className="flex items-start justify-between gap-3">
           <div 
-            className={`flex-1 ${!isDraft && onSelect ? 'cursor-pointer' : ''}`}
-            onClick={() => !isDraft && onSelect && onSelect(article)}
+            className={`flex-1 ${onSelect ? 'cursor-pointer' : ''}`}
+            onClick={() => onSelect && onSelect(article)}
           >
             <div className="flex items-center gap-2 mb-1">
               <FileText className="h-4 w-4 text-primary" />
