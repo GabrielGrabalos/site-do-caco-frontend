@@ -99,7 +99,7 @@ export function useAdminManualVM() {
     try {
       setCategories(newOrder);
       const categoryIds = newOrder.map(c => c.id);
-      await apiClient.put('admin/manual/categories/reorder', { categoryIds });
+      await apiClient.put('admin/manual/categories/r/reorder', { categoryIds });
       return { success: true };
     } catch (err) {
       await loadCategories(); // Reverte em caso de erro
@@ -186,7 +186,7 @@ export function useAdminManualVM() {
     try {
       setChapters(newOrder);
       const chapterIds = newOrder.map(ch => ch.id);
-      await apiClient.put('admin/manual/chapters/reorder', { categoryId, chapterIds });
+      await apiClient.put('admin/manual/chapters/r/reorder', { categoryId, chapterIds });
       return { success: true };
     } catch (err) {
       if (selectedCategory) {
@@ -264,7 +264,7 @@ export function useAdminManualVM() {
     try {
       setArticles(newOrder);
       const articleIds = newOrder.map(a => a.id);
-      await apiClient.put('admin/manual/articles/reorder', { chapterId, articleIds });
+      await apiClient.put('admin/manual/articles/r/reorder', { chapterId, articleIds });
       return { success: true };
     } catch (err) {
       if (selectedChapter) {

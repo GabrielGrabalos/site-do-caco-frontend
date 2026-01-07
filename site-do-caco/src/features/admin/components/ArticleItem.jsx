@@ -32,14 +32,11 @@ export function ArticleItem({ article, onDelete, onEdit, onSelect, isSelected = 
       className={isDraft ? '' : 'cursor-grab active:cursor-grabbing'}
     >
       <div 
-        className={`p-3 rounded-lg border-2 bg-white transition-all ${
-          isDragging ? 'opacity-50' : ''
-        } ${
+        className={`p-3 rounded-lg border-2 transition-all ${
           isSelected 
             ? 'border-primary bg-primary/5' 
-            : 'border-gray-200 hover:border-gray-300'
-        } ${!isDraft && onSelect ? 'cursor-pointer' : ''}`}
-        onClick={() => !isDraft && onSelect && onSelect(article)}
+            : 'border-gray-200 hover:border-gray-300 bg-white'
+        } ${isDragging ? 'opacity-50' : ''}`}
       >
         {isDraft && (
           <div className="mb-2">
@@ -49,7 +46,10 @@ export function ArticleItem({ article, onDelete, onEdit, onSelect, isSelected = 
           </div>
         )}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
+          <div 
+            className={`flex-1 ${!isDraft && onSelect ? 'cursor-pointer' : ''}`}
+            onClick={() => !isDraft && onSelect && onSelect(article)}
+          >
             <div className="flex items-center gap-2 mb-1">
               <FileText className="h-4 w-4 text-primary" />
               <h5 className="font-semibold text-sm">{article.title}</h5>

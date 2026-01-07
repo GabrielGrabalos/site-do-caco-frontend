@@ -364,7 +364,9 @@ export function AdminManualPage() {
     // Carregar feedbacks do artigo
     setLoadingFeedbacks(true);
     try {
-      const feedbacks = await apiClient.get(`admin/manual/articles/${article.id}/feedback`);
+      const response = await apiClient.get(`admin/manual/articles/${article.id}/feedback?page=0&size=100`);
+      // Backend retorna Page<ArticleFeedbackDTO>, extrair o conteúdo
+      const feedbacks = response.content || response;
       // Garantir que seja sempre um array
       setArticleFeedbacks(Array.isArray(feedbacks) ? feedbacks : []);
     } catch (err) {
