@@ -18,7 +18,7 @@ export function WarningPreview({ markdownText, severityLevel }) {
     return text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary font-semibold hover:underline">$1</a>');
   };
 
   return (
@@ -27,7 +27,7 @@ export function WarningPreview({ markdownText, severityLevel }) {
         Preview
       </label>
       <div className={`rounded-lg border-2 p-4 ${getSeverityStyles()}`}>
-        <div className="prose prose-sm max-w-none">
+        <div className="prose prose-sm max-w-none [&_a]:text-primary [&_a]:font-semibold [&_a]:hover:underline">
           <div dangerouslySetInnerHTML={{ __html: renderMarkdown(markdownText) }} />
         </div>
       </div>
