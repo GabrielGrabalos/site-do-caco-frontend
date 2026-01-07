@@ -1,4 +1,4 @@
-import { AlertCircle, X } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Ban, Info, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 export function WarningAlert({ warning, onDismiss }) {
@@ -19,26 +19,28 @@ export function WarningAlert({ warning, onDismiss }) {
     }
   };
 
-  const getIconColor = () => {
+  const getSeverityIcon = () => {
     switch (warning.severityLevel) {
       case 'CRITICAL':
-        return 'text-gray-900';
+        return { Icon: Ban, color: 'text-gray-900' };
       case 'HIGH':
-        return 'text-red-700';
+        return { Icon: AlertTriangle, color: 'text-red-700' };
       case 'MEDIUM':
-        return 'text-yellow-700';
+        return { Icon: AlertCircle, color: 'text-yellow-700' };
       case 'LOW':
-        return 'text-blue-700';
+        return { Icon: Info, color: 'text-blue-700' };
       default:
-        return 'text-gray-700';
+        return { Icon: AlertCircle, color: 'text-gray-700' };
     }
   };
+
+  const { Icon, color } = getSeverityIcon();
 
   return (
     <div className={`rounded-lg border-2 p-3 shadow-sm ${getSeverityColor()}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex gap-2 flex-1">
-          <AlertCircle className={`h-4 w-4 flex-shrink-0 mt-0.5 ${getIconColor()}`} />
+          <Icon className={`h-4 w-4 flex-shrink-0 mt-0.5 ${color}`} />
           <div className="flex-1 min-w-0">
             <div className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>p]:leading-tight text-sm">
               <ReactMarkdown>{warning.markdownText}</ReactMarkdown>
