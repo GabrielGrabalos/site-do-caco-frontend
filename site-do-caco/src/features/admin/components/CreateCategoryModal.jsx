@@ -39,7 +39,7 @@ export function CreateCategoryModal({ open, onOpenChange, onSubmit, editingCateg
   const handleTitleChange = (value) => {
     setTitle(value);
     // Atualiza slug automaticamente se estiver criando OU se editando e o slug não foi customizado
-    if (!editingCategory || slug === originalSlug) {
+    if (!editingCategory || slug === originalSlug || slug === generateSlug(title)) {
       setSlug(generateSlug(value));
     }
   };
