@@ -46,7 +46,7 @@ export function CreateChapterModal({
   const handleTitleChange = (value) => {
     setTitle(value);
     // Atualiza slug automaticamente se estiver criando OU se editando e o slug não foi customizado
-    if (!editingChapter || slug === originalSlug) {
+    if (!editingChapter || slug === originalSlug || slug === generateSlug(title)) {
       setSlug(generateSlug(value));
     }
   };

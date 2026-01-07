@@ -19,14 +19,12 @@ export function useAdminManualVM() {
 
   useEffect(() => {
     if (selectedCategory) {
+      setSelectedChapter(null); // Limpa capítulo selecionado ao trocar de categoria
       loadChapters(selectedCategory.id);
     } else {
       setChapters([]);
       setSelectedChapter(null);
     }
-    // Limpa artigos ao trocar de categoria
-    setArticles([]);
-    setSelectedChapter(null);
   }, [selectedCategory]);
 
   useEffect(() => {

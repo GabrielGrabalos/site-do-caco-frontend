@@ -50,7 +50,7 @@ export function CreateArticleModal({
   const handleTitleChange = (value) => {
     setTitle(value);
     // Atualiza slug automaticamente se estiver criando OU se editando e o slug não foi customizado
-    if (!editingArticle || slug === originalSlug) {
+    if (!editingArticle || slug === originalSlug || slug === generateSlug(title)) {
       setSlug(generateSlug(value));
     }
   };
