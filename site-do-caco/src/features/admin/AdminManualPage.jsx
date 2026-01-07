@@ -133,6 +133,17 @@ export function AdminManualPage() {
     }
   }, [articleTitle, articleSlug, articleContent, selectedChapter, editingArticle]);
 
+  // Limpar edição/visualização ao mudar de categoria ou capítulo
+  useEffect(() => {
+    setEditingArticle(null);
+    setSelectedArticleForFeedback(null);
+    setArticleFeedbacks([]);
+    setArticleTitle('');
+    setArticleSlug('');
+    setArticleContent('');
+    setIsViewingDraft(false);
+  }, [selectedCategory, selectedChapter]);
+
   const manualSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -697,6 +708,7 @@ export function AdminManualPage() {
                                     setDiscardDialogOpen(true);
                                   }}
                                   onEdit={handleViewDraft}
+                                  onSelect={handleViewDraft}
                                   isSelected={isViewingDraft}
                                 />
                               );
