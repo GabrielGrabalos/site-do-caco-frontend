@@ -5,7 +5,7 @@ import { Plus, FileQuestion } from 'lucide-react';
 export function ExamList({ exams, loading, onAddExam, onDeleteExam, onEditExam, selectedSubject }) {
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="flex items-center justify-center py-12 min-h-[300px]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
       </div>
     );
@@ -13,7 +13,7 @@ export function ExamList({ exams, loading, onAddExam, onDeleteExam, onEditExam, 
 
   if (!selectedSubject) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+      <div className="flex flex-col items-center justify-center py-12 text-gray-500 min-h-[300px]">
         <FileQuestion size={48} className="mb-4" />
         <p>Selecione uma disciplina para ver as provas</p>
       </div>
