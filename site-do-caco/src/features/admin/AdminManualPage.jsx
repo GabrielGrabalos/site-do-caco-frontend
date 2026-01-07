@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { BookOpen, Plus, Trash2, Save, X, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast.jsx';
 import {
   AlertDialog,
@@ -33,7 +35,8 @@ import { ChapterItem } from './components/ChapterItem';
 import { ArticleItem } from './components/ArticleItem';
 import { CreateCategoryModal } from './components/CreateCategoryModal';
 import { CreateChapterModal } from './components/CreateChapterModal';
-import { CreateArticleModal } from './components/CreateArticleModal';
+import { MDXEditor } from '@/shared/components/MDXEditor';
+import { apiClient } from '@/shared/services/apiClient';
 
 export function AdminManualPage() {
   const {
@@ -72,13 +75,63 @@ export function AdminManualPage() {
   const [deleteChapterDialogOpen, setDeleteChapterDialogOpen] = useState(false);
   const [chapterToDelete, setChapterToDelete] = useState(null);
 
-  // Estados para artigos
-  const [articleModalOpen, setArticleModalOpen] = useState(false);
+  // Estados para artigos (editor inline)
   const [editingArticle, setEditingArticle] = useState(null);
+  const [articleTitle, setArticleTitle] = useState('');
+  const [articleSlug, setArticleSlug] = useState('');
+  const [articleContent, setArticleContent] = useState('');
+  const [originalSlug, setOriginalSlug] = useState('');
   const [deleteArticleDialogOpen, setDeleteArticleDialogOpen] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState(null);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
+  const [isViewingDraft, setIsViewingDraft] = useState(false);
+  const [selectedArticleForFeedback, setSelectedArticleForFeedback] = useState(null);
+  const [articleFeedbacks, setArticleFeedbacks] = useState([]);
+  const [loadingFeedbacks, setLoadingFeedbacks] = useState(false);
 
   const { toast } = useToast();
+
+  const DRAFT_KEY = 'article-draft';
+
+  // Verificar se existe rascunho no localStorage
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    setHasDraft(!!savedDraft);
+  }, []);
+
+  // Atualizar estado de hasDraft quando houver mudanças
+  useEffect(() => {
+    const checkDraft = () => {
+      const savedDraft = localStorage.getItem(DRAFT_KEY);
+      setHasDraft(!!savedDraft);
+    };
+    
+    // Verificar periodicamente
+    const interval = setInterval(checkDraft, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Quando selecionar um artigo para editar
+  useEffect(() => {
+    if (editingArticle) {
+      setArticleTitle(editingArticle.title);
+      setArticleSlug(editingArticle.slug);
+      setArticleContent(editingArticle.content || '');
+      setOriginalSlug(editingArticle.slug);
+      setIsViewingDraft(false);
+    }
+  }, [editingArticle]);
+
+  // Salvar no localStorage sempre que houver mudanças (apenas se não estiver editando)
+  useEffect(() => {
+    if (!editingArticle && selectedChapter && (articleTitle || articleSlug || articleContent)) {
+      const draft = { title: articleTitle, slug: articleSlug, content: articleContent };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      setIsViewingDraft(true);
+      setHasDraft(true);
+    }
+  }, [articleTitle, articleSlug, articleContent, selectedChapter, editingArticle]);
 
   const manualSensors = useSensors(
     useSensor(PointerSensor, {
@@ -242,6 +295,158 @@ export function AdminManualPage() {
   };
 
   // ==================== Handlers de Artigos ====================
+  const generateSlug = (text) => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  };
+
+  const handleArticleTitleChange = (value) => {
+    setArticleTitle(value);
+    // Atualiza slug automaticamente se estiver criando OU se editando e o slug não foi customizado
+    if (!editingArticle || articleSlug === originalSlug || articleSlug === generateSlug(articleTitle)) {
+      setArticleSlug(generateSlug(value));
+    }
+  };
+
+  const handleNewArticle = () => {
+    setEditingArticle(null);
+    setSelectedArticleForFeedback(null);
+    setArticleFeedbacks([]);
+    setArticleTitle('');
+    setArticleSlug('');
+    setArticleContent('');
+    setOriginalSlug('');
+    setIsViewingDraft(false);
+  };
+
+  const handleViewDraft = () => {
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        setEditingArticle(null);
+        setSelectedArticleForFeedback(null);
+        setArticleFeedbacks([]);
+        setArticleTitle(draft.title || '');
+        setArticleSlug(draft.slug || '');
+        setArticleContent(draft.content || '');
+        setOriginalSlug('');
+        setIsViewingDraft(true);
+      } catch (err) {
+        console.error('Erro ao carregar rascunho:', err);
+        toast({
+          variant: 'destructive',
+          title: 'Erro ao carregar rascunho',
+          description: 'Não foi possível carregar o rascunho salvo.',
+        });
+      }
+    }
+  };
+
+  const handleEditArticle = (article) => {
+    setEditingArticle(article);
+    setSelectedArticleForFeedback(null);
+    setArticleFeedbacks([]);
+  };
+
+  const handleSelectArticleForFeedback = async (article) => {
+    setEditingArticle(null);
+    setSelectedArticleForFeedback(article);
+    setArticleTitle('');
+    setArticleSlug('');
+    setArticleContent('');
+    setIsViewingDraft(false);
+    
+    // Carregar feedbacks do artigo
+    setLoadingFeedbacks(true);
+    try {
+      const feedbacks = await apiClient.get(`admin/manual/articles/${article.id}/feedback`);
+      // Garantir que seja sempre um array
+      setArticleFeedbacks(Array.isArray(feedbacks) ? feedbacks : []);
+    } catch (err) {
+      console.error('Erro ao carregar feedbacks:', err);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao carregar feedbacks',
+        description: 'Não foi possível carregar os feedbacks deste artigo.',
+      });
+      setArticleFeedbacks([]);
+    } finally {
+      setLoadingFeedbacks(false);
+    }
+  };
+
+  const handleCancelArticle = () => {
+    if (!editingArticle && (articleTitle || articleSlug || articleContent)) {
+      setDiscardDialogOpen(true);
+    } else {
+      clearArticleForm();
+    }
+  };
+
+  const clearArticleForm = () => {
+    setEditingArticle(null);
+    setArticleTitle('');
+    setArticleSlug('');
+    setArticleContent('');
+    setOriginalSlug('');
+    setIsViewingDraft(false);
+  };
+
+  const handleDiscardDraft = () => {
+    localStorage.removeItem(DRAFT_KEY);
+    clearArticleForm();
+    setDiscardDialogOpen(false);
+    setHasDraft(false);
+  };
+
+  const handleSaveArticle = async () => {
+    if (!articleTitle.trim() || !articleSlug.trim() || !articleContent.trim() || !selectedChapter) {
+      toast({
+        variant: 'destructive',
+        title: 'Campos obrigatórios',
+        description: 'Preencha título, slug e conteúdo.',
+      });
+      return;
+    }
+
+    const articleData = {
+      title: articleTitle,
+      slug: articleSlug,
+      content: articleContent,
+      chapterId: selectedChapter.id,
+    };
+
+    const result = editingArticle
+      ? await updateArticle(editingArticle.id, articleData)
+      : await createArticle(articleData);
+    
+    if (result.success) {
+      // Limpar rascunho do localStorage após sucesso
+      if (!editingArticle || isViewingDraft) {
+        localStorage.removeItem(DRAFT_KEY);
+        setHasDraft(false);
+      }
+      clearArticleForm();
+      toast({
+        title: editingArticle ? 'Artigo atualizado' : 'Artigo criado',
+        description: editingArticle 
+          ? 'O artigo foi atualizado com sucesso.'
+          : 'O artigo foi criado com sucesso.',
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: editingArticle ? 'Erro ao atualizar' : 'Erro ao criar',
+        description: result.error,
+      });
+    }
+  };
+
   const handleDragEndArticles = async (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id || !selectedChapter) return;
@@ -262,34 +467,6 @@ export function AdminManualPage() {
     }
   };
 
-  const handleCreateArticle = async (articleData) => {
-    const result = editingArticle
-      ? await updateArticle(editingArticle.id, articleData)
-      : await createArticle(articleData);
-    
-    if (result.success) {
-      setArticleModalOpen(false);
-      setEditingArticle(null);
-      toast({
-        title: editingArticle ? 'Artigo atualizado' : 'Artigo criado',
-        description: editingArticle 
-          ? 'O artigo foi atualizado com sucesso.'
-          : 'O artigo foi criado com sucesso.',
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: editingArticle ? 'Erro ao atualizar' : 'Erro ao criar',
-        description: result.error,
-      });
-    }
-  };
-
-  const handleEditArticle = (article) => {
-    setEditingArticle(article);
-    setArticleModalOpen(true);
-  };
-
   const handleDeleteArticle = (article) => {
     setArticleToDelete(article.id);
     setDeleteArticleDialogOpen(true);
@@ -304,6 +481,10 @@ export function AdminManualPage() {
         title: 'Artigo excluído',
         description: 'O artigo foi removido com sucesso.',
       });
+      // Se estava editando o artigo excluído, limpar o formulário
+      if (editingArticle?.id === articleToDelete) {
+        clearArticleForm();
+      }
     } else {
       toast({
         variant: 'destructive',
@@ -464,7 +645,7 @@ export function AdminManualPage() {
                 <h3 className="font-semibold text-sm">Artigos</h3>
                 <Button
                   size="sm"
-                  onClick={() => setArticleModalOpen(true)}
+                  onClick={handleNewArticle}
                   disabled={!selectedChapter}
                   className="h-8"
                 >
@@ -490,26 +671,63 @@ export function AdminManualPage() {
                       strategy={verticalListSortingStrategy}
                     >
                       <div className="space-y-2">
+                        {/* Item de rascunho - aparece quando houver rascunho e um capítulo estiver selecionado */}
+                        {hasDraft && (() => {
+                          const savedDraft = localStorage.getItem(DRAFT_KEY);
+                          if (savedDraft) {
+                            try {
+                              const draft = JSON.parse(savedDraft);
+                              const draftArticle = {
+                                id: 'draft',
+                                title: draft.title || 'Rascunho',
+                                slug: draft.slug || 'Sem slug',
+                                isDraft: true,
+                                totalFeedback: 0,
+                                helpfulCount: 0,
+                                unhelpfulCount: 0,
+                                helpfulPercentage: 0,
+                              };
+                              return (
+                                <ArticleItem
+                                  key="draft"
+                                  article={draftArticle}
+                                  onDelete={() => {
+                                    setDiscardDialogOpen(true);
+                                  }}
+                                  onEdit={handleViewDraft}
+                                  isSelected={isViewingDraft}
+                                />
+                              );
+                            } catch (err) {
+                              console.error('Erro ao renderizar rascunho:', err);
+                              return null;
+                            }
+                          }
+                          return null;
+                        })()}
+                        
                         {articles.map((article) => (
                           <ArticleItem
                             key={article.id}
                             article={article}
                             onDelete={handleDeleteArticle}
                             onEdit={handleEditArticle}
+                            onSelect={handleSelectArticleForFeedback}
+                            isSelected={editingArticle?.id === article.id || selectedArticleForFeedback?.id === article.id}
                           />
                         ))}
                       </div>
                     </SortableContext>
                   </DndContext>
 
-                  {articles.length === 0 && (
+                  {articles.length === 0 && !hasDraft && (
                     <div className="text-center py-8 border-2 border-dashed rounded-lg">
                       <p className="text-sm text-muted-foreground mb-3">
                         Nenhum artigo
                       </p>
                       <Button
                         size="sm"
-                        onClick={() => setArticleModalOpen(true)}
+                        onClick={handleNewArticle}
                       >
                         <Plus className="h-4 w-4 mr-2" />
                         Criar Artigo
@@ -522,6 +740,200 @@ export function AdminManualPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Editor de Artigo Inline ou Visualização de Feedbacks */}
+      {selectedChapter && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span>
+                  {selectedArticleForFeedback 
+                    ? `Feedbacks - ${selectedArticleForFeedback.title}` 
+                    : editingArticle 
+                      ? 'Editar Artigo' 
+                      : 'Novo Artigo'
+                  }
+                </span>
+                {isViewingDraft && (
+                  <span className="text-xs px-2 py-0.5 bg-muted text-muted-foreground rounded-md font-medium">
+                    Rascunho
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                {selectedArticleForFeedback && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedArticleForFeedback(null);
+                      setArticleFeedbacks([]);
+                    }}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Fechar
+                  </Button>
+                )}
+                {!editingArticle && !selectedArticleForFeedback && (articleTitle || articleSlug || articleContent) && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setDiscardDialogOpen(true)}
+                    disabled={creating}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Descartar
+                  </Button>
+                )}
+                {(editingArticle || articleTitle || articleSlug || articleContent) && !selectedArticleForFeedback && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCancelArticle}
+                    disabled={creating}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancelar
+                  </Button>
+                )}
+                {!selectedArticleForFeedback && (
+                  <Button
+                    size="sm"
+                    onClick={handleSaveArticle}
+                    disabled={!articleTitle.trim() || !articleSlug.trim() || !articleContent.trim() || creating}
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    {creating ? 'Salvando...' : editingArticle ? 'Atualizar' : 'Criar'}
+                  </Button>
+                )}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {selectedArticleForFeedback ? (
+              // Visualização de feedbacks
+              <div className="space-y-4">
+                {loadingFeedbacks ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                  </div>
+                ) : !Array.isArray(articleFeedbacks) || articleFeedbacks.length === 0 ? (
+                  <div className="text-center py-12 border-2 border-dashed rounded-lg">
+                    <p className="text-sm text-muted-foreground">
+                      Nenhum feedback recebido para este artigo
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="text-sm">
+                        <span className="font-semibold">{articleFeedbacks.length}</span> feedback(s) total
+                      </div>
+                      <div className="text-sm text-green-600">
+                        <ThumbsUp className="h-4 w-4 inline mr-1" />
+                        <span className="font-semibold">
+                          {articleFeedbacks.filter(f => f.isHelpful).length}
+                        </span> úteis
+                      </div>
+                      <div className="text-sm text-red-600">
+                        <ThumbsDown className="h-4 w-4 inline mr-1" />
+                        <span className="font-semibold">
+                          {articleFeedbacks.filter(f => !f.isHelpful).length}
+                        </span> não úteis
+                      </div>
+                    </div>
+                    
+                    {articleFeedbacks.map((feedback) => (
+                      <div key={feedback.id} className="p-4 border rounded-lg bg-white">
+                        <div className="flex items-start gap-3">
+                          {/* Avatar do usuário */}
+                          {feedback.userAvatarUrl ? (
+                            <img 
+                              src={feedback.userAvatarUrl} 
+                              alt={feedback.userName}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold">
+                              {feedback.userName?.charAt(0).toUpperCase() || '?'}
+                            </div>
+                          )}
+                          
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm font-medium text-gray-900">
+                                {feedback.userName || 'Anônimo'}
+                              </span>
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                feedback.isHelpful 
+                                  ? 'bg-green-100 text-green-700' 
+                                  : 'bg-red-100 text-red-700'
+                              }`}>
+                                {feedback.isHelpful ? (
+                                  <><ThumbsUp className="h-3 w-3 inline mr-1" />Útil</>
+                                ) : (
+                                  <><ThumbsDown className="h-3 w-3 inline mr-1" />Não útil</>
+                                )}
+                              </span>
+                              {feedback.postedAt && (
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(feedback.postedAt).toLocaleString('pt-BR')}
+                                </span>
+                              )}
+                            </div>
+                            {feedback.comment ? (
+                              <p className="text-sm text-gray-700">{feedback.comment}</p>
+                            ) : (
+                              <p className="text-sm text-muted-foreground italic">Sem comentário</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              // Editor de artigo
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="article-title">Título</Label>
+                    <Input
+                      id="article-title"
+                      value={articleTitle}
+                      onChange={(e) => handleArticleTitleChange(e.target.value)}
+                      placeholder="Título do artigo"
+                      disabled={creating}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="article-slug">Slug</Label>
+                    <Input
+                      id="article-slug"
+                      value={articleSlug}
+                      onChange={(e) => setArticleSlug(e.target.value)}
+                      placeholder="slug-do-artigo"
+                      disabled={creating}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Conteúdo</Label>
+                  <MDXEditor
+                    key={editingArticle?.id || (isViewingDraft ? 'draft' : 'new')}
+                    value={articleContent}
+                    onChange={setArticleContent}
+                    placeholder="Escreva o conteúdo do artigo..."
+                  />
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Modais e Dialogs */}
       <CreateCategoryModal
@@ -541,14 +953,26 @@ export function AdminManualPage() {
         categoryId={selectedCategory?.id}
       />
 
-      <CreateArticleModal
-        open={articleModalOpen}
-        onOpenChange={setArticleModalOpen}
-        onSubmit={handleCreateArticle}
-        editingArticle={editingArticle}
-        loading={creating}
-        chapterId={selectedChapter?.id}
-      />
+      {/* Dialog de confirmação para descartar rascunho */}
+      <AlertDialog open={discardDialogOpen} onOpenChange={setDiscardDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Descartar rascunho?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja descartar este rascunho? Todo o conteúdo será perdido e esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDiscardDraft}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Descartar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={deleteCategoryDialogOpen} onOpenChange={setDeleteCategoryDialogOpen}>
         <AlertDialogContent>
