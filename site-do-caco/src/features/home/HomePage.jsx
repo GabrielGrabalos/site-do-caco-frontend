@@ -1,14 +1,11 @@
-import { useState } from 'react';
 import { useHomeVM } from './useHomeVM';
 import { BannerCarousel } from './components/BannerCarousel';
 import { WarningAlert } from './components/WarningAlert';
 import { LatestNews } from './components/LatestNews';
 import { NavButtons } from './components/NavButtons';
-import { MDXEditor } from '../../shared/components/MDXEditor';
 
 export function HomePage() {
   const { data, loading, error, dismissWarning } = useHomeVM();
-  const [editorContent, setEditorContent] = useState('# Teste do MDXEditor\n\nDigite aqui para testar o editor...');
 
   if (loading) {
     return (
@@ -54,25 +51,6 @@ export function HomePage() {
       {data?.latestNews && data.latestNews.length > 0 && (
         <LatestNews news={data.latestNews} />
       )}
-
-      {/* Teste do MDXEditor */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">📝 Teste do MDXEditor</h2>
-          <span className="text-sm text-muted-foreground">(Componente temporário para testes)</span>
-        </div>
-        <div className="border rounded-lg p-4 bg-white">
-          <MDXEditor
-            value={editorContent}
-            onChange={setEditorContent}
-            placeholder="Digite aqui para testar o editor markdown..."
-          />
-        </div>
-        <div className="border rounded-lg p-4 bg-gray-50">
-          <h3 className="font-semibold mb-2">Conteúdo (Preview):</h3>
-          <pre className="text-xs overflow-auto max-h-40 bg-white p-2 rounded">{editorContent}</pre>
-        </div>
-      </div>
 
       {/* Arte Decorativa */}
       <div className="flex items-center justify-center py-12">
