@@ -123,7 +123,7 @@ export const ImageUploadDialog = ({ isOpen, onClose, onImageUploaded, imageFile 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md z-[60]">
         <DialogHeader>
           <DialogTitle>Upload de Imagem</DialogTitle>
           <DialogDescription>

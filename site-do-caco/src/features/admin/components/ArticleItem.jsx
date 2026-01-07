@@ -3,7 +3,9 @@ import { CSS } from '@dnd-kit/utilities';
 import { Edit, Trash2, FileText, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export function ArticleItem({ article, onDelete, onEdit }) {
+export function ArticleItem({ article, onDelete, onEdit, onSelect, isSelected = false }) {
+  const isDraft = article.isDraft === true;
+  
   const {
     attributes,
     listeners,
@@ -13,6 +15,7 @@ export function ArticleItem({ article, onDelete, onEdit }) {
     isDragging,
   } = useSortable({ 
     id: article.id,
+    disabled: isDraft, // Rascunho não pode ser arrastado
   });
 
   const style = {
@@ -25,14 +28,26 @@ export function ArticleItem({ article, onDelete, onEdit }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
-      className="cursor-grab active:cursor-grabbing"
+      {...(!isDraft ? listeners : {})}
+      className={isDraft ? '' : 'cursor-grab active:cursor-grabbing'}
     >
       <div 
-        className={`p-3 rounded-lg border-2 border-gray-200 hover:border-gray-300 bg-white transition-all ${
+        className={`p-3 rounded-lg border-2 bg-white transition-all ${
           isDragging ? 'opacity-50' : ''
-        }`}
+        } ${
+          isSelected 
+            ? 'border-primary bg-primary/5' 
+            : 'border-gray-200 hover:border-gray-300'
+        } ${!isDraft && onSelect ? 'cursor-pointer' : ''}`}
+        onClick={() => !isDraft && onSelect && onSelect(article)}
       >
+        {isDraft && (
+          <div className="mb-2">
+            <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-800 rounded-md font-medium">
+              Rascunho
+            </span>
+          </div>
+        )}
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
@@ -43,7 +58,7 @@ export function ArticleItem({ article, onDelete, onEdit }) {
               Slug: <span className="font-mono">{article.slug}</span>
             </p>
             
-            {article.totalFeedback > 0 && (
+            {!isDraft && article.totalFeedback > 0 && (
               <div className="flex items-center gap-3 text-xs">
                 <div className="flex items-center gap-1 text-green-600">
                   <ThumbsUp className="h-3 w-3" />
@@ -69,7 +84,7 @@ export function ArticleItem({ article, onDelete, onEdit }) {
                 e.stopPropagation();
                 onEdit(article);
               }}
-              title="Editar artigo"
+              title={isDraft ? "Editar rascunho" : "Editar artigo"}
             >
               <Edit className="h-3.5 w-3.5" />
             </Button>
@@ -81,7 +96,7 @@ export function ArticleItem({ article, onDelete, onEdit }) {
                 e.stopPropagation();
                 onDelete(article);
               }}
-              title="Deletar artigo"
+              title={isDraft ? "Excluir rascunho" : "Deletar artigo"}
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>

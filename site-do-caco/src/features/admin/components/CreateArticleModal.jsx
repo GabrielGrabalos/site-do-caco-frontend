@@ -6,10 +6,23 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MDXEditor } from '@/shared/components/MDXEditor';
+import { Trash2 } from 'lucide-react';
+
+const DRAFT_KEY = 'article-draft';
 
 export function CreateArticleModal({ 
   open, 
@@ -23,6 +36,24 @@ export function CreateArticleModal({
   const [slug, setSlug] = useState('');
   const [content, setContent] = useState('');
   const [originalSlug, setOriginalSlug] = useState('');
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
+
+  // Carregar do localStorage ao abrir o modal (apenas se não estiver editando)
+  useEffect(() => {
+    if (open && !editingArticle) {
+      const savedDraft = localStorage.getItem(DRAFT_KEY);
+      if (savedDraft) {
+        try {
+          const draft = JSON.parse(savedDraft);
+          setTitle(draft.title || '');
+          setSlug(draft.slug || '');
+          setContent(draft.content || '');
+        } catch (err) {
+          console.error('Erro ao carregar rascunho:', err);
+        }
+      }
+    }
+  }, [open, editingArticle]);
 
   useEffect(() => {
     if (editingArticle) {
@@ -30,13 +61,22 @@ export function CreateArticleModal({
       setSlug(editingArticle.slug);
       setContent(editingArticle.content || '');
       setOriginalSlug(editingArticle.slug);
-    } else {
+    } else if (!open) {
+      // Limpa apenas quando fecha o modal e não está editando
       setTitle('');
       setSlug('');
       setContent('');
       setOriginalSlug('');
     }
   }, [editingArticle, open]);
+
+  // Salvar no localStorage sempre que houver mudanças (apenas se não estiver editando)
+  useEffect(() => {
+    if (!editingArticle && open && (title || slug || content)) {
+      const draft = { title, slug, content, chapterId };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    }
+  }, [title, slug, content, chapterId, editingArticle, open]);
 
   const generateSlug = (text) => {
     return text
@@ -60,7 +100,22 @@ export function CreateArticleModal({
     onSubmit({ title, slug, content, chapterId });
   };
 
+  const handleDiscard = () => {
+    setDiscardDialogOpen(true);
+  };
+
+  const confirmDiscard = () => {
+    localStorage.removeItem(DRAFT_KEY);
+    setTitle('');
+    setSlug('');
+    setContent('');
+    setOriginalSlug('');
+    setDiscardDialogOpen(false);
+    onOpenChange(false);
+  };
+
   const isValid = title.trim() && slug.trim() && content.trim();
+  const hasDraft = !editingArticle && (title || slug || content);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -113,6 +168,18 @@ export function CreateArticleModal({
           </div>
 
           <DialogFooter>
+            {hasDraft && (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleDiscard}
+                disabled={loading}
+                className="mr-auto"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Descartar
+              </Button>
+            )}
             <Button
               type="button"
               variant="outline"
@@ -127,6 +194,27 @@ export function CreateArticleModal({
           </DialogFooter>
         </form>
       </DialogContent>
+
+      {/* Dialog de confirmação de descarte */}
+      <AlertDialog open={discardDialogOpen} onOpenChange={setDiscardDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Descartar rascunho?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja descartar este rascunho? Todo o conteúdo será perdido e esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDiscard}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Descartar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
