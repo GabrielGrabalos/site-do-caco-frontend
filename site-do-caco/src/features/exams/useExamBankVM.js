@@ -1,68 +1,94 @@
-import { useState, useEffect, useMemo } from 'react';
-import { contentService } from '@/shared/services/contentService';
+import { useState, useEffect } from 'react';
+import { apiClient } from '@/shared/services/apiClient';
+import { Exam } from '../admin/models/Exam';
 
 export function useExamBankVM() {
-  const [allExams, setAllExams] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [exams, setExams] = useState([]);
+  const [filteredExams, setFilteredExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Filtros
+  const [selectedSubject, setSelectedSubject] = useState('all');
+  const [selectedYear, setSelectedYear] = useState('all');
+  const [selectedType, setSelectedType] = useState('all');
+
+  // Lista de anos disponíveis (de 2000 até o ano atual)
+  const currentYear = new Date().getFullYear();
+  const yearCount = currentYear - 2000 + 1;
+  const availableYears = Array.from({ length: yearCount }, (_, i) => currentYear - i);
 
   useEffect(() => {
-    loadExams();
+    loadData();
   }, []);
 
-  const loadExams = async () => {
+  useEffect(() => {
+    applyFilters();
+  }, [exams, selectedSubject, selectedYear, selectedType]);
+
+  const loadData = async () => {
     try {
       setLoading(true);
-      const data = await contentService.getExams();
-      setAllExams(data);
+      setError(null);
+
+      const [subjectsData, examsData] = await Promise.all([
+        apiClient.get('public/exams/subjects'),
+        apiClient.get('public/exams'),
+      ]);
+
+      setSubjects(subjectsData);
+      setExams(Exam.fromDTOArray(examsData));
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Erro ao carregar dados');
     } finally {
       setLoading(false);
     }
   };
 
-  // Filtragem em memória
-  const filteredExams = useMemo(() => {
-    if (!searchQuery.trim()) return allExams;
+  const applyFilters = () => {
+    let filtered = [...exams];
 
-    const query = searchQuery.toLowerCase();
-    return allExams.filter((exam) =>
-      exam.subject.toLowerCase().includes(query)
-    );
-  }, [allExams, searchQuery]);
+    if (selectedSubject !== 'all') {
+      filtered = filtered.filter(exam => exam.subjectCode === selectedSubject);
+    }
 
-  // Agrupar por disciplina
-  const examsBySubject = useMemo(() => {
-    const grouped = {};
-    filteredExams.forEach((exam) => {
-      if (!grouped[exam.subject]) {
-        grouped[exam.subject] = [];
-      }
-      grouped[exam.subject].push(exam);
+    if (selectedYear !== 'all') {
+      filtered = filtered.filter(exam => exam.year === parseInt(selectedYear));
+    }
+
+    if (selectedType !== 'all') {
+      filtered = filtered.filter(exam => exam.type === selectedType);
+    }
+
+    // Ordena por ano (mais recente primeiro) e depois por tipo
+    filtered.sort((a, b) => {
+      if (b.year !== a.year) return b.year - a.year;
+      return a.type.localeCompare(b.type);
     });
 
-    // Ordenar cada disciplina por tipo e depois por ano/semestre
-    Object.keys(grouped).forEach((subject) => {
-      grouped[subject].sort((a, b) => {
-        if (a.type !== b.type) {
-          const order = { P1: 1, P2: 2, P3: 3, FINAL: 4 };
-          return order[a.type] - order[b.type];
-        }
-        if (a.year !== b.year) return b.year - a.year;
-        return b.semester - a.semester;
-      });
-    });
+    setFilteredExams(filtered);
+  };
 
-    return grouped;
-  }, [filteredExams]);
+  const clearFilters = () => {
+    setSelectedSubject('all');
+    setSelectedYear('all');
+    setSelectedType('all');
+  };
 
   return {
-    examsBySubject,
+    subjects,
+    exams: filteredExams,
     loading,
     error,
-    searchQuery,
-    setSearchQuery,
+    selectedSubject,
+    setSelectedSubject,
+    selectedYear,
+    setSelectedYear,
+    selectedType,
+    setSelectedType,
+    availableYears,
+    clearFilters,
+    hasActiveFilters: selectedSubject !== 'all' || selectedYear !== 'all' || selectedType !== 'all',
   };
 }
