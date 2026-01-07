@@ -69,6 +69,7 @@ export function AdminDashboard() {
     createWarning,
     updateWarning,
     deleteWarning,
+    expireWarning,
   } = useAdminWarningsVM();
   
   const [modalOpen, setModalOpen] = useState(false);
@@ -237,7 +238,12 @@ export function AdminDashboard() {
     setWarningToDelete(warning.id);
     setDeleteWarningDialogOpen(true);
   };
-
+  const handleExpireWarning = async (warning) => {
+    const success = await expireWarning(warning.id);
+    if (success) {
+      // O aviso já foi movido para expirados pelo hook
+    }
+  };
   const confirmDeleteWarning = async () => {
     if (!warningToDelete) return;
     
@@ -482,6 +488,7 @@ export function AdminDashboard() {
                       warning={warning}
                       onEdit={handleEditWarning}
                       onDelete={handleDeleteWarning}
+                      onExpire={handleExpireWarning}
                     />
                   ))}
                 </div>

@@ -1,10 +1,10 @@
-import { Trash2, Edit2, Clock, AlertTriangle } from 'lucide-react';
+import { Trash2, Edit2, Clock, AlertTriangle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import ReactMarkdown from 'react-markdown';
 import { Warning } from '../models/Warning';
 
-export function WarningItem({ warning, onEdit, onDelete }) {
+export function WarningItem({ warning, onEdit, onDelete, onExpire }) {
   const warningObj = new Warning(warning);
   
   const formatDateTime = (isoString) => {
@@ -78,6 +78,17 @@ export function WarningItem({ warning, onEdit, onDelete }) {
 
           {/* Ações */}
           <div className="flex gap-2 justify-end sm:justify-start sm:flex-shrink-0">
+            {isActive && onExpire && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onExpire(warning)}
+                className="h-8 w-8 p-0 text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                title="Forçar expiração"
+              >
+                <XCircle className="h-4 w-4" />
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
