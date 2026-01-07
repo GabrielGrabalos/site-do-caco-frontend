@@ -18,6 +18,7 @@ import { LoginPage } from '@/features/auth/LoginPage';
 import { CallbackPage } from '@/features/auth/CallbackPage';
 import { AdminLayout } from '@/features/admin/AdminLayout';
 import { AdminDashboard } from '@/features/admin/AdminDashboard';
+import { AdminManualPage } from '@/features/admin/AdminManualPage';
 
 function App() {
   return (
@@ -67,7 +68,7 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="noticias" element={<div>Gerenciar Notícias</div>} />
           <Route path="eventos" element={<div>Gerenciar Eventos</div>} />
-          <Route path="manual" element={<div>Gerenciar Manual</div>} />
+          <Route path="manual" element={<AdminManualPage />} />
           <Route path="figurinhas" element={<div>Gerenciar Figurinhas</div>} />
         </Route>
       </Routes>
