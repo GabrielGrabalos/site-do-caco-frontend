@@ -42,7 +42,7 @@ export function WarningAlert({ warning, onDismiss }) {
         <div className="flex gap-2 flex-1">
           <Icon className={`h-4 w-4 flex-shrink-0 mt-0.5 ${color}`} />
           <div className="flex-1 min-w-0">
-            <div className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>p]:leading-tight text-sm">
+            <div className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>p]:leading-relaxed [&_a]:text-primary [&_a]:font-semibold [&_a]:hover:underline text-sm">
               <ReactMarkdown>{warning.markdownText}</ReactMarkdown>
             </div>
           </div>

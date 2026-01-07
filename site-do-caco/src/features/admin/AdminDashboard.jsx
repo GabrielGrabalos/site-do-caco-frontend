@@ -3,6 +3,12 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, FileText, Calendar, Image, Plus, AlertTriangle } from 'lucide-react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { useToast } from '@/components/ui/use-toast.jsx';
 import {
   AlertDialog,
@@ -351,36 +357,46 @@ export function AdminDashboard() {
         </Card>
 
         {/* Banners Inativos */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg md:text-xl">Banners Inativos</CardTitle>
-            <p className="text-xs md:text-sm text-muted-foreground">
-              Use o botão para ativar. Banners ativados vão para o final da lista ativa.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4 pb-4 min-h-[120px]">
-              {inactiveBanners.map((banner) => (
-                <BannerItem
-                  key={banner.id}
-                  banner={banner}
-                  onDelete={handleDelete}
-                  onToggle={handleToggle}
-                  onEdit={handleEdit}
-                  isActive={false}
-                />
-              ))}
-            </div>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="inactive-banners">
+            <Card>
+              <CardHeader className="pb-3">
+                <AccordionTrigger className="hover:no-underline [&[data-state=open]>div]:mb-2">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg md:text-xl text-left">Banners Inativos ({inactiveBanners.length})</CardTitle>
+                    <p className="text-xs md:text-sm text-muted-foreground text-left">
+                      Use o botão para ativar. Banners ativados vão para o final da lista ativa.
+                    </p>
+                  </div>
+                </AccordionTrigger>
+              </CardHeader>
+              <AccordionContent>
+                <CardContent>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4 pb-4 min-h-[120px]">
+                    {inactiveBanners.map((banner) => (
+                      <BannerItem
+                        key={banner.id}
+                        banner={banner}
+                        onDelete={handleDelete}
+                        onToggle={handleToggle}
+                        onEdit={handleEdit}
+                        isActive={false}
+                      />
+                    ))}
+                  </div>
 
-            {inactiveBanners.length === 0 && (
-              <div className="text-center py-8 md:py-12">
-                <p className="text-sm md:text-base text-muted-foreground">
-                  Nenhum banner inativo.
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  {inactiveBanners.length === 0 && (
+                    <div className="text-center py-8 md:py-12">
+                      <p className="text-sm md:text-base text-muted-foreground">
+                        Nenhum banner inativo.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </AccordionContent>
+            </Card>
+          </AccordionItem>
+        </Accordion>
       </DndContext>
 
       {/* Seção de Avisos Ativos */}
@@ -499,17 +515,24 @@ export function AdminDashboard() {
       </Card>
 
       {/* Seção de Avisos Expirados */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg md:text-xl flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-muted-foreground" />
-            Avisos Expirados
-          </CardTitle>
-          <p className="text-xs md:text-sm text-muted-foreground">
-            Avisos que já passaram da data de término
-          </p>
-        </CardHeader>
-        <CardContent>
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="expired-warnings" className="border-none">
+          <Card>
+            <CardHeader className="pb-3">
+              <AccordionTrigger className="hover:no-underline [&[data-state=open]>div]:mb-2">
+                <div className="flex-1">
+                  <CardTitle className="text-lg md:text-xl flex items-center gap-2 text-left">
+                    <AlertTriangle className="h-5 w-5 text-muted-foreground" />
+                    Avisos Expirados ({allExpiredWarnings.length})
+                  </CardTitle>
+                  <p className="text-xs md:text-sm text-muted-foreground text-left">
+                    Avisos que já passaram da data de término
+                  </p>
+                </div>
+              </AccordionTrigger>
+            </CardHeader>
+            <AccordionContent>
+              <CardContent>
           {loadingWarnings ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -597,8 +620,11 @@ export function AdminDashboard() {
               )}
             </>
           )}
-        </CardContent>
-      </Card>
+              </CardContent>
+            </AccordionContent>
+          </Card>
+        </AccordionItem>
+      </Accordion>
 
       {/* Dialog de confirmação de exclusão de banner */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
