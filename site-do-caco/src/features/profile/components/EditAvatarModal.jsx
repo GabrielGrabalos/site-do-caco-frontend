@@ -47,6 +47,17 @@ export function EditAvatarModal({ open, onClose, onSave, currentAvatarUrl }) {
       return;
     }
 
+    // Limite de 2MB para avatar
+    const maxSize = 2 * 1024 * 1024; // 2MB em bytes
+    if (file.size > maxSize) {
+      toast({
+        variant: 'destructive',
+        title: 'Arquivo muito grande',
+        description: 'A imagem deve ter no máximo 2 MB.',
+      });
+      return;
+    }
+
     setOriginalFile(file);
 
     const reader = new FileReader();
@@ -142,7 +153,7 @@ export function EditAvatarModal({ open, onClose, onSave, currentAvatarUrl }) {
                 <div>
                   <p className="font-medium">Escolha uma nova foto</p>
                   <p className="text-sm text-muted-foreground">
-                    Clique para selecionar do seu computador
+                    Clique para selecionar do seu computador (máx. 2 MB)
                   </p>
                 </div>
               </label>
