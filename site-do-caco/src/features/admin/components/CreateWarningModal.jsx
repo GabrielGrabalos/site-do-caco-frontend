@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Calendar } from 'lucide-react';
 import { SeverityLevel } from '../models/Warning';
+import { DatePicker } from './DatePicker';
+import { TimeInput } from './TimeInput';
+import { SeveritySelector } from './SeveritySelector';
+import { WarningPreview } from './WarningPreview';
 
 export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading, editingWarning }) {
   const [formData, setFormData] = useState({
     markdownText: '',
     severityLevel: SeverityLevel.LOW,
-    startDate: '',
+    startDate: null,
     startTime: '',
-    endDate: '',
+    endDate: null,
     endTime: '',
   });
 
@@ -26,9 +28,9 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
       setFormData({
         markdownText: editingWarning.markdownText || '',
         severityLevel: editingWarning.severityLevel || SeverityLevel.LOW,
-        startDate: startDate.toISOString().split('T')[0],
+        startDate: startDate,
         startTime: startDate.toTimeString().slice(0, 5),
-        endDate: endDate.toISOString().split('T')[0],
+        endDate: endDate,
         endTime: endDate.toTimeString().slice(0, 5),
       });
     } else if (open && !editingWarning) {
@@ -36,9 +38,9 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
       setFormData({
         markdownText: '',
         severityLevel: SeverityLevel.LOW,
-        startDate: '',
+        startDate: null,
         startTime: '',
-        endDate: '',
+        endDate: null,
         endTime: '',
       });
       setErrors({});
@@ -61,8 +63,11 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
     }
 
     if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate + 'T' + (formData.startTime || '00:00'));
-      const end = new Date(formData.endDate + 'T' + (formData.endTime || '23:59'));
+      const start = new Date(formData.startDate);
+      start.setHours(...(formData.startTime || '00:00').split(':').map(Number), 0);
+      
+      const end = new Date(formData.endDate);
+      end.setHours(...(formData.endTime || '23:59').split(':').map(Number), 59);
       
       if (end <= start) {
         newErrors.endDate = 'A data de término deve ser posterior à data de início';
@@ -79,19 +84,17 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
     if (!validate()) return;
 
     // Monta as datas ISO
-    const startsAt = new Date(
-      formData.startDate + 'T' + (formData.startTime || '00:00') + ':00'
-    ).toISOString();
+    const startsAt = new Date(formData.startDate);
+    startsAt.setHours(...(formData.startTime || '00:00').split(':').map(Number), 0);
     
-    const expiresAt = new Date(
-      formData.endDate + 'T' + (formData.endTime || '23:59') + ':59'
-    ).toISOString();
+    const expiresAt = new Date(formData.endDate);
+    expiresAt.setHours(...(formData.endTime || '23:59').split(':').map(Number), 59);
 
     const dto = {
       markdownText: formData.markdownText,
       severityLevel: formData.severityLevel,
-      startsAt,
-      expiresAt,
+      startsAt: startsAt.toISOString(),
+      expiresAt: expiresAt.toISOString(),
     };
 
     if (editingWarning) {
@@ -103,14 +106,14 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">
             {editingWarning ? 'Editar Aviso' : 'Criar Novo Aviso'}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Texto do Aviso (Markdown) */}
           <div>
             <label className="block text-sm font-medium mb-2">
@@ -121,156 +124,93 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
               onChange={(e) => setFormData({ ...formData, markdownText: e.target.value })}
               placeholder="**Atenção:** Este é um exemplo de aviso com *markdown*"
               rows={6}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm sm:text-base"
             />
             {errors.markdownText && (
               <p className="text-red-500 text-sm mt-1">{errors.markdownText}</p>
             )}
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
               Você pode usar negrito (**texto**), itálico (*texto*), links ([texto](url)), etc.
             </p>
           </div>
 
           {/* Nível de Severidade */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Nível de Severidade
-            </label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {Object.entries(SeverityLevel).map(([key, value]) => {
-                const labels = {
-                  LOW: 'Baixo',
-                  MEDIUM: 'Médio',
-                  HIGH: 'Alto',
-                  CRITICAL: 'Crítico',
-                };
-                
-                const colors = {
-                  LOW: 'border-blue-300 bg-blue-50 hover:bg-blue-100 data-[selected=true]:bg-blue-200 data-[selected=true]:border-blue-500',
-                  MEDIUM: 'border-yellow-300 bg-yellow-50 hover:bg-yellow-100 data-[selected=true]:bg-yellow-200 data-[selected=true]:border-yellow-500',
-                  HIGH: 'border-red-300 bg-red-50 hover:bg-red-100 data-[selected=true]:bg-red-200 data-[selected=true]:border-red-500',
-                  CRITICAL: 'border-gray-700 bg-gray-200 hover:bg-gray-300 data-[selected=true]:bg-gray-400 data-[selected=true]:border-gray-900',
-                };
-
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    data-selected={formData.severityLevel === value}
-                    onClick={() => setFormData({ ...formData, severityLevel: value })}
-                    className={`px-4 py-3 rounded-lg border-2 font-medium transition-colors ${colors[key]}`}
-                  >
-                    {labels[key]}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <SeveritySelector
+            value={formData.severityLevel}
+            onChange={(level) => setFormData({ ...formData, severityLevel: level })}
+          />
 
           {/* Data e Hora de Início */}
           <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2 flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Data de Início
-              </label>
-              <Input
-                type="date"
-                value={formData.startDate}
-                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                className={errors.startDate ? 'border-red-500' : ''}
-              />
-              {errors.startDate && (
-                <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Hora de Início (opcional)
-              </label>
-              <Input
-                type="time"
-                value={formData.startTime}
-                onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                placeholder="00:00"
-                step="60"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Deixe vazio para 00:00
-              </p>
-            </div>
+            <DatePicker
+              value={formData.startDate}
+              onChange={(date) => setFormData({ ...formData, startDate: date })}
+              error={errors.startDate}
+              label="Data de Início"
+            />
+            
+            <TimeInput
+              value={formData.startTime}
+              onChange={(time) => setFormData({ ...formData, startTime: time })}
+              onError={(error) => {
+                if (error) {
+                  setErrors({ ...errors, startTime: error });
+                } else {
+                  const newErrors = { ...errors };
+                  delete newErrors.startTime;
+                  setErrors(newErrors);
+                }
+              }}
+              error={errors.startTime}
+              label="Hora de Início (opcional)"
+              placeholder="00:00"
+            />
           </div>
 
           {/* Data e Hora de Término */}
           <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2 flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Data de Término
-              </label>
-              <Input
-                type="date"
-                value={formData.endDate}
-                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                className={errors.endDate ? 'border-red-500' : ''}
-              />
-              {errors.endDate && (
-                <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Hora de Término (opcional)
-              </label>
-              <Input
-                type="time"
-                value={formData.endTime}
-                onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                placeholder="23:59"
-                step="60"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Deixe vazio para 23:59
-              </p>
-            </div>
+            <DatePicker
+              value={formData.endDate}
+              onChange={(date) => setFormData({ ...formData, endDate: date })}
+              error={errors.endDate}
+              label="Data de Término"
+            />
+            
+            <TimeInput
+              value={formData.endTime}
+              onChange={(time) => setFormData({ ...formData, endTime: time })}
+              onError={(error) => {
+                if (error) {
+                  setErrors({ ...errors, endTime: error });
+                } else {
+                  const newErrors = { ...errors };
+                  delete newErrors.endTime;
+                  setErrors(newErrors);
+                }
+              }}
+              error={errors.endTime}
+              label="Hora de Término (opcional)"
+              placeholder="23:59"
+            />
           </div>
 
           {/* Preview do Aviso */}
-          {formData.markdownText && (
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Preview
-              </label>
-              <div className={`rounded-lg border-2 p-4 ${
-                formData.severityLevel === 'CRITICAL' ? 'bg-gray-200 border-gray-900 text-gray-950' :
-                formData.severityLevel === 'HIGH' ? 'bg-red-100 border-red-400 text-red-950' :
-                formData.severityLevel === 'MEDIUM' ? 'bg-yellow-100 border-yellow-400 text-yellow-950' :
-                'bg-blue-100 border-blue-400 text-blue-950'
-              }`}>
-                <div className="prose prose-sm max-w-none">
-                  <div dangerouslySetInnerHTML={{ 
-                    __html: formData.markdownText
-                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-                  }} />
-                </div>
-              </div>
-            </div>
-          )}
+          <WarningPreview
+            markdownText={formData.markdownText}
+            severityLevel={formData.severityLevel}
+          />
 
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               disabled={loading}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="w-full sm:w-auto">
               {loading ? 'Salvando...' : editingWarning ? 'Atualizar' : 'Criar'}
             </Button>
           </DialogFooter>

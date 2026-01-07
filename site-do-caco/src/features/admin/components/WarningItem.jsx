@@ -43,41 +43,41 @@ export function WarningItem({ warning, onEdit, onDelete }) {
 
   return (
     <Card className={`${!isActive ? 'opacity-60' : ''}`}>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between gap-4">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
           <div className="flex-1 space-y-3">
             {/* Cabeçalho com severidade e status */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap">
               {getSeverityBadge()}
               {!isActive && (
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-300">
+                <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-300">
                   Inativo
                 </span>
               )}
             </div>
 
             {/* Texto do aviso */}
-            <div className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+            <div className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 text-sm sm:text-base">
               <ReactMarkdown>{warning.markdownText}</ReactMarkdown>
             </div>
 
             {/* Data e hora */}
-            <div className="flex items-start gap-4 text-sm text-gray-600">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
               <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
+                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                 <span className="font-medium">Início:</span>
-                <span>{formatDateTime(warning.startsAt)}</span>
+                <span className="break-all">{formatDateTime(warning.startsAt)}</span>
               </div>
               <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" />
+                <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                 <span className="font-medium">Término:</span>
-                <span>{formatDateTime(warning.expiresAt)}</span>
+                <span className="break-all">{formatDateTime(warning.expiresAt)}</span>
               </div>
             </div>
           </div>
 
           {/* Ações */}
-          <div className="flex gap-2 flex-shrink-0">
+          <div className="flex gap-2 justify-end sm:justify-start sm:flex-shrink-0">
             <Button
               variant="outline"
               size="sm"
