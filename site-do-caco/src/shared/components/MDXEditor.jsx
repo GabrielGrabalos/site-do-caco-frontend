@@ -42,6 +42,7 @@ import { ImageUploadDialog } from './ImageUploadDialog';
  * @param {string} props.placeholder - Texto placeholder
  * @param {string} props.className - Classes CSS adicionais
  * @param {boolean} props.readOnly - Define se o editor é apenas leitura
+ * @param {string} props.editorKey - Key única para forçar re-montagem do editor
  */
 export const MDXEditor = ({
   value = '',
@@ -49,6 +50,7 @@ export const MDXEditor = ({
   placeholder = 'Digite aqui...',
   className = '',
   readOnly = false,
+  editorKey,
 }) => {
   const { toast } = useToast();
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
@@ -91,6 +93,7 @@ export const MDXEditor = ({
   return (
     <div className={`mdx-editor-wrapper ${className}`}>
       <BaseMDXEditor
+        key={editorKey}
         markdown={value}
         onChange={onChange}
         placeholder={placeholder}
