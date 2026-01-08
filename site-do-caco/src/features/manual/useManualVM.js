@@ -1,6 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { apiClient } from '@/shared/services/apiClient';
+import { authService } from '@/shared/services/authService';
+
+const PENDING_FEEDBACK_KEY = 'caco_pending_feedback';
+
+// Funções para gerenciar feedback pendente no localStorage
+const savePendingFeedback = (articleSlug, helpful, comment) => {
+  localStorage.setItem(PENDING_FEEDBACK_KEY, JSON.stringify({
+    articleSlug,
+    helpful,
+    comment,
+    timestamp: Date.now()
+  }));
+};
+
+const getPendingFeedback = (articleSlug) => {
+  try {
+    const data = localStorage.getItem(PENDING_FEEDBACK_KEY);
+    if (!data) return null;
+    
+    const feedback = JSON.parse(data);
+    // Só retorna se for para o mesmo artigo
+    if (feedback.articleSlug === articleSlug) {
+      return { helpful: feedback.helpful, comment: feedback.comment };
+    }
+    return null;
+  } catch (err) {
+    console.error('Erro ao recuperar feedback pendente:', err);
+    return null;
+  }
+};
+
+const clearPendingFeedback = () => {
+  localStorage.removeItem(PENDING_FEEDBACK_KEY);
+};
 
 export function useManualVM() {
   const { slug } = useParams();
@@ -16,6 +50,7 @@ export function useManualVM() {
   const [loadingArticle, setLoadingArticle] = useState(false);
   const [error, setError] = useState(null);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [pendingFeedback, setPendingFeedback] = useState(null);
 
   // Carregar categorias ao montar
   useEffect(() => {
@@ -69,6 +104,10 @@ export function useManualVM() {
       const data = await apiClient.get(`public/manual/articles/slug/${articleSlug}`);
       setSelectedArticle(data);
       
+      // Verificar se há feedback pendente para este artigo
+      const pending = getPendingFeedback(articleSlug);
+      setPendingFeedback(pending);
+      
       // Expandir categoria e capítulo correspondentes
       if (data.categoryId) {
         setSelectedCategory(data.categoryId);
@@ -119,12 +158,28 @@ export function useManualVM() {
   const submitFeedback = async (helpful, comment = '') => {
     if (!selectedArticle) return;
     
+    // Verificar se o usuário está autenticado
+    const isAuthenticated = authService.getToken() !== null;
+    
+    if (!isAuthenticated) {
+      // Salvar feedback no localStorage
+      savePendingFeedback(selectedArticle.slug, helpful, comment);
+      
+      // Redirecionar para login
+      navigate('/login', { state: { from: `/manual/${selectedArticle.slug}` } });
+      return;
+    }
+    
     try {
       await apiClient.post(`article-feedback/articles/${selectedArticle.id}/feedback`, {
         isHelpful: helpful,
         comment,
       });
       setFeedbackSubmitted(true);
+      
+      // Limpar feedback pendente após envio bem-sucedido
+      clearPendingFeedback();
+      setPendingFeedback(null);
       
       // Atualizar contadores de feedback no artigo
       setSelectedArticle(prev => ({
@@ -149,6 +204,7 @@ export function useManualVM() {
     loadingArticle,
     error,
     feedbackSubmitted,
+    pendingFeedback,
     selectCategory,
     selectChapter,
     selectArticle,
