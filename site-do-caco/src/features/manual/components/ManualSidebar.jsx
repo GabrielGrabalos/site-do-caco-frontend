@@ -71,7 +71,7 @@ export function ManualSidebar({
                 key={article.id}
                 variant="ghost"
                 size="sm"
-                className={`w-full justify-start text-left ${
+                className={`w-full justify-start text-left h-auto py-2 ${
                   selectedArticle?.id === article.id
                     ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
                     : ''
@@ -83,7 +83,7 @@ export function ManualSidebar({
                     selectedArticle?.id === article.id ? 'fill-current' : ''
                   }`}
                 />
-                <span className="flex-1 truncate text-sm">{article.title}</span>
+                <span className="flex-1 text-sm whitespace-normal break-words">{article.title}</span>
               </Button>
             ))}
           </div>
@@ -106,7 +106,7 @@ export function ManualSidebar({
             {/* Category */}
             <Button
               variant="ghost"
-              className={`w-full justify-start text-left font-medium ${
+              className={`w-full justify-start text-left font-medium h-auto py-2 ${
                 isExpanded ? 'bg-accent' : ''
               }`}
               onClick={() => onSelectCategory(category)}
@@ -117,7 +117,7 @@ export function ManualSidebar({
                 <ChevronRight className="h-4 w-4 mr-2 flex-shrink-0" />
               )}
               <Book className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span className="flex-1 truncate">{category.title}</span>
+              <span className="flex-1 whitespace-normal break-words">{category.title}</span>
               <span className="text-xs text-muted-foreground ml-2">
                 {category.chapterCount}
               </span>
@@ -136,7 +136,7 @@ export function ManualSidebar({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`w-full justify-start text-left ${
+                        className={`w-full justify-start text-left h-auto py-2 ${
                           isChapterExpanded ? 'bg-accent' : ''
                         }`}
                         onClick={() => onSelectChapter(chapter)}
@@ -147,7 +147,7 @@ export function ManualSidebar({
                           <ChevronRight className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
                         )}
                         <FileText className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
-                        <span className="flex-1 truncate text-sm">
+                        <span className="flex-1 text-sm whitespace-normal break-words">
                           {chapter.title}
                         </span>
                         <span className="text-xs text-muted-foreground ml-2">
@@ -163,7 +163,7 @@ export function ManualSidebar({
                               key={article.id}
                               variant="ghost"
                               size="sm"
-                              className={`w-full justify-start text-left ${
+                              className={`w-full justify-start text-left h-auto py-1.5 ${
                                 selectedArticle?.id === article.id
                                   ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
                                   : ''
@@ -177,7 +177,7 @@ export function ManualSidebar({
                                     : ''
                                 }`}
                               />
-                              <span className="flex-1 truncate text-xs">
+                              <span className="flex-1 text-xs whitespace-normal break-words">
                                 {article.title}
                               </span>
                             </Button>
