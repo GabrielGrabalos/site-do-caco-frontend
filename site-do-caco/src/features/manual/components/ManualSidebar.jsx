@@ -49,6 +49,7 @@ export function ManualSidebar({
             className="pl-8 h-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            autoFocus={false}
           />
         </div>
         {searchTerm && (

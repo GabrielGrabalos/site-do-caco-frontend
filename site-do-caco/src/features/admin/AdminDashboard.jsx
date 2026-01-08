@@ -3,11 +3,9 @@ import { Users, FileText, Calendar, Image } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast.jsx';
 import { useAdminBannersVM } from './useAdminBannersVM';
 import { useAdminWarningsVM } from './useAdminWarningsVM';
-import { useAdminExamsVM } from './useAdminExamsVM';
 import { StatsCards } from './components/StatsCards';
 import { BannersSection } from './components/BannersSection';
 import { WarningsSection } from './components/WarningsSection';
-import { ExamsSection } from './components/ExamsSection';
 
 export function AdminDashboard() {
   const stats = [
@@ -22,7 +20,6 @@ export function AdminDashboard() {
   // ViewModels para cada seção
   const bannersVM = useAdminBannersVM();
   const warningsVM = useAdminWarningsVM();
-  const examsVM = useAdminExamsVM();
   
   // Handlers para Banners com feedback de toast
   const handleReorderBanners = async (newOrder) => {
@@ -105,41 +102,7 @@ export function AdminDashboard() {
     }
   };
 
-  // Handlers para Exams com feedback de toast
-  const handleDeleteExam = async (examId) => {
-    const result = await examsVM.deleteExam(examId);
-    if (result.success) {
-      toast({
-        title: 'Prova excluída',
-        description: 'A prova foi removida com sucesso.',
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao excluir',
-        description: result.error,
-      });
-    }
-    return result.success;
-  };
-
-  const handleDeleteSubject = async (subjectCode) => {
-    const result = await examsVM.deleteSubject(subjectCode);
-    if (result.success) {
-      toast({
-        title: 'Disciplina excluída',
-        description: 'A disciplina e todas as suas provas foram removidas.',
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao excluir',
-        description: result.error,
-      });
-    }
-  };
-
-  if (bannersVM.loading || warningsVM.loading || examsVM.loading) {
+  if (bannersVM.loading || warningsVM.loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
@@ -180,21 +143,6 @@ export function AdminDashboard() {
         onUpdate={warningsVM.updateWarning}
         onDelete={warningsVM.deleteWarning}
         onExpire={warningsVM.expireWarning}
-      />
-
-      <ExamsSection
-        subjects={examsVM.subjects}
-        selectedSubject={examsVM.selectedSubject}
-        onSelectSubject={examsVM.setSelectedSubject}
-        exams={examsVM.exams}
-        loading={examsVM.loading}
-        loadingExams={examsVM.loadingExams}
-        creating={examsVM.creating}
-        onCreateSubject={examsVM.createSubject}
-        onDeleteSubject={handleDeleteSubject}
-        onCreateExam={examsVM.createExam}
-        onUpdateExam={examsVM.updateExam}
-        onDeleteExam={handleDeleteExam}
       />
     </div>
   );
