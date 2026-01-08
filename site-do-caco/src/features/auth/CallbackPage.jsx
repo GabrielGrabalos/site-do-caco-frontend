@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { authService } from '@/shared/services/authService';
 import { useToast } from '@/components/ui/use-toast.jsx';
 
 export function CallbackPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [processing, setProcessing] = useState(true);
 
@@ -30,8 +31,10 @@ export function CallbackPage() {
           description: 'Bem-vindo de volta ao CACo!',
         });
 
-        // Redireciona para a home
-        navigate('/', { replace: true });
+        // Redireciona para a página de origem (se houver no sessionStorage) ou para a home
+        const redirectTo = sessionStorage.getItem('caco_login_redirect') || location.state?.from || '/';
+        sessionStorage.removeItem('caco_login_redirect'); // Limpar após uso
+        navigate(redirectTo, { replace: true });
       } catch (error) {
         console.error('Erro no callback OAuth:', error);
         toast({

@@ -22,6 +22,7 @@ export function ManualPage() {
     loadingArticle,
     error,
     feedbackSubmitted,
+    pendingFeedback,
     selectCategory,
     selectChapter,
     selectArticle,
@@ -191,6 +192,7 @@ export function ManualPage() {
                   <FeedbackSection
                     onSubmit={submitFeedback}
                     submitted={feedbackSubmitted}
+                    pendingFeedback={pendingFeedback}
                   />
                 </Card>
               </div>

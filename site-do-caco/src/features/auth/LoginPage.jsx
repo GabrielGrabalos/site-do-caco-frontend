@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { authService } from '@/shared/services/authService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { AlertCircle, X } from 'lucide-react';
 
 export function LoginPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
@@ -51,6 +52,12 @@ export function LoginPage() {
   const handleGoogleLogin = () => {
     // Limpa o erro ao tentar novamente
     setErrorMessage(null);
+    
+    // Salvar a página de origem no sessionStorage (se houver)
+    if (location.state?.from) {
+      sessionStorage.setItem('caco_login_redirect', location.state.from);
+    }
+    
     // Redireciona para o endpoint OAuth do backend
     authService.redirectToGoogleLogin();
   };

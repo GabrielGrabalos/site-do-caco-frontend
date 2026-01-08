@@ -1,15 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThumbsUp, ThumbsDown, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 
-export function FeedbackSection({ onSubmit, submitted }) {
+export function FeedbackSection({ onSubmit, submitted, pendingFeedback }) {
   const [helpful, setHelpful] = useState(null);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
+
+  // Restaurar feedback pendente quando componente montar ou pendingFeedback mudar
+  useEffect(() => {
+    if (pendingFeedback) {
+      setHelpful(pendingFeedback.helpful);
+      setComment(pendingFeedback.comment || '');
+    } else {
+      setHelpful(null);
+      setComment('');
+    }
+  }, [pendingFeedback]);
 
   const handleSubmit = async () => {
     if (helpful === null) {
