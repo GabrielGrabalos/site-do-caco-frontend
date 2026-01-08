@@ -89,6 +89,7 @@ export function AdminManualPage() {
   const [selectedArticleForFeedback, setSelectedArticleForFeedback] = useState(null);
   const [articleFeedbacks, setArticleFeedbacks] = useState([]);
   const [loadingFeedbacks, setLoadingFeedbacks] = useState(false);
+  const [editorResetKey, setEditorResetKey] = useState(0);
 
   const { toast } = useToast();
 
@@ -115,11 +116,12 @@ export function AdminManualPage() {
   // Quando selecionar um artigo para editar
   useEffect(() => {
     if (editingArticle) {
-      setArticleTitle(editingArticle.title);
-      setArticleSlug(editingArticle.slug);
+      setArticleTitle(editingArticle.title || '');
+      setArticleSlug(editingArticle.slug || '');
       setArticleContent(editingArticle.content || '');
-      setOriginalSlug(editingArticle.slug);
+      setOriginalSlug(editingArticle.slug || '');
       setIsViewingDraft(false);
+      setEditorResetKey(prev => prev + 1); // Força re-montagem do editor
     }
   }, [editingArticle]);
 
@@ -347,6 +349,7 @@ export function AdminManualPage() {
         setArticleContent(draft.content || '');
         setOriginalSlug('');
         setIsViewingDraft(true);
+        setEditorResetKey(prev => prev + 1); // Força re-montagem do editor
       } catch (err) {
         console.error('Erro ao carregar rascunho:', err);
         toast({
@@ -937,7 +940,7 @@ export function AdminManualPage() {
                 <div className="space-y-2">
                   <Label>Conteúdo</Label>
                   <MDXEditor
-                    key={editingArticle?.id || (isViewingDraft ? 'draft' : 'new')}
+                    editorKey={`editor-${editorResetKey}`}
                     value={articleContent}
                     onChange={setArticleContent}
                     placeholder="Escreva o conteúdo do artigo..."
