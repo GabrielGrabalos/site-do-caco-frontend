@@ -120,9 +120,8 @@ export function useManualVM() {
     if (!selectedArticle) return;
     
     try {
-      await apiClient.post('public/manual/feedback', {
-        articleId: selectedArticle.id,
-        helpful,
+      await apiClient.post(`article-feedback/articles/${selectedArticle.id}/feedback`, {
+        isHelpful: helpful,
         comment,
       });
       setFeedbackSubmitted(true);

@@ -32,10 +32,10 @@ class ContentService {
   }
 
   async submitFeedback(articleId, helpful, comment = '') {
-    const response = await fetch(`${API_BASE_URL}/manual/feedback`, {
+    const response = await fetch(`${API_BASE_URL}/article-feedback/articles/${articleId}/feedback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ articleId, helpful, comment }),
+      body: JSON.stringify({ isHelpful: helpful, comment }),
     });
     if (!response.ok) throw new Error('Falha ao enviar feedback');
     return response.json();
