@@ -35,7 +35,7 @@ export function Header() {
           </div>
 
           {/* Auth Section */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 ml-auto">
             {isAuthenticated ? (
               <ProfilePopover />
             ) : (

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Newspaper, BookOpen, Calendar, GraduationCap } from 'lucide-react';
+import { Newspaper, BookOpen, Calendar, GraduationCap, ShoppingBag, MessageSquare, Archive } from 'lucide-react';
 
 export function NavButtons() {
   const navItems = [
@@ -26,6 +26,24 @@ export function NavButtons() {
       label: 'Provas',
       icon: GraduationCap,
       color: 'bg-blue-300 hover:bg-blue-400 text-blue-900',
+    },
+    {
+      to: '/loja',
+      label: 'Loja',
+      icon: ShoppingBag,
+      color: 'bg-purple-300 hover:bg-purple-400 text-purple-900',
+    },
+    {
+      to: '/espaco-de-fala',
+      label: 'Espaço de Fala',
+      icon: MessageSquare,
+      color: 'bg-pink-300 hover:bg-pink-400 text-pink-900',
+    },
+    {
+      to: '/gaveta',
+      label: 'Gaveta do CACo',
+      icon: Archive,
+      color: 'bg-orange-300 hover:bg-orange-400 text-orange-900',
     },
   ];
 

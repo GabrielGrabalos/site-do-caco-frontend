@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Newspaper, BookOpen, Calendar, GraduationCap, Home, X } from 'lucide-react';
+import { Menu, Newspaper, BookOpen, Calendar, GraduationCap, Home, ShoppingBag, MessageSquare, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const navigationItems = [
-  { to: '/', label: 'Início', icon: Home },
-  { to: '/noticias', label: 'Notícias', icon: Newspaper },
-  { to: '/manual', label: 'Manual do Calouro', icon: BookOpen },
-  { to: '/calendario', label: 'Calendário', icon: Calendar },
-  { to: '/provas', label: 'Banco de Provas', icon: GraduationCap },
+  { to: '/', label: 'Início', icon: Home, color: 'hover:bg-gray-100' },
+  { to: '/noticias', label: 'Notícias', icon: Newspaper, color: 'hover:bg-red-100 hover:text-red-900' },
+  { to: '/manual', label: 'Manual do Calouro', icon: BookOpen, color: 'hover:bg-yellow-100 hover:text-yellow-900' },
+  { to: '/calendario', label: 'Calendário', icon: Calendar, color: 'hover:bg-green-100 hover:text-green-900' },
+  { to: '/provas', label: 'Banco de Provas', icon: GraduationCap, color: 'hover:bg-blue-100 hover:text-blue-900' },
+  { to: '/loja', label: 'Loja', icon: ShoppingBag, color: 'hover:bg-purple-100 hover:text-purple-900' },
+  { to: '/espaco-de-fala', label: 'Espaço de Fala', icon: MessageSquare, color: 'hover:bg-pink-100 hover:text-pink-900' },
+  { to: '/gaveta', label: 'Gaveta do CACo', icon: Archive, color: 'hover:bg-orange-100 hover:text-orange-900' },
 ];
 
 export function NavigationMenu() {
@@ -34,7 +37,7 @@ export function NavigationMenu() {
                 key={item.to}
                 variant="ghost"
                 asChild
-                className="justify-start h-auto py-3 px-4"
+                className={`justify-start h-auto py-3 px-4 ${item.color}`}
                 onClick={() => setOpen(false)}
               >
                 <Link to={item.to} className="flex items-center gap-3">
