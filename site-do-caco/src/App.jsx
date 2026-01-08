@@ -30,7 +30,7 @@ function App() {
           <Route path="/noticias" element={<NewsListPage />} />
           <Route path="/noticias/:slug" element={<NewsDetailPage />} />
           <Route path="/manual" element={<ManualPage />} />
-          <Route path="/manual/:articleId" element={<ManualPage />} />
+          <Route path="/manual/:slug" element={<ManualPage />} />
           <Route path="/calendario" element={<CalendarPage />} />
           <Route path="/eventos/:id" element={<EventPage />} />
           <Route path="/provas" element={<ExamBankPage />} />
