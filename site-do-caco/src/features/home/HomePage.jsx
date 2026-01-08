@@ -27,37 +27,42 @@ export function HomePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      {/* Banner Carousel */}
-      <BannerCarousel banners={data?.banners || []} />
+    <div className="space-y-8">
+      {/* Banner Carousel - Sem padding lateral no mobile */}
+      <div className="md:container md:mx-auto md:px-4 md:pt-8">
+        <BannerCarousel banners={data?.banners || []} />
+      </div>
 
-      {/* Warning Alerts */}
-      {data?.warnings && data.warnings.length > 0 && (
-        <div className="space-y-3">
-          {data.warnings.map((warning) => (
-            <WarningAlert
-              key={warning.id}
-              warning={warning}
-              onDismiss={dismissWarning}
-            />
-          ))}
-        </div>
-      )}
+      {/* Resto do conteúdo com container normal */}
+      <div className="container mx-auto px-4 pb-8 space-y-8">
+        {/* Warning Alerts */}
+        {data?.warnings && data.warnings.length > 0 && (
+          <div className="space-y-3">
+            {data.warnings.map((warning) => (
+              <WarningAlert
+                key={warning.id}
+                warning={warning}
+                onDismiss={dismissWarning}
+              />
+            ))}
+          </div>
+        )}
 
-      {/* Navigation Buttons */}
-      <NavButtons />
+        {/* Navigation Buttons */}
+        <NavButtons />
 
-      {/* Latest News */}
-      {data?.latestNews && data.latestNews.length > 0 && (
-        <LatestNews news={data.latestNews} />
-      )}
+        {/* Latest News */}
+        {data?.latestNews && data.latestNews.length > 0 && (
+          <LatestNews news={data.latestNews} />
+        )}
 
-      {/* Arte Decorativa */}
-      <div className="flex items-center justify-center py-12">
-        <div className="w-full max-w-3xl aspect-video rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border-2 border-dashed border-primary/30">
-          <div className="text-center text-muted-foreground">
-            <p className="text-lg font-medium">Arte decorativa</p>
-            <p className="text-sm mt-2">Espaço reservado para ilustração</p>
+        {/* Arte Decorativa */}
+        <div className="flex items-center justify-center py-12">
+          <div className="w-full max-w-3xl aspect-video rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border-2 border-dashed border-primary/30">
+            <div className="text-center text-muted-foreground">
+              <p className="text-lg font-medium">Arte decorativa</p>
+              <p className="text-sm mt-2">Espaço reservado para ilustração</p>
+            </div>
           </div>
         </div>
       </div>

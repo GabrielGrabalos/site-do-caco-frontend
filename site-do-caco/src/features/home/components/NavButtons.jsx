@@ -7,25 +7,25 @@ export function NavButtons() {
       to: '/noticias',
       label: 'Notícias',
       icon: Newspaper,
-      color: 'bg-blue-600 hover:bg-blue-700 text-white',
+      color: 'bg-red-300 hover:bg-red-400 text-red-900',
     },
     {
       to: '/manual',
       label: 'Manual',
       icon: BookOpen,
-      color: 'bg-green-600 hover:bg-green-700 text-white',
+      color: 'bg-yellow-300 hover:bg-yellow-400 text-yellow-900',
     },
     {
       to: '/calendario',
       label: 'Calendário',
       icon: Calendar,
-      color: 'bg-purple-600 hover:bg-purple-700 text-white',
+      color: 'bg-green-300 hover:bg-green-400 text-green-900',
     },
     {
       to: '/provas',
       label: 'Provas',
       icon: GraduationCap,
-      color: 'bg-orange-600 hover:bg-orange-700 text-white',
+      color: 'bg-blue-300 hover:bg-blue-400 text-blue-900',
     },
   ];
 

@@ -1,4 +1,4 @@
-import { BookOpen, ChevronRight, ThumbsUp, ThumbsDown, Menu } from 'lucide-react';
+import { BookOpen, ChevronRight, Menu } from 'lucide-react';
 import { useManualVM } from './useManualVM';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -165,21 +165,6 @@ export function ManualPage() {
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">
                       {selectedArticle.title}
                     </h1>
-
-                    {/* Feedback Stats */}
-                    {(selectedArticle.helpfulCount > 0 ||
-                      selectedArticle.unhelpfulCount > 0) && (
-                      <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <ThumbsUp className="h-4 w-4 text-green-600" />
-                          <span>{selectedArticle.helpfulCount}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <ThumbsDown className="h-4 w-4 text-red-600" />
-                          <span>{selectedArticle.unhelpfulCount}</span>
-                        </div>
-                      </div>
-                    )}
 
                     <div className="prose prose-lg max-w-none">
                       <MarkdownContent content={selectedArticle.content} />

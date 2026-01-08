@@ -70,10 +70,10 @@ export function LoginPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="container mx-auto px-4 py-6 md:py-16">
       {/* Alerta de Erro Persistente */}
       {errorMessage && (
-        <div className="max-w-6xl mx-auto mb-6">
+        <div className="max-w-6xl mx-auto mb-4 md:mb-6">
           <Alert variant="destructive" className="relative pr-12">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>{errorMessage.title}</AlertTitle>
@@ -89,7 +89,7 @@ export function LoginPage() {
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 gap-8 items-center max-w-6xl mx-auto">
+      <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center max-w-6xl mx-auto">
         {/* Área de Arte */}
         <div className="flex items-center justify-center order-2 md:order-1">
           <div className="w-full aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border-2 border-dashed border-primary/30">
