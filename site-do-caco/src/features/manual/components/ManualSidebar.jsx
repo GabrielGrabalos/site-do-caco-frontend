@@ -1,5 +1,7 @@
-import { ChevronDown, ChevronRight, Book, FileText, Circle } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronDown, ChevronRight, Book, FileText, Circle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export function ManualSidebar({
   categories,
@@ -13,6 +15,15 @@ export function ManualSidebar({
   onSelectChapter,
   onSelectArticle,
 }) {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filtrar artigos pela busca
+  const filteredArticles = searchTerm
+    ? articles.filter(article =>
+        article.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : articles;
+
   if (loading) {
     return (
       <div className="space-y-3">
@@ -27,7 +38,62 @@ export function ManualSidebar({
   }
 
   return (
-    <nav className="space-y-1">
+    <nav className="space-y-2">
+      {/* Search bar */}
+      <div className="mb-4">
+        <div className="relative">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Buscar artigos..."
+            className="pl-8 h-9"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        {searchTerm && (
+          <p className="text-xs text-muted-foreground mt-2">
+            {filteredArticles.length} {filteredArticles.length === 1 ? 'resultado' : 'resultados'}
+          </p>
+        )}
+      </div>
+
+      {/* Lista com scroll quando tiver busca ativa */}
+      <div className={searchTerm ? 'max-h-[400px] overflow-y-auto' : ''}>
+        {searchTerm && filteredArticles.length > 0 ? (
+          // Mostrar apenas artigos filtrados quando houver busca
+          <div className="space-y-1">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-2 px-2">
+              RESULTADOS
+            </h3>
+            {filteredArticles.map((article) => (
+              <Button
+                key={article.id}
+                variant="ghost"
+                size="sm"
+                className={`w-full justify-start text-left ${
+                  selectedArticle?.id === article.id
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
+                    : ''
+                }`}
+                onClick={() => onSelectArticle(article)}
+              >
+                <Circle
+                  className={`h-2 w-2 mr-2 flex-shrink-0 ${
+                    selectedArticle?.id === article.id ? 'fill-current' : ''
+                  }`}
+                />
+                <span className="flex-1 truncate text-sm">{article.title}</span>
+              </Button>
+            ))}
+          </div>
+        ) : searchTerm ? (
+          <div className="text-center py-4 text-sm text-muted-foreground">
+            Nenhum artigo encontrado
+          </div>
+        ) : (
+          // Navegação hierárquica normal
+          <div className="space-y-1">
       <h2 className="text-sm font-semibold text-muted-foreground mb-3 px-2">
         CATEGORIAS
       </h2>
@@ -132,6 +198,9 @@ export function ManualSidebar({
           Nenhuma categoria disponível
         </div>
       )}
+          </div>
+        )}
+      </div>
     </nav>
   );
 }
