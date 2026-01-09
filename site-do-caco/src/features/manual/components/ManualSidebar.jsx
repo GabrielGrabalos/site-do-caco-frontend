@@ -118,8 +118,8 @@ export function ManualSidebar({
                 <ChevronRight className="h-4 w-4 mr-2 flex-shrink-0" />
               )}
               <Book className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span className="flex-1 whitespace-normal break-words">{category.title}</span>
-              <span className="text-xs text-muted-foreground ml-2">
+              <span className="flex-1 whitespace-normal break-words min-w-0">{category.title}</span>
+              <span className="text-xs text-muted-foreground ml-2 flex-shrink-0">
                 {category.chapterCount}
               </span>
             </Button>
@@ -148,10 +148,10 @@ export function ManualSidebar({
                           <ChevronRight className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
                         )}
                         <FileText className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
-                        <span className="flex-1 text-sm whitespace-normal break-words">
+                        <span className="flex-1 text-sm whitespace-normal break-words min-w-0">
                           {chapter.title}
                         </span>
-                        <span className="text-xs text-muted-foreground ml-2">
+                        <span className="text-xs text-muted-foreground ml-2 flex-shrink-0">
                           {chapter.articleCount}
                         </span>
                       </Button>

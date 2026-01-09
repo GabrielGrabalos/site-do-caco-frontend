@@ -32,7 +32,7 @@ export function ChapterItem({ chapter, onDelete, onEdit, onSelect, isSelected })
         className={`p-3 rounded-lg border-2 transition-all ${
           isSelected 
             ? 'border-primary bg-primary/5' 
-            : 'border-gray-200 hover:border-gray-300 bg-white'
+            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-card'
         } ${isDragging ? 'opacity-50' : ''}`}
       >
         <div className="flex items-start justify-between gap-3">

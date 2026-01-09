@@ -35,12 +35,12 @@ export function ArticleItem({ article, onDelete, onEdit, onSelect, isSelected = 
         className={`p-3 rounded-lg border-2 transition-all ${
           isSelected 
             ? 'border-primary bg-primary/5' 
-            : 'border-gray-200 hover:border-gray-300 bg-white'
+            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-card'
         } ${isDragging ? 'opacity-50' : ''}`}
       >
         {isDraft && (
           <div className="mb-2">
-            <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-800 rounded-md font-medium">
+            <span className="text-xs px-2 py-0.5 bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 rounded-md font-medium">
               Rascunho
             </span>
           </div>

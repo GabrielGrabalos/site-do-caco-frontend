@@ -64,11 +64,11 @@ export function ExamBankPage() {
 
       {exams.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <FileQuestion size={64} className="text-gray-300 mb-4" />
-          <h3 className="text-xl font-semibold text-gray-600 mb-2">
+          <FileQuestion size={64} className="text-gray-300 dark:text-gray-600 mb-4" />
+          <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
             Nenhuma prova encontrada
           </h3>
-          <p className="text-gray-500 mb-4">
+          <p className="text-gray-500 dark:text-gray-500 mb-4">
             {hasActiveFilters
               ? 'Tente ajustar os filtros para ver mais resultados'
               : 'Ainda não há provas cadastradas'}
@@ -83,12 +83,12 @@ export function ExamBankPage() {
       )}
 
       {/* Link para adicionar prova */}
-      <div className="mt-12 pt-8 border-t border-gray-200 text-center">
+      <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 text-center">
         <a
           href="https://forms.gle/YOUR_GOOGLE_FORM_ID"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors">
         >
           Quer adicionar uma prova? Clique aqui
         </a>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, LogOut, Shield } from 'lucide-react';
+import { User, LogOut, Shield, Sun, Moon, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -8,11 +8,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { authService } from '@/shared/services/authService';
+import { useTheme } from '@/shared/contexts/ThemeContext';
 
 export function ProfilePopover() {
   const navigate = useNavigate();
   const user = authService.getUser();
   const [open, setOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const handleLogout = () => {
     setOpen(false);
@@ -22,6 +24,38 @@ export function ProfilePopover() {
 
   const handleNavigate = () => {
     setOpen(false);
+  };
+
+  const getThemeIcon = () => {
+    switch (theme) {
+      case 'light':
+        return <Sun className="h-4 w-4" />;
+      case 'dark':
+        return <Moon className="h-4 w-4" />;
+      case 'system':
+        return <Monitor className="h-4 w-4" />;
+      default:
+        return <Sun className="h-4 w-4" />;
+    }
+  };
+
+  const getThemeLabel = () => {
+    switch (theme) {
+      case 'light':
+        return 'Claro';
+      case 'dark':
+        return 'Escuro';
+      case 'system':
+        return 'Sistema';
+      default:
+        return 'Claro';
+    }
+  };
+
+  const cycleTheme = () => {
+    if (theme === 'light') setTheme('dark');
+    else if (theme === 'dark') setTheme('system');
+    else setTheme('light');
   };
 
   return (
@@ -89,6 +123,19 @@ export function ProfilePopover() {
                 </Link>
               </Button>
             )}
+
+            {/* Theme Toggle */}
+            <div className="pt-2 border-t">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                size="sm"
+                onClick={cycleTheme}
+              >
+                {getThemeIcon()}
+                <span className="ml-2">Tema: {getThemeLabel()}</span>
+              </Button>
+            </div>
 
             <Button
               variant="ghost"

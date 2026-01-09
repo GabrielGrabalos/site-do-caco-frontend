@@ -3,6 +3,7 @@ import { MainLayout } from '@/shared/components/MainLayout';
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute';
 import { SessionExpiryWarning } from '@/shared/components/SessionExpiryWarning';
 import { Toaster } from '@/components/ui/use-toast.jsx';
+import { ThemeProvider } from '@/shared/contexts/ThemeContext';
 
 // Pages
 import { HomePage } from '@/features/home/HomePage';
@@ -23,9 +24,10 @@ import { AdminExamBankPage } from '@/features/admin/AdminExamBankPage';
 
 function App() {
   return (
-    <BrowserRouter>
-      <SessionExpiryWarning />
-      <Routes>
+    <ThemeProvider>
+      <BrowserRouter>
+        <SessionExpiryWarning />
+        <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/noticias" element={<NewsListPage />} />
@@ -77,6 +79,7 @@ function App() {
       
       <Toaster />
     </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
