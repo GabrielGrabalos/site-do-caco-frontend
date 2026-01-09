@@ -5,6 +5,7 @@ import { authService } from '@/shared/services/authService';
 import { HeaderSearchBar } from './HeaderSearchBar';
 import { ProfilePopover } from './ProfilePopover';
 import { NavigationMenu } from './NavigationMenu';
+import { ThemeToggle } from './ThemeToggle';
 import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
 
 export function Header() {
@@ -39,9 +40,12 @@ export function Header() {
             {isAuthenticated ? (
               <ProfilePopover />
             ) : (
-              <Button size="sm" asChild>
-                <Link to="/login">Entrar</Link>
-              </Button>
+              <>
+                <ThemeToggle />
+                <Button size="sm" asChild>
+                  <Link to="/login">Entrar</Link>
+                </Button>
+              </>
             )}
           </div>
         </div>

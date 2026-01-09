@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const navigationItems = [
-  { to: '/', label: 'Início', icon: Home, color: 'hover:bg-gray-100' },
-  { to: '/noticias', label: 'Notícias', icon: Newspaper, color: 'hover:bg-red-100 hover:text-red-900' },
-  { to: '/manual', label: 'Manual do Calouro', icon: BookOpen, color: 'hover:bg-yellow-100 hover:text-yellow-900' },
-  { to: '/calendario', label: 'Calendário', icon: Calendar, color: 'hover:bg-green-100 hover:text-green-900' },
-  { to: '/provas', label: 'Banco de Provas', icon: GraduationCap, color: 'hover:bg-blue-100 hover:text-blue-900' },
-  { to: '/loja', label: 'Loja', icon: ShoppingBag, color: 'hover:bg-purple-100 hover:text-purple-900' },
-  { to: '/espaco-de-fala', label: 'Espaço de Fala', icon: MessageSquare, color: 'hover:bg-pink-100 hover:text-pink-900' },
-  { to: '/gaveta', label: 'Gaveta do CACo', icon: Archive, color: 'hover:bg-orange-100 hover:text-orange-900' },
+  { to: '/', label: 'Início', icon: Home, color: 'hover:bg-gray-100 dark:hover:bg-gray-800' },
+  { to: '/noticias', label: 'Notícias', icon: Newspaper, color: 'hover:bg-red-100 hover:text-red-900 dark:hover:bg-red-900 dark:hover:text-red-100' },
+  { to: '/manual', label: 'Manual do Calouro', icon: BookOpen, color: 'hover:bg-yellow-100 hover:text-yellow-900 dark:hover:bg-yellow-900 dark:hover:text-yellow-100' },
+  { to: '/calendario', label: 'Calendário', icon: Calendar, color: 'hover:bg-green-100 hover:text-green-900 dark:hover:bg-green-900 dark:hover:text-green-100' },
+  { to: '/provas', label: 'Banco de Provas', icon: GraduationCap, color: 'hover:bg-blue-100 hover:text-blue-900 dark:hover:bg-blue-900 dark:hover:text-blue-100' },
+  { to: '/loja', label: 'Loja', icon: ShoppingBag, color: 'hover:bg-purple-100 hover:text-purple-900 dark:hover:bg-purple-900 dark:hover:text-purple-100' },
+  { to: '/espaco-de-fala', label: 'Espaço de Fala', icon: MessageSquare, color: 'hover:bg-pink-100 hover:text-pink-900 dark:hover:bg-pink-900 dark:hover:text-pink-100' },
+  { to: '/gaveta', label: 'Gaveta do CACo', icon: Archive, color: 'hover:bg-orange-100 hover:text-orange-900 dark:hover:bg-orange-900 dark:hover:text-orange-100' },
 ];
 
 export function NavigationMenu() {

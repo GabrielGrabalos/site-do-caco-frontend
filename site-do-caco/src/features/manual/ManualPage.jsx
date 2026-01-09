@@ -36,7 +36,7 @@ export function ManualPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b bg-transparent">
         <div className="container mx-auto px-4 py-6 sm:py-8">

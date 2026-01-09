@@ -65,14 +65,14 @@ export function ExamFilters({
     <div className="mb-6 space-y-4">
       {/* Filtro de Disciplinas - Tags Coloridas */}
       <div>
-        <label className="block text-xs font-medium mb-2 text-gray-600">Disciplina</label>
+        <label className="block text-xs font-medium mb-2 text-gray-600 dark:text-gray-400">Disciplina</label>
         <div className="flex flex-wrap gap-1.5">
           <button
             onClick={() => setSelectedSubject('all')}
             className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
               selectedSubject === 'all'
                 ? 'bg-blue-600 text-white shadow-md scale-105'
-                : 'bg-blue-600/20 text-blue-700 hover:bg-blue-600/30'
+                : 'bg-blue-600/20 text-blue-700 dark:bg-blue-600/30 dark:text-blue-400 hover:bg-blue-600/30 dark:hover:bg-blue-600/40'
             }`}
           >
             Todas
@@ -133,14 +133,14 @@ export function ExamFilters({
       <div className="flex flex-col lg:flex-row gap-4 items-start">
         {/* Filtro de Tipo - Tags Coloridas */}
         <div className="flex-1">
-          <label className="block text-xs font-medium mb-2 text-gray-600">Tipo de Prova</label>
+          <label className="block text-xs font-medium mb-2 text-gray-600 dark:text-gray-400">Tipo de Prova</label>
           <div className="flex flex-wrap gap-1.5">
             <button
               onClick={() => setSelectedType('all')}
               className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
                 selectedType === 'all'
                   ? 'bg-gray-600 text-white shadow-md scale-105'
-                  : 'bg-gray-600/20 text-gray-700 hover:bg-gray-600/30'
+                  : 'bg-gray-600/20 text-gray-700 dark:bg-gray-600/30 dark:text-gray-400 hover:bg-gray-600/30 dark:hover:bg-gray-600/40'
               }`}
             >
               Todos
@@ -184,15 +184,15 @@ export function ExamFilters({
         {/* Filtro de Ano - Dropdown bonito */}
         <div className="flex items-center gap-3">
           <div className="relative" ref={yearDropdownRef}>
-            <label className="block text-xs font-medium mb-2 text-gray-600">Ano</label>
+            <label className="block text-xs font-medium mb-2 text-gray-600 dark:text-gray-400">Ano</label>
             <button
               onClick={() => setIsYearDropdownOpen(!isYearDropdownOpen)}
-              className="min-w-[160px] px-4 py-2 text-sm font-medium bg-white border-2 border-gray-300 rounded-lg hover:border-blue-500 focus:outline-none focus:border-blue-500 transition-colors flex items-center justify-between shadow-sm"
+              className="min-w-[160px] px-4 py-2 text-sm font-medium bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors flex items-center justify-between shadow-sm"
             >
-              <span className="text-gray-700">{getYearLabel()}</span>
+              <span className="text-gray-700 dark:text-gray-300">{getYearLabel()}</span>
               <ChevronDown
                 size={16}
-                className={`text-gray-500 transition-transform ${
+                className={`text-gray-500 dark:text-gray-400 transition-transform ${
                   isYearDropdownOpen ? 'rotate-180' : ''
                 }`}
               />
@@ -200,16 +200,16 @@ export function ExamFilters({
 
             {/* Dropdown Menu */}
             {isYearDropdownOpen && (
-              <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+              <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-64 overflow-y-auto">
                 <button
                   onClick={() => {
                     setSelectedYear('all');
                     setIsYearDropdownOpen(false);
                   }}
-                  className={`w-full px-4 py-2 text-sm text-left hover:bg-blue-50 transition-colors ${
+                  className={`w-full px-4 py-2 text-sm text-left hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors ${
                     selectedYear === 'all'
-                      ? 'bg-blue-100 text-blue-700 font-semibold'
-                      : 'text-gray-700'
+                      ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold'
+                      : 'text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   Todos os anos
@@ -221,10 +221,10 @@ export function ExamFilters({
                       setSelectedYear(String(year));
                       setIsYearDropdownOpen(false);
                     }}
-                    className={`w-full px-4 py-2 text-sm text-left hover:bg-blue-50 transition-colors ${
+                    className={`w-full px-4 py-2 text-sm text-left hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors ${
                       selectedYear === String(year)
-                        ? 'bg-blue-100 text-blue-700 font-semibold'
-                        : 'text-gray-700'
+                        ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold'
+                        : 'text-gray-700 dark:text-gray-300'
                     }`}
                   >
                     {year}

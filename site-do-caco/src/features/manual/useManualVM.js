@@ -52,6 +52,10 @@ export function useManualVM() {
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [pendingFeedback, setPendingFeedback] = useState(null);
 
+  // Cache para armazenar chapters e articles já carregados
+  const [chaptersCache, setChaptersCache] = useState({});
+  const [articlesCache, setArticlesCache] = useState({});
+
   // Carregar categorias ao montar
   useEffect(() => {
     loadCategories();
@@ -81,8 +85,20 @@ export function useManualVM() {
 
   const loadChapters = async (categoryId) => {
     try {
+      // Verificar se já está no cache
+      if (chaptersCache[categoryId]) {
+        setChapters(chaptersCache[categoryId]);
+        return;
+      }
+      
       const data = await apiClient.get(`public/manual/chapters/category/${categoryId}`);
       setChapters(data);
+      
+      // Armazenar no cache
+      setChaptersCache(prev => ({
+        ...prev,
+        [categoryId]: data
+      }));
     } catch (err) {
       console.error('Erro ao carregar capítulos:', err);
     }
@@ -90,8 +106,20 @@ export function useManualVM() {
 
   const loadArticles = async (chapterId) => {
     try {
+      // Verificar se já está no cache
+      if (articlesCache[chapterId]) {
+        setArticles(articlesCache[chapterId]);
+        return;
+      }
+      
       const data = await apiClient.get(`public/manual/articles/chapter/${chapterId}`);
       setArticles(data);
+      
+      // Armazenar no cache
+      setArticlesCache(prev => ({
+        ...prev,
+        [chapterId]: data
+      }));
     } catch (err) {
       console.error('Erro ao carregar artigos:', err);
     }

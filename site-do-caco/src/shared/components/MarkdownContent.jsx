@@ -47,7 +47,7 @@ export function MarkdownContent({ content }) {
             ),
           img: ({ node, ...props }) => (
             <img
-              className="rounded-lg my-6 max-w-full h-auto"
+              className="rounded-lg my-6 max-w-full h-auto mx-auto block"
               loading="lazy"
               {...props}
             />
