@@ -88,7 +88,7 @@ export function ExamBankPage() {
           href="https://forms.gle/YOUR_GOOGLE_FORM_ID"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors">
+          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors"
         >
           Quer adicionar uma prova? Clique aqui
         </a>
