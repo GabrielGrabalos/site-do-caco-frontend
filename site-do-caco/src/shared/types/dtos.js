@@ -107,6 +107,129 @@
  * @property {string} [expiresAt] - Data de expiração (ISO string)
  */
 
+// ============= STORE DTOs =============
+
+/**
+ * @typedef {Object} StoreCategoryDTO
+ * @property {string} id - UUID da categoria
+ * @property {string} name - Nome da categoria
+ * @property {string} slug - Slug para URL
+ * @property {number} order - Ordem de exibição
+ */
+
+/**
+ * @typedef {Object} ProductSummaryDTO
+ * @property {string} id - UUID do produto
+ * @property {string} name - Nome do produto
+ * @property {string} slug - Slug para URL
+ * @property {number} price - Preço do produto
+ * @property {number} [originalPrice] - Preço original (antes do desconto)
+ * @property {string} coverImage - URL da imagem de capa
+ * @property {boolean} outOfStock - Se está fora de estoque
+ * @property {string} categoryId - UUID da categoria
+ * @property {string} categoryName - Nome da categoria
+ * @property {string} categorySlug - Slug da categoria
+ * @property {string} createdAt - Data de criação (ISO string)
+ */
+
+/**
+ * @typedef {Object} ProductVariationDTO
+ * @property {string} id - UUID da variação
+ * @property {string} name - Nome da variação
+ * @property {number} additionalPrice - Preço adicional
+ * @property {boolean} available - Se está disponível
+ */
+
+/**
+ * @typedef {Object} ProductDetailDTO
+ * @property {string} id - UUID do produto
+ * @property {string} name - Nome do produto
+ * @property {string} slug - Slug para URL
+ * @property {string} description - Descrição do produto
+ * @property {number} price - Preço do produto
+ * @property {boolean} manageStock - Se gerencia estoque
+ * @property {boolean} outOfStock - Se está fora de estoque
+ * @property {string} categoryId - UUID da categoria
+ * @property {string} categoryName - Nome da categoria
+ * @property {string} categorySlug - Slug da categoria
+ * @property {string[]} images - URLs das imagens
+ * @property {ProductVariationDTO[]} variations - Variações do produto
+ */
+
+/**
+ * @typedef {Object} ProductDetailAdminDTO
+ * @property {string} id - UUID do produto
+ * @property {string} name - Nome do produto
+ * @property {string} slug - Slug para URL
+ * @property {string} description - Descrição do produto
+ * @property {number} price - Preço do produto
+ * @property {number} [originalPrice] - Preço original
+ * @property {boolean} manageStock - Se gerencia estoque
+ * @property {number} stockQuantity - Quantidade em estoque
+ * @property {boolean} active - Se está ativo
+ * @property {string} categoryId - UUID da categoria
+ * @property {string} categoryName - Nome da categoria
+ * @property {string} categorySlug - Slug da categoria
+ * @property {string[]} images - URLs das imagens
+ * @property {ProductVariationDTO[]} variations - Variações do produto
+ * @property {string} createdAt - Data de criação (ISO string)
+ * @property {string} updatedAt - Data de atualização (ISO string)
+ */
+
+/**
+ * @typedef {Object} CreateStoreCategoryDTO
+ * @property {string} name - Nome da categoria
+ * @property {string} slug - Slug para URL
+ */
+
+/**
+ * @typedef {Object} UpdateStoreCategoryDTO
+ * @property {string} name - Nome da categoria
+ * @property {string} slug - Slug para URL
+ */
+
+/**
+ * @typedef {Object} CreateProductDTO
+ * @property {string} name - Nome do produto
+ * @property {string} slug - Slug para URL
+ * @property {string} description - Descrição do produto
+ * @property {number} price - Preço do produto
+ * @property {number} [originalPrice] - Preço original
+ * @property {string} categoryId - UUID da categoria
+ * @property {boolean} manageStock - Se gerencia estoque
+ * @property {number} stockQuantity - Quantidade em estoque
+ * @property {boolean} active - Se está ativo
+ * @property {string[]} images - URLs das imagens
+ */
+
+/**
+ * @typedef {Object} UpdateProductDTO
+ * @property {string} name - Nome do produto
+ * @property {string} slug - Slug para URL
+ * @property {string} description - Descrição do produto
+ * @property {number} price - Preço do produto
+ * @property {number} [originalPrice] - Preço original
+ * @property {string} categoryId - UUID da categoria
+ * @property {boolean} manageStock - Se gerencia estoque
+ * @property {number} stockQuantity - Quantidade em estoque
+ * @property {boolean} active - Se está ativo
+ * @property {string[]} images - URLs das imagens
+ */
+
+/**
+ * @typedef {Object} CreateProductVariationDTO
+ * @property {string} name - Nome da variação
+ * @property {number} additionalPrice - Preço adicional
+ * @property {number} stockQuantity - Quantidade em estoque
+ */
+
+/**
+ * @typedef {Object} UpdateProductVariationDTO
+ * @property {string} name - Nome da variação
+ * @property {number} additionalPrice - Preço adicional
+ * @property {number} stockQuantity - Quantidade em estoque
+ */
+
 // Exporta um objeto vazio apenas para permitir importação
 // Os tipos estão disponíveis via JSDoc
 export default {};

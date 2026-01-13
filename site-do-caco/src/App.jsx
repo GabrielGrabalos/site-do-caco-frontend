@@ -21,6 +21,7 @@ import { AdminLayout } from '@/features/admin/AdminLayout';
 import { AdminDashboard } from '@/features/admin/AdminDashboard';
 import { AdminManualPage } from '@/features/admin/AdminManualPage';
 import { AdminExamBankPage } from '@/features/admin/AdminExamBankPage';
+import { AdminStorePage } from '@/features/admin/AdminStorePage';
 
 function App() {
   return (
@@ -74,6 +75,7 @@ function App() {
           <Route path="manual" element={<AdminManualPage />} />
           <Route path="provas" element={<AdminExamBankPage />} />
           <Route path="figurinhas" element={<div>Gerenciar Figurinhas</div>} />
+          <Route path="loja" element={<AdminStorePage />} />
         </Route>
       </Routes>
       

@@ -1,15 +1,22 @@
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export function CreateCategoryModal({ open, onClose, onSave, loading, category }) {
-  const [name, setName] = useState('');
-  const [slug, setSlug] = useState('');
-  const [errors, setErrors] = useState({});
+export function StoreCategoryDialog({ open, category, onSave, onCancel }) {
+  const [name, setName] = React.useState('');
+  const [slug, setSlug] = React.useState('');
+  const [errors, setErrors] = React.useState({});
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (open) {
       if (category) {
         setName(category.name);
@@ -22,16 +29,17 @@ export function CreateCategoryModal({ open, onClose, onSave, loading, category }
     }
   }, [open, category]);
 
+  // Auto-gera slug a partir do nome
   const handleNameChange = (value) => {
     setName(value);
-    // Auto-gera slug se for nova categoria
+    // Se não está editando ou o slug ainda não foi modificado manualmente
     if (!category) {
       const generatedSlug = value
         .toLowerCase()
         .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+        .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+        .replace(/[^a-z0-9]+/g, '-') // Substitui caracteres especiais por hífens
+        .replace(/^-+|-+$/g, ''); // Remove hífens no início e fim
       setSlug(generatedSlug);
     }
   };
@@ -50,25 +58,29 @@ export function CreateCategoryModal({ open, onClose, onSave, loading, category }
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSave = () => {
     if (validate()) {
-      await onSave({ name: name.trim(), slug: slug.trim() });
+      onSave({ name: name.trim(), slug: slug.trim() });
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && !loading && onClose()}>
+    <Dialog open={open} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
             {category ? 'Editar Categoria' : 'Nova Categoria'}
           </DialogTitle>
+          <DialogDescription>
+            {category
+              ? 'Atualize as informações da categoria.'
+              : 'Preencha as informações para criar uma nova categoria.'}
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+        <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nome *</Label>
+            <Label htmlFor="name">Nome</Label>
             <Input
               id="name"
               value={name}
@@ -82,7 +94,7 @@ export function CreateCategoryModal({ open, onClose, onSave, loading, category }
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="slug">Slug (URL) *</Label>
+            <Label htmlFor="slug">Slug (URL)</Label>
             <Input
               id="slug"
               value={slug}
@@ -97,16 +109,16 @@ export function CreateCategoryModal({ open, onClose, onSave, loading, category }
               Apenas letras minúsculas, números e hífens
             </p>
           </div>
+        </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Salvando...' : category ? 'Salvar' : 'Criar'}
-            </Button>
-          </div>
-        </form>
+        <DialogFooter>
+          <Button variant="outline" onClick={onCancel}>
+            Cancelar
+          </Button>
+          <Button onClick={handleSave}>
+            {category ? 'Salvar' : 'Criar'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

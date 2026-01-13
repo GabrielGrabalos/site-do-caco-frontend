@@ -62,12 +62,23 @@ class ApiClient {
       throw new Error(errorData.error || 'Erro desconhecido');
     }
 
-    // Se resposta vazia (204 No Content)
+    // Se resposta vazia (204 No Content ou corpo vazio)
     if (response.status === 204) {
       return null;
     }
 
-    return response.json();
+    // Verifica se há conteúdo antes de fazer parse
+    const text = await response.text();
+    if (!text || text.trim() === '') {
+      return null;
+    }
+
+    try {
+      return JSON.parse(text);
+    } catch (error) {
+      console.error('Erro ao fazer parse do JSON:', text);
+      throw new Error('Resposta inválida do servidor');
+    }
   }
 
   /**
