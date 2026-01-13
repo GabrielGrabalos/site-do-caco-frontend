@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, Calendar, BookOpen, Image, Menu, X, GraduationCap } from 'lucide-react';
+import { LayoutDashboard, FileText, Calendar, BookOpen, Image, Menu, X, GraduationCap, Store } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { to: '/admin/manual', label: 'Manual', icon: BookOpen },
   { to: '/admin/provas', label: 'Banco de Provas', icon: GraduationCap },
   { to: '/admin/figurinhas', label: 'Figurinhas', icon: Image },
+  { to: '/admin/loja', label: 'Loja', icon: Store },
 ];
 
 export function AdminLayout() {
