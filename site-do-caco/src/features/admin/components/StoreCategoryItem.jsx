@@ -27,8 +27,8 @@ export function StoreCategoryItem({ category, onEdit, onDelete }) {
   } = useSortable({ id: category.id });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
+    transform: CSS.Translate.toString(transform),
+    transition: isDragging ? undefined : transition,
     opacity: isDragging ? 0.5 : 1,
   };
 
@@ -47,7 +47,7 @@ export function StoreCategoryItem({ category, onEdit, onDelete }) {
         className="flex items-center gap-3 p-4 bg-card border rounded-lg hover:bg-accent/50 transition-colors"
       >
         <button
-          className="cursor-grab active:cursor-grabbing touch-none"
+          className="cursor-grab active:cursor-grabbing touch-none p-1 -m-1"
           {...attributes}
           {...listeners}
         >

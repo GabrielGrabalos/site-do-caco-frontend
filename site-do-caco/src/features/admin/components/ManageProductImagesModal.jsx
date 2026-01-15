@@ -158,6 +158,10 @@ export function ManageProductImagesModal({
               
               setImages(formattedImages);
               loadedProductIdRef.current = product.id;
+            } else if (result.success && (!result.data || result.data.length === 0)) {
+              // Lista vazia não é erro, apenas não há imagens
+              setImages([]);
+              loadedProductIdRef.current = product.id;
             } else {
               setLoadError(result.error || 'Erro ao carregar imagens');
               setImages([]);
@@ -201,6 +205,9 @@ export function ManageProductImagesModal({
       setCropModalOpen(true);
       setCrop({ x: 0, y: 0 });
       setZoom(1);
+    };
+    reader.onerror = (error) => {
+      console.error('Error reading file:', error);
     };
     reader.readAsDataURL(validFiles[0]);
   };
@@ -448,7 +455,7 @@ export function ManageProductImagesModal({
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept="image/*,image/webp"
                     multiple
                     onChange={handleFileSelect}
                     className="hidden"
@@ -489,7 +496,41 @@ export function ManageProductImagesModal({
                   </SortableContext>
                 </DndContext>
 
-      {/* Crop Modal */}
+                {/* Botão para adicionar mais */}
+                <div className="border-2 border-dashed rounded-lg p-6 text-center bg-muted/10 hover:bg-muted/20 transition-colors">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,image/webp"
+                    multiple
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    disabled={loading || uploadProgress || isUploading}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={loading || uploadProgress || isUploading}
+                    className="w-full"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {uploadProgress || 'Adicionar Mais Imagens'}
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button variant="outline" onClick={onClose} disabled={loading || isUploading}>
+              {isUploading ? 'Enviando...' : 'Fechar'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Crop Modal - FORA do Dialog principal */}
       <Dialog open={cropModalOpen} onOpenChange={handleCropCancel}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -559,40 +600,6 @@ export function ManageProductImagesModal({
                 )}
               </Button>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-                {/* Botão para adicionar mais */}
-                <div className="border-2 border-dashed rounded-lg p-6 text-center bg-muted/10 hover:bg-muted/20 transition-colors">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleFileSelect}
-                    className="hidden"
-                    disabled={loading || uploadProgress || isUploading}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={loading || uploadProgress || isUploading}
-                    className="w-full"
-                  >
-                    <Upload className="h-4 w-4 mr-2" />
-                    {uploadProgress || 'Adicionar Mais Imagens'}
-                  </Button>
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="flex justify-end gap-2 pt-4 border-t">
-            <Button variant="outline" onClick={onClose} disabled={loading || isUploading}>
-              {isUploading ? 'Enviando...' : 'Fechar'}
-            </Button>
           </div>
         </DialogContent>
       </Dialog>

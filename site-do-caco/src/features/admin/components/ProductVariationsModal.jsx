@@ -30,9 +30,8 @@ export function ProductVariationsModal({
   const [deleteVariation, setDeleteVariation] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    value: '',
-    priceAdjustment: '',
-    stock: ''
+    additionalPrice: '',
+    stockQuantity: ''
   });
   const [errors, setErrors] = useState({});
 
@@ -45,9 +44,8 @@ export function ProductVariationsModal({
   const resetForm = () => {
     setFormData({
       name: '',
-      value: '',
-      priceAdjustment: '',
-      stock: ''
+      additionalPrice: '',
+      stockQuantity: ''
     });
     setEditingVariation(null);
     setErrors({});
@@ -57,9 +55,8 @@ export function ProductVariationsModal({
     setEditingVariation(variation);
     setFormData({
       name: variation.name || '',
-      value: variation.value || '',
-      priceAdjustment: variation.priceAdjustment?.toString() || '0',
-      stock: variation.stock?.toString() || ''
+      additionalPrice: variation.additionalPrice?.toString() || '0',
+      stockQuantity: variation.stockQuantity?.toString() || '0'
     });
   };
 
@@ -74,19 +71,23 @@ export function ProductVariationsModal({
     const newErrors = {};
     
     if (!formData.name.trim()) {
-      newErrors.name = 'Nome da variação é obrigatório';
+      newErrors.name = 'Nome é obrigatório';
     }
     
-    if (!formData.value.trim()) {
-      newErrors.value = 'Valor é obrigatório';
+    // Valida additionalPrice apenas se não estiver vazio
+    if (formData.additionalPrice !== '' && formData.additionalPrice !== null) {
+      if (isNaN(parseFloat(formData.additionalPrice))) {
+        newErrors.additionalPrice = 'Preço adicional inválido';
+      } else if (parseFloat(formData.additionalPrice) < 0) {
+        newErrors.additionalPrice = 'Preço adicional deve ser zero ou positivo';
+      }
     }
     
-    if (formData.priceAdjustment === '' || isNaN(parseFloat(formData.priceAdjustment))) {
-      newErrors.priceAdjustment = 'Ajuste de preço inválido';
-    }
-    
-    if (!formData.stock || parseInt(formData.stock) < 0) {
-      newErrors.stock = 'Estoque inválido';
+    // Valida stockQuantity apenas se não estiver vazio
+    if (formData.stockQuantity !== '' && formData.stockQuantity !== null) {
+      if (isNaN(parseInt(formData.stockQuantity)) || parseInt(formData.stockQuantity) < 0) {
+        newErrors.stockQuantity = 'Quantidade em estoque não pode ser negativa';
+      }
     }
 
     setErrors(newErrors);
@@ -99,10 +100,15 @@ export function ProductVariationsModal({
 
     const data = {
       name: formData.name.trim(),
-      value: formData.value.trim(),
-      priceAdjustment: parseFloat(formData.priceAdjustment),
-      stock: parseInt(formData.stock)
+      additionalPrice: formData.additionalPrice === '' || formData.additionalPrice === null 
+        ? 0 
+        : parseFloat(formData.additionalPrice)
     };
+    
+    // Só adiciona stockQuantity se foi especificado
+    if (formData.stockQuantity !== '' && formData.stockQuantity !== null) {
+      data.stockQuantity = parseInt(formData.stockQuantity);
+    }
 
     let result;
     if (editingVariation) {
@@ -145,7 +151,7 @@ export function ProductVariationsModal({
           <DialogHeader>
             <DialogTitle>Variações - {product.name}</DialogTitle>
             <p className="text-sm text-muted-foreground">
-              Preço Base: {formatPrice(product.basePrice)}
+              Preço Base: {formatPrice(product.price)}
             </p>
           </DialogHeader>
 
@@ -156,14 +162,14 @@ export function ProductVariationsModal({
                 {editingVariation ? 'Editar Variação' : 'Nova Variação'}
               </h3>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Nome da Variação *</Label>
+                  <Label htmlFor="name">Nome *</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => handleChange('name', e.target.value)}
-                    placeholder="Ex: Tamanho"
+                    placeholder="Ex: Tamanho M, Cor Azul"
                     className={errors.name ? 'border-destructive' : ''}
                   />
                   {errors.name && (
@@ -171,55 +177,50 @@ export function ProductVariationsModal({
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="value">Valor *</Label>
-                  <Input
-                    id="value"
-                    value={formData.value}
-                    onChange={(e) => handleChange('value', e.target.value)}
-                    placeholder="Ex: M, G, GG"
-                    className={errors.value ? 'border-destructive' : ''}
-                  />
-                  {errors.value && (
-                    <p className="text-sm text-destructive">{errors.value}</p>
-                  )}
-                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="additionalPrice">Preço Adicional (R$)</Label>
+                    <Input
+                      id="additionalPrice"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.additionalPrice}
+                      onChange={(e) => handleChange('additionalPrice', e.target.value)}
+                      placeholder="0.00"
+                      className={errors.additionalPrice ? 'border-destructive' : ''}
+                    />
+                    {errors.additionalPrice && (
+                      <p className="text-sm text-destructive">{errors.additionalPrice}</p>
+                    )}
+                    {formData.additionalPrice && !errors.additionalPrice && (
+                      <p className="text-xs text-muted-foreground">
+                        Preço Final: {formatPrice(calculateFinalPrice(product.price, parseFloat(formData.additionalPrice) || 0))}
+                      </p>
+                    )}
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="priceAdjustment">Ajuste de Preço (R$) *</Label>
-                  <Input
-                    id="priceAdjustment"
-                    type="number"
-                    step="0.01"
-                    value={formData.priceAdjustment}
-                    onChange={(e) => handleChange('priceAdjustment', e.target.value)}
-                    placeholder="0.00"
-                    className={errors.priceAdjustment ? 'border-destructive' : ''}
-                  />
-                  {errors.priceAdjustment && (
-                    <p className="text-sm text-destructive">{errors.priceAdjustment}</p>
-                  )}
-                  {formData.priceAdjustment && !errors.priceAdjustment && (
-                    <p className="text-xs text-muted-foreground">
-                      Preço Final: {formatPrice(calculateFinalPrice(product.basePrice, parseFloat(formData.priceAdjustment) || 0))}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="stock">Estoque *</Label>
-                  <Input
-                    id="stock"
-                    type="number"
-                    min="0"
-                    value={formData.stock}
-                    onChange={(e) => handleChange('stock', e.target.value)}
-                    placeholder="0"
-                    className={errors.stock ? 'border-destructive' : ''}
-                  />
-                  {errors.stock && (
-                    <p className="text-sm text-destructive">{errors.stock}</p>
-                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="stockQuantity">Quantidade em Estoque</Label>
+                    <Input
+                      id="stockQuantity"
+                      type="number"
+                      min="0"
+                      value={formData.stockQuantity}
+                      onChange={(e) => handleChange('stockQuantity', e.target.value)}
+                      placeholder="0"
+                      className={errors.stockQuantity ? 'border-destructive' : ''}
+                      disabled={!product.manageStock}
+                    />
+                    {!product.manageStock && (
+                      <p className="text-xs text-muted-foreground">
+                        Este produto não gerencia estoque
+                      </p>
+                    )}
+                    {errors.stockQuantity && (
+                      <p className="text-sm text-destructive">{errors.stockQuantity}</p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -264,22 +265,23 @@ export function ProductVariationsModal({
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium">{variation.name}:</span>
-                          <Badge variant="secondary">{variation.value}</Badge>
-                          {variation.stock === 0 && (
+                          <span className="font-medium">{variation.name}</span>
+                          {variation.stockQuantity !== null && variation.stockQuantity !== undefined && variation.stockQuantity === 0 && (
                             <Badge variant="destructive">Sem estoque</Badge>
                           )}
                         </div>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span>
-                            Preço: {formatPrice(calculateFinalPrice(product.basePrice, variation.priceAdjustment))}
+                            Preço: {formatPrice(calculateFinalPrice(product.price, variation.additionalPrice))}
                           </span>
-                          {variation.priceAdjustment !== 0 && (
-                            <span className={variation.priceAdjustment > 0 ? 'text-green-600' : 'text-red-600'}>
-                              ({variation.priceAdjustment > 0 ? '+' : ''}{formatPrice(variation.priceAdjustment)})
+                          {variation.additionalPrice !== 0 && (
+                            <span className={variation.additionalPrice > 0 ? 'text-green-600' : 'text-red-600'}>
+                              ({variation.additionalPrice > 0 ? '+' : ''}{formatPrice(variation.additionalPrice)})
                             </span>
                           )}
-                          <span>Estoque: {variation.stock}</span>
+                          {variation.stockQuantity !== null && variation.stockQuantity !== undefined && (
+                            <span>Estoque: {variation.stockQuantity}</span>
+                          )}
                         </div>
                       </div>
 
@@ -322,7 +324,7 @@ export function ProductVariationsModal({
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir a variação "{deleteVariation?.name}: {deleteVariation?.value}"?
+              Tem certeza que deseja excluir a variação "{deleteVariation?.name}"?
               Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>

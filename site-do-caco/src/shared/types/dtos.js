@@ -137,6 +137,7 @@
  * @property {string} id - UUID da variação
  * @property {string} name - Nome da variação
  * @property {number} additionalPrice - Preço adicional
+ * @property {number} stockQuantity - Quantidade em estoque
  * @property {boolean} available - Se está disponível
  */
 

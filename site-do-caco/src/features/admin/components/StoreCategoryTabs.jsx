@@ -39,8 +39,8 @@ function SortableCategoryTab({ category, isSelected, onSelect, onEdit, onDelete 
   } = useSortable({ id: category.id });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
+    transform: CSS.Translate.toString(transform),
+    transition: isDragging ? undefined : transition,
     opacity: isDragging ? 0.5 : 1,
   };
 
@@ -48,25 +48,24 @@ function SortableCategoryTab({ category, isSelected, onSelect, onEdit, onDelete 
     <div
       ref={setNodeRef}
       style={style}
+      {...attributes}
+      {...listeners}
       className={`
         relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full 
-        transition-all
+        transition-all cursor-grab active:cursor-grabbing
         ${isSelected
           ? 'bg-blue-600 text-white'
           : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
         }
       `}
     >
-      <button
-        {...attributes}
-        {...listeners}
-        className="cursor-grab active:cursor-grabbing"
-      >
+      <div className="touch-none">
         <GripVertical size={14} />
-      </button>
+      </div>
       
       <button
         onClick={() => onSelect(category)}
+        onPointerDown={(e) => e.stopPropagation()}
         className="text-sm font-semibold flex-1"
       >
         {category.name}
@@ -77,6 +76,7 @@ function SortableCategoryTab({ category, isSelected, onSelect, onEdit, onDelete 
           e.stopPropagation();
           onEdit(category);
         }}
+        onPointerDown={(e) => e.stopPropagation()}
         className={`
           transition-colors
           ${isSelected
@@ -94,6 +94,7 @@ function SortableCategoryTab({ category, isSelected, onSelect, onEdit, onDelete 
           e.stopPropagation();
           onDelete(category);
         }}
+        onPointerDown={(e) => e.stopPropagation()}
         className={`
           transition-colors
           ${isSelected
