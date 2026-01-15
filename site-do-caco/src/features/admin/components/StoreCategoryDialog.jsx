@@ -31,7 +31,6 @@ export function StoreCategoryDialog({ open, category, onSave, onCancel }) {
 
   // Auto-gera slug a partir do nome
   const handleNameChange = (value) => {
-    console.log("Name changed to: ", value);
     setName(value);
     // Sempre gera slug automaticamente
     const generatedSlug = value
@@ -40,7 +39,6 @@ export function StoreCategoryDialog({ open, category, onSave, onCancel }) {
       .replace(/[\u0300-\u036f]/g, '') // Remove acentos
       .replace(/[^a-z0-9]+/g, '-') // Substitui caracteres especiais por hífens
       .replace(/^-+|-+$/g, ''); // Remove hífens no início e fim
-      console.log("Generated slug: ", generatedSlug);
       
     setSlug(generatedSlug);
   };
@@ -85,7 +83,7 @@ export function StoreCategoryDialog({ open, category, onSave, onCancel }) {
             <Input
               id="name"
               value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
+              onChange={(e) => {handleNameChange(e.target.value)}}
               placeholder="Ex: Vestuário"
               className={errors.name ? 'border-destructive' : ''}
             />

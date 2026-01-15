@@ -108,14 +108,6 @@ export function StoreSection({
     ? products.filter((p) => p.categoryId === selectedCategory.id)
     : [];
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-      </div>
-    );
-  }
-
   return (
     <>
       <Card>
@@ -136,16 +128,22 @@ export function StoreSection({
             onReorderCategories={onReorderCategories}
           />
 
-          <ProductList
-            products={filteredProducts}
-            loading={loadingProducts}
-            onAddProduct={() => setProductModalOpen(true)}
-            onDeleteProduct={onDeleteProduct}
-            onEditProduct={handleEditProduct}
-            onManageVariations={handleManageVariations}
-            onManageImages={handleManageImages}
-            selectedCategory={selectedCategory}
-          />
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+            </div>
+          ) : (
+            <ProductList
+              products={filteredProducts}
+              loading={loadingProducts}
+              onAddProduct={() => setProductModalOpen(true)}
+              onDeleteProduct={onDeleteProduct}
+              onEditProduct={handleEditProduct}
+              onManageVariations={handleManageVariations}
+              onManageImages={handleManageImages}
+              selectedCategory={selectedCategory}
+            />
+          )}
         </CardContent>
       </Card>
 

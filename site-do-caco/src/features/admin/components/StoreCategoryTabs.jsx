@@ -40,7 +40,7 @@ function SortableCategoryTab({ category, isSelected, onSelect, onEdit, onDelete 
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    transition: isDragging ? undefined : transition,
+    transition: isDragging ? 'none' : transition,
     opacity: isDragging ? 0.5 : 1,
   };
 
