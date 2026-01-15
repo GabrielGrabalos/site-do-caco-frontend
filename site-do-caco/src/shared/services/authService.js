@@ -13,7 +13,14 @@ class AuthService {
   async loginWithToken(token, expiresInMilliseconds) {
     try {
       const expiryMilliseconds = expiresInMilliseconds || DEFAULT_TOKEN_EXPIRY_MILLISECONDS;
+      console.log('[AuthService] expiresInMilliseconds recebido:', expiresInMilliseconds);
+      console.log('[AuthService] expiryMilliseconds a usar:', expiryMilliseconds);
+      console.log('[AuthService] Usando default?', !expiresInMilliseconds);
+      
       const expiryTimestamp = Date.now() + expiryMilliseconds;
+      const hoursFromNow = expiryMilliseconds / (1000 * 60 * 60);
+      console.log('[AuthService] Token expirará em (horas):', hoursFromNow.toFixed(2));
+      console.log('[AuthService] Timestamp de expiração:', new Date(expiryTimestamp).toISOString());
       
       // Salva o token temporariamente para que apiClient possa usá-lo
       this.setToken(token, expiryTimestamp);

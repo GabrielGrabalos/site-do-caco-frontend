@@ -38,7 +38,7 @@ export function StoreProductItem({ product, onEdit, onDelete, onManageVariations
     <>
       <div className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-card">
         {/* Imagem do Produto */}
-        <div className="aspect-[4/3] bg-muted relative">
+        <div className="aspect-square bg-muted relative">
           {coverImage ? (
             <img
               src={coverImage}
@@ -86,7 +86,7 @@ export function StoreProductItem({ product, onEdit, onDelete, onManageVariations
           </div>
 
           <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold">{formatPrice(product.price)}</span>
+            <span className="font-semibold text-base">{formatPrice(product.price)}</span>
             <div className="flex items-center gap-2 text-muted-foreground">
               {product.manageStock && (
                 <div className="flex items-center gap-1">

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { PriceInput } from '@/components/ui/price-input';
-import { X, Upload } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Info } from 'lucide-react';
 
 export function CreateProductModal({ open, onClose, onSave, loading, product, categoryId }) {
   const [formData, setFormData] = useState({
@@ -19,12 +20,7 @@ export function CreateProductModal({ open, onClose, onSave, loading, product, ca
     stockQuantity: '',
     active: true
   });
-  const [imageFiles, setImageFiles] = useState([]);
-  const [imagePreviews, setImagePreviews] = useState([]);
-  const [existingImages, setExistingImages] = useState([]);
   const [errors, setErrors] = useState({});
-  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0, uploading: false });
-  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (open) {
@@ -39,10 +35,6 @@ export function CreateProductModal({ open, onClose, onSave, loading, product, ca
           stockQuantity: product.stockQuantity?.toString() || '',
           active: product.active ?? true
         });
-        // Ao editar, não gerencia imagens aqui (use modal separado)
-        setExistingImages([]);
-        setImageFiles([]);
-        setImagePreviews([]);
       } else {
         setFormData({
           name: '',
@@ -54,12 +46,8 @@ export function CreateProductModal({ open, onClose, onSave, loading, product, ca
           stockQuantity: '',
           active: true
         });
-        setExistingImages([]);
-        setImageFiles([]);
-        setImagePreviews([]);
       }
       setErrors({});
-      setUploadProgress({ current: 0, total: 0, uploading: false });
     }
   }, [open, product]);
 
@@ -69,8 +57,8 @@ export function CreateProductModal({ open, onClose, onSave, loading, product, ca
       setErrors(prev => ({ ...prev, [field]: null }));
     }
 
-    // Auto-gera slug quando o nome muda (apenas para novo produto)
-    if (field === 'name' && !product) {
+    // Auto-gera slug quando o nome muda
+    if (field === 'name') {
       const generatedSlug = value
         .toLowerCase()
         .normalize('NFD')
@@ -81,48 +69,7 @@ export function CreateProductModal({ open, onClose, onSave, loading, product, ca
     }
   };
 
-  const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
 
-    // Validar tipo e tamanho
-    const validFiles = files.filter(file => {
-      if (!file.type.startsWith('image/')) {
-        return false;
-      }
-      if (file.size > 10 * 1024 * 1024) { // 10MB
-        return false;
-      }
-      return true;
-    });
-
-    if (validFiles.length !== files.length) {
-      setErrors(prev => ({
-        ...prev,
-        images: 'Alguns arquivos foram ignorados (apenas imagens até 10MB)'
-      }));
-    }
-
-    // Criar previews e adicionar arquivos
-    const newPreviews = validFiles.map(file => URL.createObjectURL(file));
-    
-    setImageFiles(prev => [...prev, ...validFiles]);
-    setImagePreviews(prev => [...prev, ...newPreviews]);
-    
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const removeNewImage = (index) => {
-    URL.revokeObjectURL(imagePreviews[index]);
-    setImageFiles(prev => prev.filter((_, i) => i !== index));
-    setImagePreviews(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const removeExistingImage = (imageUrl) => {
-    setExistingImages(prev => prev.filter(url => url !== imageUrl));
-  };
 
   const validate = () => {
     const newErrors = {};
@@ -157,11 +104,6 @@ export function CreateProductModal({ open, onClose, onSave, loading, product, ca
       }
     }
 
-    // Ao criar novo produto, pelo menos uma imagem é necessária
-    if (!product && imageFiles.length === 0) {
-      newErrors.images = 'Adicione pelo menos uma imagem';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -190,22 +132,10 @@ export function CreateProductModal({ open, onClose, onSave, loading, product, ca
       categoryId: categoryId
     };
 
-    // Callback de progresso do upload
-    const onProgress = (current, total, uploading) => {
-      setUploadProgress({ current, total, uploading });
-    };
-
-    await onSave(data, imageFiles, onProgress);
+    await onSave(data);
   };
 
-  // Cleanup previews on unmount
-  useEffect(() => {
-    return () => {
-      imagePreviews.forEach(url => URL.revokeObjectURL(url));
-    };
-  }, [imagePreviews]);
 
-  const totalImages = existingImages.length + imageFiles.length;
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && !loading && onClose()}>
@@ -340,79 +270,14 @@ export function CreateProductModal({ open, onClose, onSave, loading, product, ca
             />
           </div>
 
-          {/* Imagens - Apenas ao criar produto */}
+          {/* Alerta informativo para novos produtos */}
           {!product && (
-            <div className="space-y-2">
-              <Label>Imagens * ({imageFiles.length})</Label>
-
-              {/* Novas Imagens */}
-              {imagePreviews.length > 0 && (
-                <div className="grid grid-cols-4 gap-2 mb-2">
-                  {imagePreviews.map((preview, index) => (
-                    <div key={`new-${index}`} className="relative group">
-                      <img
-                        src={preview}
-                        alt={`Nova ${index + 1}`}
-                        className="w-full h-24 object-cover rounded border border-primary"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeNewImage(index)}
-                        className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Upload Button */}
-              <div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleFileSelect}
-                  className="hidden"
-                  disabled={loading}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={loading}
-                  className="w-full"
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Adicionar Imagens
-                </Button>
-              </div>
-
-              {errors.images && (
-                <p className="text-sm text-destructive">{errors.images}</p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Formatos aceitos: JPG, PNG, WebP. Máximo 10MB por imagem.
-              </p>
-
-              {/* Progress bar para upload de imagens */}
-              {uploadProgress.uploading && (
-                <div className="space-y-2 p-3 bg-muted rounded-lg">
-                  <div className="flex justify-between text-sm">
-                    <span>Enviando imagens...</span>
-                    <span>{uploadProgress.current} de {uploadProgress.total}</span>
-                  </div>
-                  <div className="w-full bg-background rounded-full h-2">
-                    <div
-                      className="bg-primary h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                Após criar o produto, você poderá adicionar imagens e variações através dos botões de ação na lista de produtos.
+              </AlertDescription>
+            </Alert>
           )}
 
           {/* Actions */}

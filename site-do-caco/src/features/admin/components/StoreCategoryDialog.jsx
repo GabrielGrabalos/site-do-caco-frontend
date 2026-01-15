@@ -31,17 +31,18 @@ export function StoreCategoryDialog({ open, category, onSave, onCancel }) {
 
   // Auto-gera slug a partir do nome
   const handleNameChange = (value) => {
+    console.log("Name changed to: ", value);
     setName(value);
-    // Se não está editando ou o slug ainda não foi modificado manualmente
-    if (!category) {
-      const generatedSlug = value
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') // Remove acentos
-        .replace(/[^a-z0-9]+/g, '-') // Substitui caracteres especiais por hífens
-        .replace(/^-+|-+$/g, ''); // Remove hífens no início e fim
-      setSlug(generatedSlug);
-    }
+    // Sempre gera slug automaticamente
+    const generatedSlug = value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .replace(/[^a-z0-9]+/g, '-') // Substitui caracteres especiais por hífens
+      .replace(/^-+|-+$/g, ''); // Remove hífens no início e fim
+      console.log("Generated slug: ", generatedSlug);
+      
+    setSlug(generatedSlug);
   };
 
   const validate = () => {
@@ -98,15 +99,14 @@ export function StoreCategoryDialog({ open, category, onSave, onCancel }) {
             <Input
               id="slug"
               value={slug}
-              onChange={(e) => setSlug(e.target.value.toLowerCase())}
-              placeholder="Ex: vestuario"
-              className={errors.slug ? 'border-destructive' : ''}
+              placeholder="Ex: colecao-de-verao-2026"
+              className={`bg-muted ${errors.slug ? 'border-destructive' : ''}`}
             />
             {errors.slug && (
               <p className="text-sm text-destructive">{errors.slug}</p>
             )}
             <p className="text-xs text-muted-foreground">
-              Apenas letras minúsculas, números e hífens
+              Gerado automaticamente a partir do nome
             </p>
           </div>
         </div>

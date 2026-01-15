@@ -50,31 +50,15 @@ export function useAdminStoreProductsVM() {
   }, []);
 
   /**
-   * Cria um novo produto e faz upload das imagens
+   * Cria um novo produto (sem imagens - adicione as imagens posteriormente)
    * @param {Object} data - Dados do produto
-   * @param {File[]} imageFiles - Array de arquivos de imagem
-   * @param {Function} onProgress - Callback (index, total, uploading) => void
    */
-  const createProduct = useCallback(async (data, imageFiles = [], onProgress = null) => {
+  const createProduct = useCallback(async (data) => {
     try {
       setIsCreating(true);
       
-      // 1. Cria o produto sem imagens
+      // Cria o produto sem imagens
       const newProduct = await storeService.createProduct(data);
-      
-      // 2. Só faz upload das imagens se o produto foi criado com sucesso
-      if (newProduct && newProduct.id && imageFiles.length > 0) {
-        for (let i = 0; i < imageFiles.length; i++) {
-          onProgress?.(i, imageFiles.length, true);
-          await storeService.addProductImage(newProduct.id, imageFiles[i]);
-        }
-        onProgress?.(imageFiles.length, imageFiles.length, false);
-        
-        // Recarrega o produto com as imagens
-        const updatedProduct = await storeService.getProductById(newProduct.id);
-        setProducts(prev => [...prev, updatedProduct]);
-        return { success: true, data: updatedProduct };
-      }
       
       setProducts(prev => [...prev, newProduct]);
       return { success: true, data: newProduct };

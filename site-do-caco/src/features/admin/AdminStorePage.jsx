@@ -74,8 +74,8 @@ export function AdminStorePage() {
 
   // ============= PRODUTOS =============
 
-  const handleCreateProduct = async (data, imageFiles, onProgress) => {
-    const result = await productsVM.createProduct(data, imageFiles, onProgress);
+  const handleCreateProduct = async (data) => {
+    const result = await productsVM.createProduct(data);
     if (result.success) {
       toast({
         title: 'Produto criado',
