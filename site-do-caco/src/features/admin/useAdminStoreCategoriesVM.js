@@ -114,17 +114,21 @@ export function useAdminStoreCategoriesVM() {
    * @param {string[]} categoryIds - Array de IDs na nova ordem
    */
   const reorderCategories = useCallback(async (categoryIds) => {
+    // Reordena localmente primeiro (otimista)
+    const reordered = categoryIds.map((id, index) => {
+      const cat = categories.find(c => c.id === id);
+      return { ...cat, order: index };
+    });
+    const previousCategories = categories;
+    setCategories(reordered);
+    
     try {
       await storeService.reorderCategories(categoryIds);
-      // Reordena localmente
-      const reordered = categoryIds.map((id, index) => {
-        const cat = categories.find(c => c.id === id);
-        return { ...cat, order: index };
-      });
-      setCategories(reordered);
       return { success: true };
     } catch (err) {
       console.error('Erro ao reordenar categorias:', err);
+      // Reverte em caso de erro
+      setCategories(previousCategories);
       return { success: false, error: err.message };
     }
   }, [categories]);

@@ -23,17 +23,17 @@ export function CreateCategoryModal({ open, onClose, onSave, loading, category }
   }, [open, category]);
 
   const handleNameChange = (value) => {
+    console.log('Name changed to:', value);
     setName(value);
-    // Auto-gera slug se for nova categoria
-    if (!category) {
-      const generatedSlug = value
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-      setSlug(generatedSlug);
-    }
+    // Auto-gera slug sempre
+    const generatedSlug = value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    console.log('Generated slug:', generatedSlug);
+    setSlug(generatedSlug);
   };
 
   const validate = () => {
