@@ -22,6 +22,8 @@ import { AdminDashboard } from '@/features/admin/AdminDashboard';
 import { AdminManualPage } from '@/features/admin/AdminManualPage';
 import { AdminExamBankPage } from '@/features/admin/AdminExamBankPage';
 import { AdminStorePage } from '@/features/admin/AdminStorePage';
+import { StorePage } from '@/features/store/StorePage';
+import { ProductDetailPage } from '@/features/store/ProductDetailPage';
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
           <Route path="/calendario" element={<CalendarPage />} />
           <Route path="/eventos/:id" element={<EventPage />} />
           <Route path="/provas" element={<ExamBankPage />} />
+          <Route path="/loja" element={<StorePage />} />
+          <Route path="/loja/produto/:slug" element={<ProductDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/callback" element={<CallbackPage />} />
           
