@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,11 +21,25 @@ export function ProductImageGallery({
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
   const imageRef = useRef(null);
   const touchDistance = useRef(0);
+  const containerRef = useRef(null);
 
   const hasImages = images && images.length > 0;
   const currentImage = hasImages 
     ? images[currentIndex]
     : null;
+
+  // Função para limitar o movimento da imagem dentro dos bounds
+  const constrainPosition = (position, scale, containerSize, imageSize) => {
+    if (scale <= 1) return { x: 0, y: 0 };
+    
+    const scaledImageSize = imageSize * scale;
+    const maxOffset = (scaledImageSize - containerSize) / 2;
+    
+    return {
+      x: Math.max(Math.min(position.x, maxOffset), -maxOffset),
+      y: Math.max(Math.min(position.y, maxOffset), -maxOffset)
+    };
+  };
 
   // Hover zoom para desktop
   const handleMouseMove = (e) => {
@@ -65,16 +79,51 @@ export function ProductImageGallery({
       touchDistance.current = distance;
     } else if (isDragging && e.touches.length === 1 && zoomScale > 1) {
       e.preventDefault();
-      setZoomPosition({
+      const newPosition = {
         x: e.touches[0].clientX - dragStart.x,
         y: e.touches[0].clientY - dragStart.y,
-      });
+      };
+      
+      // Limitar o movimento dentro dos bounds
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const constrainedPos = constrainPosition(
+          newPosition,
+          zoomScale,
+          Math.min(rect.width, rect.height),
+          Math.min(rect.width, rect.height)
+        );
+        setZoomPosition(constrainedPos);
+      } else {
+        setZoomPosition(newPosition);
+      }
     }
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false);
   };
+
+  // Aplicar restrições quando o zoom muda
+  useEffect(() => {
+    if (containerRef.current && zoomScale > 1) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const constrainedPos = constrainPosition(
+        zoomPosition,
+        zoomScale,
+        Math.min(rect.width, rect.height),
+        Math.min(rect.width, rect.height)
+      );
+      
+      // Só atualizar se a posição mudou
+      if (constrainedPos.x !== zoomPosition.x || constrainedPos.y !== zoomPosition.y) {
+        setZoomPosition(constrainedPos);
+      }
+    } else if (zoomScale === 1) {
+      // Resetar posição quando zoom volta para 1
+      setZoomPosition({ x: 0, y: 0 });
+    }
+  }, [zoomScale]);
 
   const handleOpenZoom = () => {
     setIsZoomOpen(true);
@@ -184,76 +233,82 @@ export function ProductImageGallery({
       </div>
 
       {/* Modal de Zoom (apenas mobile) */}
-      <Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-black/95">
-          <div className="relative w-full h-[95vh]">
-            {/* Botão Fechar */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleCloseZoom}
-              className="absolute top-4 right-4 z-10 text-white hover:bg-white/20 rounded-full"
-            >
-              <X size={24} />
-            </Button>
+      <DialogPrimitive.Root open={isZoomOpen} onOpenChange={setIsZoomOpen}>
+        <DialogPrimitive.Portal>
+          <DialogPrimitive.Overlay 
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" 
+            onClick={() => setIsZoomOpen(false)}
+          />
+          <DialogPrimitive.Content 
+            className="fixed left-0 top-0 z-50 w-full h-[100dvh] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+            onEscapeKeyDown={() => setIsZoomOpen(false)}
+            onPointerDownOutside={() => setIsZoomOpen(false)}
+          >
+            <div className="relative w-full h-full">
+              {/* Botão Fechar */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCloseZoom}
+                className="absolute top-4 right-4 z-10 text-foreground bg-background/80 hover:bg-background/90 rounded-full shadow-lg"
+              >
+                <X size={24} />
+              </Button>
 
-            {/* Navegação */}
-            {images.length > 1 && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:bg-white/20 rounded-full"
-                  onClick={onPrevious}
-                >
-                  <ChevronLeft size={28} />
-                </Button>
-                
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:bg-white/20 rounded-full"
-                  onClick={onNext}
-                >
-                  <ChevronRight size={28} />
-                </Button>
-              </>
-            )}
+              {/* Navegação */}
+              {images.length > 1 && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-foreground bg-background/80 hover:bg-background/90 rounded-full shadow-lg"
+                    onClick={onPrevious}
+                  >
+                    <ChevronLeft size={28} />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-foreground bg-background/80 hover:bg-background/90 rounded-full shadow-lg"
+                    onClick={onNext}
+                  >
+                    <ChevronRight size={28} />
+                  </Button>
+                </>
+              )}
 
-            {/* Imagem com pinch zoom */}
-            <div
-              className="w-full h-full flex items-center justify-center overflow-hidden touch-none"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <img
-                src={currentImage}
-                alt={`${productName} - Imagem ${currentIndex + 1}`}
-                className="max-w-full max-h-full object-contain select-none"
-                style={{
-                  transform: `scale(${zoomScale}) translate(${zoomPosition.x / zoomScale}px, ${zoomPosition.y / zoomScale}px)`,
-                  transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                  cursor: zoomScale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
-                }}
-                draggable={false}
-              />
-            </div>
-
-            {/* Indicador */}
-            {images.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-medium">
-                {currentIndex + 1} / {images.length}
+              {/* Imagem com pinch zoom */}
+              <div
+                ref={containerRef}
+                className="w-full h-full flex items-center justify-center overflow-hidden touch-none"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <img
+                  src={currentImage}
+                  alt={`${productName} - Imagem ${currentIndex + 1}`}
+                  className="max-w-full max-h-full object-contain select-none"
+                  style={{
+                    transform: `scale(${zoomScale}) translate(${zoomPosition.x / zoomScale}px, ${zoomPosition.y / zoomScale}px)`,
+                    transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                    cursor: zoomScale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                  }}
+                  draggable={false}
+                />
               </div>
-            )}
-            
-            {/* Hint de pinch zoom */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs">
-              Use dois dedos para dar zoom
+
+              {/* Indicador */}
+              {images.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-md text-foreground px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+                  {currentIndex + 1} / {images.length}
+                </div>
+              )}
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogPrimitive.Content>
+        </DialogPrimitive.Portal>
+      </DialogPrimitive.Root>
     </>
   );
 }
