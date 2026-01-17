@@ -189,7 +189,7 @@ class StoreService {
         return await apiClient.delete(`/admin/store/variations/${variationId}`);
     }
 
-    // ============= PÚBLICOS (para uso futuro) =============
+    // ============= PÚBLICOS =============
 
     /**
      * Busca todas as categorias (público)
@@ -200,29 +200,30 @@ class StoreService {
     }
 
     /**
-     * Busca detalhes de uma categoria por slug (público)
-     * @param {string} slug
-     * @returns {Promise<StoreCategoryDTO>}
-     */
-    async getPublicCategoryBySlug(slug) {
-        return await apiClient.get(`/public/store/categories/${slug}`);
-    }
-
-    /**
-     * Busca todos os produtos (público)
+     * Busca produtos de uma categoria por slug (público)
+     * @param {string} categorySlug
      * @returns {Promise<ProductSummaryDTO[]>}
      */
-    async getPublicProducts() {
-        return await apiClient.get('/public/store/products');
+    async getPublicProductsByCategory(categorySlug) {
+        return await apiClient.get(`/public/store/categories/${categorySlug}/products`);
     }
 
     /**
      * Busca detalhes de um produto por slug (público)
-     * @param {string} slug
+     * @param {string} productSlug
      * @returns {Promise<ProductDetailDTO>}
      */
-    async getPublicProductBySlug(slug) {
-        return await apiClient.get(`/public/store/products/${slug}`);
+    async getPublicProductBySlug(productSlug) {
+        return await apiClient.get(`/public/store/products/slug/${productSlug}`);
+    }
+
+    /**
+     * Busca produtos por palavra-chave (público)
+     * @param {string} keyword
+     * @returns {Promise<ProductSummaryDTO[]>}
+     */
+    async searchPublicProducts(keyword) {
+        return await apiClient.get(`/public/store/search`, { keyword });
     }
 }
 
