@@ -45,11 +45,18 @@ export function ProductCard({ product }) {
             <p className="text-2xl font-bold text-primary mb-1">
               {formatCurrency(product.price)}
             </p>
-            {product.categoryName && (
-              <Badge variant="secondary" className="text-xs">
-                {product.categoryName}
-              </Badge>
-            )}
+            <div className="flex items-center gap-2 flex-wrap">
+              {product.categoryName && (
+                <Badge variant="secondary" className="text-xs">
+                  {product.categoryName}
+                </Badge>
+              )}
+              {product.manageStock && !product.outOfStock && product.stockQuantity && (
+                <Badge variant="outline" className="text-xs">
+                  {product.stockQuantity} em estoque
+                </Badge>
+              )}
+            </div>
           </div>
         </CardFooter>
       </Card>

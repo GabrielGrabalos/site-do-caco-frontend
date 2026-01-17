@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, LogOut, Shield, Sun, Moon, Monitor } from 'lucide-react';
+import { User, LogOut, Shield, Sun, Moon, Monitor, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -107,6 +107,18 @@ export function ProfilePopover() {
               <Link to="/perfil" onClick={handleNavigate}>
                 <User className="h-4 w-4 mr-2" />
                 Meu Perfil
+              </Link>
+            </Button>
+
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+              size="sm"
+              asChild
+            >
+              <Link to="/carrinho" onClick={handleNavigate}>
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Minhas comprinhas
               </Link>
             </Button>
 
