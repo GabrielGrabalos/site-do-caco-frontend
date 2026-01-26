@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PriceInput } from '@/components/ui/price-input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
@@ -55,7 +56,7 @@ export function ProductVariationsModal({
     setEditingVariation(variation);
     setFormData({
       name: variation.name || '',
-      additionalPrice: variation.additionalPrice?.toString() || '0',
+      additionalPrice: variation.additionalPrice || '',
       stockQuantity: variation.stockQuantity?.toString() || '0'
     });
   };
@@ -74,11 +75,12 @@ export function ProductVariationsModal({
       newErrors.name = 'Nome é obrigatório';
     }
     
-    // Valida additionalPrice apenas se não estiver vazio
-    if (formData.additionalPrice !== '' && formData.additionalPrice !== null) {
-      if (isNaN(parseFloat(formData.additionalPrice))) {
+    // Valida additionalPrice
+    if (formData.additionalPrice !== '' && formData.additionalPrice !== null && formData.additionalPrice !== undefined) {
+      const price = typeof formData.additionalPrice === 'number' ? formData.additionalPrice : parseFloat(formData.additionalPrice);
+      if (isNaN(price)) {
         newErrors.additionalPrice = 'Preço adicional inválido';
-      } else if (parseFloat(formData.additionalPrice) < 0) {
+      } else if (price < 0) {
         newErrors.additionalPrice = 'Preço adicional deve ser zero ou positivo';
       }
     }
@@ -100,9 +102,9 @@ export function ProductVariationsModal({
 
     const data = {
       name: formData.name.trim(),
-      additionalPrice: formData.additionalPrice === '' || formData.additionalPrice === null 
-        ? 0 
-        : parseFloat(formData.additionalPrice)
+      additionalPrice: typeof formData.additionalPrice === 'number' 
+        ? formData.additionalPrice 
+        : (formData.additionalPrice === '' || formData.additionalPrice === null ? 0 : parseFloat(formData.additionalPrice))
     };
     
     // Só adiciona stockQuantity se foi especificado
@@ -180,22 +182,19 @@ export function ProductVariationsModal({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="additionalPrice">Preço Adicional (R$)</Label>
-                    <Input
+                    <PriceInput
                       id="additionalPrice"
-                      type="number"
-                      step="0.01"
-                      min="0"
                       value={formData.additionalPrice}
-                      onChange={(e) => handleChange('additionalPrice', e.target.value)}
-                      placeholder="0.00"
+                      onChange={(value) => handleChange('additionalPrice', value)}
+                      placeholder="0,00"
                       className={errors.additionalPrice ? 'border-destructive' : ''}
                     />
                     {errors.additionalPrice && (
                       <p className="text-sm text-destructive">{errors.additionalPrice}</p>
                     )}
-                    {formData.additionalPrice && !errors.additionalPrice && (
+                    {formData.additionalPrice !== '' && formData.additionalPrice !== null && formData.additionalPrice !== undefined && !errors.additionalPrice && Number(formData.additionalPrice) !== 0 && (
                       <p className="text-xs text-muted-foreground">
-                        Preço Final: {formatPrice(calculateFinalPrice(product.price, parseFloat(formData.additionalPrice) || 0))}
+                        Preço Final: {formatPrice(calculateFinalPrice(product.price, typeof formData.additionalPrice === 'number' ? formData.additionalPrice : parseFloat(formData.additionalPrice) || 0))}
                       </p>
                     )}
                   </div>
