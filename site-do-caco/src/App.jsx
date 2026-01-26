@@ -22,6 +22,7 @@ import { AdminDashboard } from '@/features/admin/AdminDashboard';
 import { AdminManualPage } from '@/features/admin/AdminManualPage';
 import { AdminExamBankPage } from '@/features/admin/AdminExamBankPage';
 import { AdminStorePage } from '@/features/admin/AdminStorePage';
+import { AdminEventsPage } from '@/features/admin/AdminEventsPage';
 import { StorePage } from '@/features/store/StorePage';
 import { ProductDetailPage } from '@/features/store/ProductDetailPage';
 
@@ -75,7 +76,7 @@ function App() {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="noticias" element={<div>Gerenciar Notícias</div>} />
-          <Route path="eventos" element={<div>Gerenciar Eventos</div>} />
+          <Route path="eventos" element={<AdminEventsPage />} />
           <Route path="manual" element={<AdminManualPage />} />
           <Route path="provas" element={<AdminExamBankPage />} />
           <Route path="figurinhas" element={<div>Gerenciar Figurinhas</div>} />
