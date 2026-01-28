@@ -5,6 +5,7 @@ export function useAdminEventsVM() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     loadEvents();
@@ -13,8 +14,12 @@ export function useAdminEventsVM() {
   const loadEvents = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get('admin/events');
-      setEvents(data);
+      const [upcoming, past] = await Promise.all([
+        apiClient.get('public/events/upcoming?size=100'),
+        apiClient.get('public/events/past?size=100'),
+      ]);
+      const allEvents = [...(upcoming.content || []), ...(past.content || [])];
+      setEvents(allEvents);
     } catch (err) {
       console.error('Erro ao carregar eventos:', err);
     } finally {
@@ -25,7 +30,7 @@ export function useAdminEventsVM() {
   const createEvent = async (eventData) => {
     try {
       setCreating(true);
-      const newEvent = await apiClient.post('admin/events', eventData);
+      const newEvent = await apiClient.postFormData('admin/events', eventData);
       setEvents([...events, newEvent]);
       return { success: true, data: newEvent };
     } catch (err) {
@@ -37,7 +42,7 @@ export function useAdminEventsVM() {
 
   const updateEvent = async (id, eventData) => {
     try {
-      const updated = await apiClient.put(`admin/events/${id}`, eventData);
+      const updated = await apiClient.putFormData(`admin/events/${id}`, eventData);
       setEvents(events.map(e => e.id === id ? updated : e));
       return { success: true, data: updated };
     } catch (err) {
@@ -59,6 +64,8 @@ export function useAdminEventsVM() {
     events,
     loading,
     creating,
+    modalOpen,
+    setModalOpen,
     loadEvents,
     createEvent,
     updateEvent,
