@@ -1,4 +1,4 @@
-import { SeverityLevel } from '../models/Warning';
+import { SeverityLevel } from '../Warning';
 import { AlertCircle, AlertTriangle, Ban, Info } from 'lucide-react';
 
 const SEVERITY_CONFIG = {

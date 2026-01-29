@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/shared/services/apiClient';
-import { Exam } from '../admin/models/Exam';
+import { Exam } from '../admin/exams/models/Exam';
 
 export function useExamBankVM() {
   const [subjects, setSubjects] = useState([]);

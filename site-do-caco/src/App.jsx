@@ -18,11 +18,11 @@ import { ProfilePage } from '@/features/profile/ProfilePage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { CallbackPage } from '@/features/auth/CallbackPage';
 import { AdminLayout } from '@/features/admin/AdminLayout';
-import { AdminDashboard } from '@/features/admin/AdminDashboard';
-import { AdminManualPage } from '@/features/admin/AdminManualPage';
-import { AdminExamBankPage } from '@/features/admin/AdminExamBankPage';
-import { AdminStorePage } from '@/features/admin/AdminStorePage';
-import { AdminEventsPage } from '@/features/admin/AdminEventsPage';
+import { AdminDashboard } from '@/features/admin/dashboard/AdminDashboard';
+import { AdminManualPage } from '@/features/admin/manual/AdminManualPage';
+import { AdminExamBankPage } from '@/features/admin/exams/AdminExamBankPage';
+import { AdminStorePage } from '@/features/admin/store/AdminStorePage';
+import { AdminEventsPage } from '@/features/admin/event/AdminEventsPage';
 import { StorePage } from '@/features/store/StorePage';
 import { ProductDetailPage } from '@/features/store/ProductDetailPage';
 

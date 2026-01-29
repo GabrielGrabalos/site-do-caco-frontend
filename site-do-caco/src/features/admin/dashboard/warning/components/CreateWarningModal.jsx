@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { SeverityLevel } from '../models/Warning';
-import { DatePicker } from './DatePicker';
-import { TimeInput } from './TimeInput';
+import { SeverityLevel } from '../Warning';
+import { DatePicker } from '../../../components/DatePicker';
+import { TimeInput } from '../../../components/TimeInput';
 import { SeveritySelector } from './SeveritySelector';
 import { WarningPreview } from './WarningPreview';
 

@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StoreCategoryTabs } from './StoreCategoryTabs';
 import { ProductList } from './ProductList';
-import { CreateCategoryModal } from './CreateCategoryModal';
 import { CreateProductModal } from './CreateProductModal';
 import { ProductVariationsModal } from './ProductVariationsModal';
 import { ManageProductImagesModal } from './ManageProductImagesModal';
+import { CreateCategoryModal } from '../../manual/components/CreateCategoryModal';
 
 export function StoreSection({
   categories,
