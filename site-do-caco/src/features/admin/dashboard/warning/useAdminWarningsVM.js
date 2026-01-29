@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { warningService } from '@/shared/services/warningService';
 import { useToast } from '@/components/ui/use-toast.jsx';
-import { SeverityLevel } from './models/Warning';
+import { SeverityLevel } from './Warning';
 
 export function useAdminWarningsVM() {
   const [activeWarnings, setActiveWarnings] = useState([]);

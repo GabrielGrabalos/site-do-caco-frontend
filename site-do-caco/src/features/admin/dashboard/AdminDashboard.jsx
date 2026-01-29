@@ -1,11 +1,11 @@
 import React from 'react';
 import { Users, FileText, Calendar, Image } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast.jsx';
-import { useAdminBannersVM } from './useAdminBannersVM';
-import { useAdminWarningsVM } from './useAdminWarningsVM';
-import { StatsCards } from './components/StatsCards';
-import { BannersSection } from './components/BannersSection';
-import { WarningsSection } from './components/WarningsSection';
+import { useAdminBannersVM } from './banner/useAdminBannersVM';
+import { useAdminWarningsVM } from './warning/useAdminWarningsVM';
+import { StatsCards } from '../components/StatsCards';
+import { BannersSection } from './banner/components/BannersSection';
+import { WarningsSection } from './warning/components/WarningsSection';
 
 export function AdminDashboard() {
   const stats = [

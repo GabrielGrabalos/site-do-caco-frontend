@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { SubjectTabs } from './SubjectTabs';
 import { ExamList } from './ExamList';
-import { CreateSubjectModal } from './CreateSubjectModal';
 import { CreateExamModal } from './CreateExamModal';
-import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
+import { SubjectTabs } from './SubjectTabs';
+import { CreateSubjectModal } from './CreateSubjectModal';
+import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
 
 export function ExamsSection({
   subjects,

@@ -24,7 +24,7 @@ import {
 } from '@dnd-kit/sortable';
 import { BannerItem } from './BannerItem';
 import { CreateBannerModal } from './CreateBannerModal';
-import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
+import { ConfirmDeleteDialog } from '../../../components/ConfirmDeleteDialog';
 
 export function BannersSection({ 
   activeBanners, 

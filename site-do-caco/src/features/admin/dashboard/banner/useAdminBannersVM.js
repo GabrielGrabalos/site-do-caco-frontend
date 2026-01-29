@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/shared/services/apiClient';
-import { Banner } from './models/Banner';
+import { Banner } from './Banner';
 
 export function useAdminBannersVM() {
   const [activeBanners, setActiveBanners] = useState([]);

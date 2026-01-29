@@ -9,7 +9,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-export function ConfirmDeleteDialog({ open, onOpenChange, onConfirm, title, description }) {
+export function ConfirmDeleteDialog({ open, onOpenChange, onConfirm, title, description, confirmText }) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -25,7 +25,7 @@ export function ConfirmDeleteDialog({ open, onOpenChange, onConfirm, title, desc
             onClick={onConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Excluir
+            {confirmText || 'Excluir'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

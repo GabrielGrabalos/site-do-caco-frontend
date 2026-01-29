@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/accordion';
 import { WarningItem } from './WarningItem';
 import { CreateWarningModal } from './CreateWarningModal';
-import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
+import { ConfirmDeleteDialog } from '../../../components/ConfirmDeleteDialog';
 import { FilterButtons } from './FilterButtons';
 
 const WARNING_FILTERS = [

@@ -37,6 +37,7 @@ import { CreateCategoryModal } from './components/CreateCategoryModal';
 import { CreateChapterModal } from './components/CreateChapterModal';
 import { MDXEditor } from '@/shared/components/MDXEditor';
 import { apiClient } from '@/shared/services/apiClient';
+import { ConfirmDeleteDialog } from '../components/ConfirmDeleteDialog';
 
 export function AdminManualPage() {
   const {
@@ -970,26 +971,17 @@ export function AdminManualPage() {
         categoryId={selectedCategory?.id}
       />
 
+      <ConfirmDeleteDialog
+        open={discardDialogOpen}
+        onOpenChange={setDiscardDialogOpen}
+        onConfirm={handleDiscardDraft}
+        title={"Descartar rascunho?"}
+        description={"Tem certeza que deseja descartar este rascunho? Todo o conteúdo será perdido e esta ação não pode ser desfeita."}
+        confirmText={"Descartar"}
+      />
+
       {/* Dialog de confirmação para descartar rascunho */}
-      <AlertDialog open={discardDialogOpen} onOpenChange={setDiscardDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Descartar rascunho?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja descartar este rascunho? Todo o conteúdo será perdido e esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDiscardDraft}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Descartar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      
 
       <AlertDialog open={deleteCategoryDialogOpen} onOpenChange={setDeleteCategoryDialogOpen}>
         <AlertDialogContent>

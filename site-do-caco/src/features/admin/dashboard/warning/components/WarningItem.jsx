@@ -2,7 +2,7 @@ import { Trash2, Edit2, Clock, AlertTriangle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import ReactMarkdown from 'react-markdown';
-import { Warning } from '../models/Warning';
+import { Warning } from '../Warning';
 
 export function WarningItem({ warning, onEdit, onDelete, onExpire }) {
   const warningObj = new Warning(warning);
