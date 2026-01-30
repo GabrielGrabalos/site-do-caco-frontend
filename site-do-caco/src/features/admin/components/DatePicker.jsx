@@ -11,7 +11,6 @@ export function DatePicker({ value, onChange, error, label, placeholder = "Selec
     <div>
       {label && (
         <label className="block text-sm font-medium mb-2 flex items-center gap-2">
-          <CalendarIcon className="h-4 w-4" />
           {label}
         </label>
       )}
