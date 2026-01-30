@@ -971,6 +971,7 @@ export function AdminManualPage() {
         categoryId={selectedCategory?.id}
       />
 
+      {/* Diálogos de confirmação de exclusão */}
       <ConfirmDeleteDialog
         open={discardDialogOpen}
         onOpenChange={setDiscardDialogOpen}
@@ -980,74 +981,32 @@ export function AdminManualPage() {
         confirmText={"Descartar"}
       />
 
-      {/* Dialog de confirmação para descartar rascunho */}
-      
+      <ConfirmDeleteDialog
+        open={deleteCategoryDialogOpen}
+        onOpenChange={setDeleteCategoryDialogOpen}
+        onConfirm={confirmDeleteCategory}
+        title={"Confirmar exclusão"}
+        description={"Tem certeza que deseja excluir esta categoria? Todos os capítulos e artigos também serão removidos. Esta ação não pode ser desfeita."}
+        confirmText={"Excluir"}
+      />
 
-      <AlertDialog open={deleteCategoryDialogOpen} onOpenChange={setDeleteCategoryDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir esta categoria? Todos os capítulos e artigos também serão removidos. Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setCategoryToDelete(null)}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={confirmDeleteCategory}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        open={deleteChapterDialogOpen}
+        onOpenChange={setDeleteChapterDialogOpen}
+        onConfirm={confirmDeleteChapter}
+        title={"Confirmar exclusão"}
+        description={"Tem certeza que deseja excluir este capítulo? Todos os artigos também serão removidos. Esta ação não pode ser desfeita."}
+        confirmText={"Excluir"}
+      />
 
-      <AlertDialog open={deleteChapterDialogOpen} onOpenChange={setDeleteChapterDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir este capítulo? Todos os artigos também serão removidos. Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setChapterToDelete(null)}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={confirmDeleteChapter}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={deleteArticleDialogOpen} onOpenChange={setDeleteArticleDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir este artigo? Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setArticleToDelete(null)}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={confirmDeleteArticle}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        open={deleteArticleDialogOpen}
+        onOpenChange={setDeleteArticleDialogOpen}
+        onConfirm={confirmDeleteArticle}
+        title={"Confirmar exclusão"}
+        description={"Tem certeza que deseja excluir este artigo? Esta ação não pode ser desfeita."}
+        confirmText={"Excluir"}
+      />
     </div>
   );
 }

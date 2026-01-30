@@ -17,6 +17,25 @@ export function EventItem({ id, event, onUpdate, onDelete }) {
                         </div>
                     )}
                 </div>
+                <div className="p-4">
+                    <h3 className="text-lg font-semibold mb-2 line-clamp-2">
+                        {event.name}
+                    </h3>
+                    <div className="flex items-center justify-between space-x-2">
+                        <button
+                            onClick={() => onUpdate(id)}
+                            className="flex-1 px-3 py-1 bg-primary text-white rounded-md hover:bg-primary/90 transition"
+                        >
+                            Editar
+                        </button>
+                        <button
+                            onClick={() => onDelete(id)}
+                            className="flex-1 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                        >
+                            Deletar
+                        </button>
+                    </div>
+                </div>
             </div>
         </>
     );

@@ -4,27 +4,26 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export function CreateCategoryModal({ open, onClose, onSave, loading, category }) {
-  const [name, setName] = useState('');
+export function CreateCategoryModal({ open, onClose, onSubmit, loading, category }) {
+  const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (open) {
       if (category) {
-        setName(category.name);
+        setTitle(category.title);
         setSlug(category.slug);
       } else {
-        setName('');
+        setTitle('');
         setSlug('');
       }
       setErrors({});
     }
   }, [open, category]);
 
-  const handleNameChange = (value) => {
-    console.log('Name changed to:', value);
-    setName(value);
+  const handleTitleChange = (value) => {
+    setTitle(value);
     // Auto-gera slug sempre
     const generatedSlug = value
       .toLowerCase()
@@ -32,14 +31,13 @@ export function CreateCategoryModal({ open, onClose, onSave, loading, category }
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
-    console.log('Generated slug:', generatedSlug);
     setSlug(generatedSlug);
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!name.trim()) {
-      newErrors.name = 'Nome é obrigatório';
+    if (!title.trim()) {
+      newErrors.title = 'Nome é obrigatório';
     }
     if (!slug.trim()) {
       newErrors.slug = 'Slug é obrigatório';
@@ -53,7 +51,7 @@ export function CreateCategoryModal({ open, onClose, onSave, loading, category }
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      await onSave({ name: name.trim(), slug: slug.trim() });
+      await onSubmit({ title: title.trim(), slug: slug.trim() });
     }
   };
 
@@ -68,16 +66,16 @@ export function CreateCategoryModal({ open, onClose, onSave, loading, category }
 
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nome *</Label>
+            <Label htmlFor="title">Nome *</Label>
             <Input
-              id="name"
-              value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
+              id="title"
+              value={title}
+              onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="Ex: Vestuário"
-              className={errors.name ? 'border-destructive' : ''}
+              className={errors.title ? 'border-destructive' : ''}
             />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name}</p>
+            {errors.title && (
+              <p className="text-sm text-destructive">{errors.title}</p>
             )}
           </div>
 

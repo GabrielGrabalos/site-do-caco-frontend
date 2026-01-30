@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MDXEditor } from '@/shared/components/MDXEditor';
 import { Trash2 } from 'lucide-react';
+import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
 
 const DRAFT_KEY = 'article-draft';
 
@@ -195,26 +196,14 @@ export function CreateArticleModal({
         </form>
       </DialogContent>
 
-      {/* Dialog de confirmação de descarte */}
-      <AlertDialog open={discardDialogOpen} onOpenChange={setDiscardDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Descartar rascunho?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja descartar este rascunho? Todo o conteúdo será perdido e esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDiscard}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Descartar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        open={discardDialogOpen}
+        onOpenChange={setDiscardDialogOpen}
+        title="Descartar rascunho?"
+        description="Tem certeza que deseja descartar este rascunho? Todo o conteúdo será perdido e esta ação não pode ser desfeita."
+        onConfirm={confirmDiscard}
+        confirmText="Descartar"
+      />    
     </Dialog>
   );
 }
