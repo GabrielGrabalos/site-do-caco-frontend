@@ -4,9 +4,7 @@
    1. Variáveis e Escopo Principal
    ========================================= */
 .mdx-editor-wrapper {
-  /* Mapeamento de Cores do MDXEditor para Shadcn/Tailwind */
-  
-  /* Cores Base */
+  /* Mapeamento de Cores */
   --baseBase: hsl(var(--background));
   --baseBg: hsl(var(--background));
   --baseBgSubtle: hsl(var(--muted));
@@ -21,7 +19,6 @@
   --baseText: hsl(var(--foreground));
   --baseTextContrast: hsl(var(--background));
   
-  /* Cores de Destaque (Accent) */
   --accentBase: hsl(var(--primary));
   --accentBg: hsl(var(--primary) / 0.1);
   --accentBgHover: hsl(var(--primary) / 0.2);
@@ -30,7 +27,6 @@
   --accentText: hsl(var(--primary));
   --accentBorder: hsl(var(--primary));
 
-  /* Fontes e Estrutura */
   font-family: inherit;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
@@ -51,7 +47,6 @@
   border-top-right-radius: var(--radius);
 }
 
-/* Garante cursor pointer e cor correta nos botões da toolbar */
 .mdx-editor-wrapper .mdxeditor-toolbar button {
   cursor: pointer !important;
   color: hsl(var(--foreground));
@@ -62,8 +57,7 @@
   color: hsl(var(--accent-foreground));
 }
 
-/* Correção específica para o "Trigger" do Dropdown (o botão "Paragraph", "H1", etc)
-   que estava ficando claro no tema escuro */
+/* Trigger do Dropdown (Paragraph, etc) */
 .mdx-editor-wrapper button[role="combobox"] {
   background-color: transparent !important;
   color: hsl(var(--foreground)) !important;
@@ -75,24 +69,20 @@
 }
 
 /* =========================================
-   3. Dropdowns e Popups (CORREÇÃO CRÍTICA)
+   3. Elementos Globais / Portals (CORREÇÃO AQUI)
+   Estes elementos ficam fora do .mdx-editor-wrapper no DOM
    ========================================= */
 
-/* NOTA: As classes abaixo NÃO estão aninhadas dentro de .mdx-editor-wrapper 
-   porque o menu dropdown é renderizado em um Portal (fora do elemento pai)
-*/
-
-/* O container do menu dropdown */
+/* --- Dropdowns (Selects) --- */
 .mdxeditor-select-content {
   background-color: hsl(var(--popover)) !important;
   border: 1px solid hsl(var(--border)) !important;
   border-radius: var(--radius) !important;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   padding: 4px !important;
-  z-index: 50 !important; /* Garante que fique acima de tudo */
+  z-index: 50 !important;
 }
 
-/* Os itens dentro do menu */
 .mdxeditor-select-item {
   color: hsl(var(--popover-foreground)) !important;
   border-radius: 2px !important;
@@ -100,27 +90,39 @@
   outline: none !important;
 }
 
-/* Item quando o mouse passa por cima (Hover/Focus) */
 .mdxeditor-select-item[data-highlighted] {
   background-color: hsl(var(--accent)) !important;
   color: hsl(var(--accent-foreground)) !important;
 }
 
-/* Item selecionado (check) */
 .mdxeditor-select-item-indicator {
   color: hsl(var(--primary)) !important;
 }
 
-/* Dialogs Genéricos (Link, Upload de Imagem) */
-.mdx-editor-wrapper [role="dialog"],
-.mdx-editor-wrapper .mdxeditor-popup-container {
+/* --- Popups e Dialogs (Link, Imagem) --- */
+/* Removemos o aninhamento .mdx-editor-wrapper para funcionar globalmente */
+
+.mdxeditor-popup-container {
+  z-index: 50 !important;
+}
+
+/* O cartão do formulário (Inserir Link/Imagem) */
+.mdxeditor-popup-container [role="dialog"], 
+.mdxeditor-popup-container form {
   background-color: hsl(var(--popover)) !important;
   color: hsl(var(--popover-foreground)) !important;
   border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
 }
 
-/* Inputs dentro dos Dialogs */
-.mdx-editor-wrapper input[type="text"] {
+/* Botões dentro dos popups (Salvar/Cancelar) */
+.mdxeditor-popup-container button {
+  cursor: pointer !important;
+}
+
+/* Inputs dentro dos popups */
+.mdxeditor-popup-container input[type="text"] {
   background-color: hsl(var(--input)) !important;
   color: hsl(var(--foreground)) !important;
   border: 1px solid hsl(var(--border)) !important;
