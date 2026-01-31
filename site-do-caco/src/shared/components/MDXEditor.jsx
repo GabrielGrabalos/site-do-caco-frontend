@@ -1,7 +1,3 @@
-/**
- * Componente MDXEditor reutilizável com suporte a upload de imagens
- */
-
 import React, { useState, useRef } from 'react';
 import {
   MDXEditor as BaseMDXEditor,
@@ -30,20 +26,10 @@ import {
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 import './MDXEditor.css';
-import { imageUploadService } from '../services/imageUploadService';
 import { useToast } from '@/components/ui/use-toast';
 import { ImageUploadDialog } from './ImageUploadDialog';
+import { useTheme } from '../contexts/ThemeContext';
 
-/**
- * Componente MDXEditor configurado com todos os plugins necessários
- * @param {Object} props
- * @param {string} props.value - Conteúdo markdown atual
- * @param {function} props.onChange - Callback quando o conteúdo mudar
- * @param {string} props.placeholder - Texto placeholder
- * @param {string} props.className - Classes CSS adicionais
- * @param {boolean} props.readOnly - Define se o editor é apenas leitura
- * @param {string} props.editorKey - Key única para forçar re-montagem do editor
- */
 export const MDXEditor = ({
   value = '',
   onChange,
@@ -53,12 +39,14 @@ export const MDXEditor = ({
   editorKey,
 }) => {
   const { toast } = useToast();
+  // Obtém o tema atual para passar a classe correta ao editor
+  const { theme } = useTheme(); 
+  
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const uploadResolveRef = useRef(null);
 
   const handleImageUpload = async (image) => {
-    // Previne múltiplos uploads simultâneos
     if (isUploading) {
       throw new Error('Já existe um upload em andamento');
     }
@@ -66,7 +54,6 @@ export const MDXEditor = ({
     setIsUploading(true);
     setIsUploadDialogOpen(true);
 
-    // Cria uma Promise que será resolvida quando o dialog completar
     return new Promise((resolve, reject) => {
       uploadResolveRef.current = { resolve, reject, image };
     });
@@ -98,8 +85,10 @@ export const MDXEditor = ({
         onChange={onChange}
         placeholder={placeholder}
         readOnly={readOnly}
+        // Aplica a classe 'dark-theme' se o tema for escuro. 
+        // Isso ativa as variáveis internas de cor do MDXEditor.
+        className={theme === 'dark' ? 'dark-theme' : ''}
         plugins={[
-          // Plugins de formatação
           headingsPlugin(),
           listsPlugin(),
           quotePlugin(),
@@ -118,18 +107,13 @@ export const MDXEditor = ({
               html: 'HTML',
               json: 'JSON',
               bash: 'Bash',
+              sql: 'SQL'
             },
           }),
-          
-          // Plugin de imagens com função de upload
           imagePlugin({
             imageUploadHandler: handleImageUpload,
           }),
-
-          // Atalhos de teclado
           markdownShortcutPlugin(),
-
-          // Toolbar
           toolbarPlugin({
             toolbarContents: () => (
               <>
@@ -153,7 +137,6 @@ export const MDXEditor = ({
         ]}
       />
 
-      {/* Dialog de upload com progresso */}
       <ImageUploadDialog
         isOpen={isUploadDialogOpen}
         onClose={handleUploadCancel}

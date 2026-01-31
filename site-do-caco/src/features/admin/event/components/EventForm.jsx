@@ -451,7 +451,7 @@ export function EventForm({
                             <div className="space-y-2">
                                 <Label className={errors.description ? "text-destructive" : ""}>Descrição (Markdown) *</Label>
                                 <div
-                                    className={`border rounded-md min-h-[50vh] md:min-h-[400px] ${errors.description ? "border-destructive" : ""}`}
+                                    className={`border rounded-md ${errors.description ? "border-destructive" : ""}`}
                                     data-error={!!errors.description}
                                 >
                                     <MDXEditor
