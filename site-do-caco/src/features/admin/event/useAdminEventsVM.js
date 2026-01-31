@@ -1,52 +1,59 @@
 import { useState, useEffect, useMemo } from 'react';
 import { apiClient } from '@/shared/services/apiClient';
 import { Event } from './Event';
+import { useToast } from '@/components/ui/use-toast';
 
 const DRAFT_KEY = 'event-draft';
 
 export function useAdminEventsVM() {
+  const { toast } = useToast();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Controle de Visualização
-  const [viewMode, setViewMode] = useState('LIST'); // 'LIST' | 'FORM'
+  const [viewMode, setViewMode] = useState('LIST');
   const [selectedEvent, setSelectedEvent] = useState(null);
-  
+
   // Controle de Rascunho
   const [hasDraft, setHasDraft] = useState(false);
 
   // Filtros
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
-    period: 'UPCOMING', // 'ALL', 'UPCOMING', 'PAST'
-    type: 'ALL',        // 'ALL', 'CACO', 'IC', 'FERIADO'
-    importance: 'ALL'   // 'ALL', 'MAJOR', 'MINOR'
+    period: 'UPCOMING',
+    type: 'ALL',
+    importance: 'ALL'
   });
 
-  // --- INICIALIZAÇÃO ---
   useEffect(() => {
     loadEvents();
     checkForDraft();
   }, []);
 
-  // --- LÓGICA DE RASCUNHO ---
+  // Helper para extrair mensagem de erro do backend
+  const getErrorMessage = (err) => {
+    if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+      // Formato comum de validação do Spring (BindingResult)
+      return err.response.data.errors.map(e => e.defaultMessage || e.message).join(' | ');
+    }
+    return err.response?.data?.message || err.message || "Ocorreu um erro inesperado.";
+  };
+
   const checkForDraft = () => {
     const draft = localStorage.getItem(DRAFT_KEY);
-    // Verifica se existe algo salvo
     setHasDraft(!!draft);
   };
 
   const discardDraft = () => {
     localStorage.removeItem(DRAFT_KEY);
     setHasDraft(false);
-    // Se estiver no form, reseta ou volta
-    if (viewMode === 'FORM' && !selectedEvent) {
-       // Opcional: forçar reload do form ou sair
-    }
+    toast({
+      title: "Rascunho descartado",
+      description: "As informações não salvas foram removidas.",
+    });
   };
 
-  // --- CARREGAMENTO DE DADOS ---
   const loadEvents = async () => {
     try {
       setLoading(true);
@@ -54,37 +61,50 @@ export function useAdminEventsVM() {
         apiClient.get('public/events/upcoming?size=100'),
         apiClient.get('public/events/past?size=100'),
       ]);
-      
+
       const allEvents = [
         ...Event.fromDTOArray(upcoming.content || []),
         ...Event.fromDTOArray(past.content || [])
       ];
-      
-      // Ordena por data mais recente primeiro
+
       allEvents.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
-      
       setEvents(allEvents);
     } catch (err) {
       console.error('Erro ao carregar eventos:', err);
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar",
+        description: "Não foi possível buscar a lista de eventos.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // --- CRUD OPERATIONS ---
   const createEvent = async (formData) => {
     try {
       setIsSubmitting(true);
       const newEvent = await apiClient.postFormData('admin/events', formData);
       const eventInstance = Event.fromDTO(newEvent);
-      
+
       setEvents(prev => [eventInstance, ...prev]);
       setViewMode('LIST');
-      discardDraft(); // Limpa rascunho após sucesso
+
+      localStorage.removeItem(DRAFT_KEY);
+      setHasDraft(false);
+
+      toast({
+        title: "Evento criado!",
+        description: `O evento "${eventInstance.title}" foi salvo com sucesso.`,
+      });
       return { success: true };
     } catch (err) {
       console.error(err);
-      alert('Erro ao criar evento: ' + (err.response?.data?.message || err.message));
+      toast({
+        variant: "destructive",
+        title: "Erro ao criar",
+        description: getErrorMessage(err),
+      });
       return { success: false, error: err.message };
     } finally {
       setIsSubmitting(false);
@@ -96,13 +116,22 @@ export function useAdminEventsVM() {
       setIsSubmitting(true);
       const updated = await apiClient.putFormData(`admin/events/${id}`, formData);
       const eventInstance = Event.fromDTO(updated);
-      
+
       setEvents(prev => prev.map(e => e.id === id ? eventInstance : e));
       setViewMode('LIST');
+
+      toast({
+        title: "Evento atualizado!",
+        description: "As alterações foram salvas com sucesso.",
+      });
       return { success: true };
     } catch (err) {
       console.error(err);
-      alert('Erro ao atualizar evento: ' + (err.response?.data?.message || err.message));
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar",
+        description: getErrorMessage(err),
+      });
       return { success: false, error: err.message };
     } finally {
       setIsSubmitting(false);
@@ -110,20 +139,27 @@ export function useAdminEventsVM() {
   };
 
   const deleteEvent = async (id) => {
-    if (!confirm("Tem certeza que deseja excluir este evento?")) return;
-
     try {
       setLoading(true);
       await apiClient.delete(`admin/events/${id}`);
       setEvents(prev => prev.filter(e => e.id !== id));
-      
+
       if (viewMode === 'FORM') {
         setViewMode('LIST');
         setSelectedEvent(null);
       }
+
+      toast({
+        title: "Evento excluído",
+        description: "O evento foi removido permanentemente.",
+      });
     } catch (err) {
       console.error(err);
-      alert('Erro ao deletar evento');
+      toast({
+        variant: "destructive",
+        title: "Erro ao excluir",
+        description: getErrorMessage(err),
+      });
     } finally {
       setLoading(false);
     }
@@ -136,75 +172,62 @@ export function useAdminEventsVM() {
 
   const filteredList = useMemo(() => {
     return events.filter(event => {
-      // 1. Busca textual
       const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         event.title.toLowerCase().includes(searchLower) ||
         (event.location && event.location.toLowerCase().includes(searchLower));
 
       if (!matchesSearch) return false;
-
-      // 2. Filtro de Tipo
       if (filters.type !== 'ALL' && event.type !== filters.type) return false;
-
-      // 3. Filtro de Importância
       if (filters.importance !== 'ALL' && event.importance !== filters.importance) return false;
 
-      // 4. Filtro de Período (Status calculado)
-      if (filters.period === 'UPCOMING') {
-        return event.isScheduled || event.isHappening;
-      }
-      if (filters.period === 'PAST') {
-        return event.isEnded;
-      }
+      if (filters.period === 'UPCOMING') return event.isScheduled || event.isHappening;
+      if (filters.period === 'PAST') return event.isEnded;
 
       return true;
     });
   }, [events, searchTerm, filters]);
 
-  // --- VIEW HANDLERS ---
-  const handleCreateClick = () => {
-    setSelectedEvent(null);
-    setViewMode('FORM');
-  };
+  const handleCreateClick = () => { setSelectedEvent(null); setViewMode('FORM'); };
+  
+  const handleEditClick = async (eventSummary) => {
+    try {
+      setLoading(true);
+      // Busca o DTO completo usando o ID do evento
+      const fullEventData = await apiClient.get(`public/events/${eventSummary.id}`);
 
-  const handleEditClick = (event) => {
-    setSelectedEvent(event);
-    setViewMode('FORM');
+      // Transforma o DTO completo em uma instância da classe Event
+      const eventInstance = Event.fromDTO(fullEventData);
+
+      setSelectedEvent(eventInstance);
+      setViewMode('FORM');
+    } catch (err) {
+      console.error('Erro ao buscar detalhes do evento:', err);
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar detalhes",
+        description: "Não foi possível recuperar todas as informações do evento.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancelForm = () => {
     setSelectedEvent(null);
     setViewMode('LIST');
-    checkForDraft(); // Atualiza estado do botão de rascunho na lista
+    checkForDraft();
   };
-
-  const handleSubmit = async (data, id) => {
-    if (id) return await updateEvent(id, data);
-    return await createEvent(data);
-  };
+  const handleSubmit = async (data, id) => id ? await updateEvent(id, data) : await createEvent(data);
 
   return {
-    // Dados
     loading: loading || isSubmitting,
     viewMode,
     selectedEvent,
     hasDraft,
-    
-    // Filtros & Lista
-    searchTerm,
-    setSearchTerm,
-    filters,
-    setFilter,
-    filteredList, // Use esta lista na UI
-
-    // Ações
-    loadEvents,
-    deleteEvent,
-    discardDraft,
-    handleSubmit,
-    handleCreateClick,
-    handleEditClick,
-    handleCancelForm,
+    searchTerm, setSearchTerm,
+    filters, setFilter, filteredList,
+    loadEvents, deleteEvent, discardDraft, handleSubmit,
+    handleCreateClick, handleEditClick, handleCancelForm,
   };
 }
