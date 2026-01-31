@@ -1,47 +1,48 @@
 /* src/shared/components/MDXEditor.css */
 
-/* Definição de variáveis para o escopo do MDXEditor.
-   Mapeamos as variáveis internas do MDXEditor (--base*, --accent*) 
-   para as variáveis do Shadcn/Tailwind (hsl(var(--...))) 
-*/
+/* =========================================
+   1. Variáveis e Escopo Principal
+   ========================================= */
 .mdx-editor-wrapper {
-  /* --- CORES BASE (Fundo, Texto, Bordas) --- */
-  --baseBase: hsl(var(--background));        /* Cor de fundo principal */
-  --baseBg: hsl(var(--background));          /* Cor de fundo dos painéis */
-  --baseBgSubtle: hsl(var(--muted));         /* Fundo sutil (toolbar) */
+  /* Mapeamento de Cores do MDXEditor para Shadcn/Tailwind */
   
-  --baseBgHover: hsl(var(--accent));         /* Hover nos botões */
-  --baseBgActive: hsl(var(--accent));        /* Botão ativo */
+  /* Cores Base */
+  --baseBase: hsl(var(--background));
+  --baseBg: hsl(var(--background));
+  --baseBgSubtle: hsl(var(--muted));
   
-  --baseLine: hsl(var(--border));            /* Linhas divisórias */
-  --baseBorder: hsl(var(--border));          /* Bordas principais */
-  --baseBorderHover: hsl(var(--ring));       /* Borda ao passar o mouse */
+  --baseBgHover: hsl(var(--accent));
+  --baseBgActive: hsl(var(--accent));
   
-  --baseText: hsl(var(--foreground));        /* Texto principal */
-  --baseTextContrast: hsl(var(--background));/* Texto reverso */
+  --baseLine: hsl(var(--border));
+  --baseBorder: hsl(var(--border));
+  --baseBorderHover: hsl(var(--ring));
   
-  /* --- CORES DE ACCENT (Destaques, Links, Seleção) --- */
+  --baseText: hsl(var(--foreground));
+  --baseTextContrast: hsl(var(--background));
+  
+  /* Cores de Destaque (Accent) */
   --accentBase: hsl(var(--primary));
-  --accentBg: hsl(var(--primary) / 0.1);     /* Fundo da seleção */
+  --accentBg: hsl(var(--primary) / 0.1);
   --accentBgHover: hsl(var(--primary) / 0.2);
   --accentBgActive: hsl(var(--primary) / 0.3);
   
-  --accentText: hsl(var(--primary));         /* Cor do texto de destaque/link */
-  --accentBorder: hsl(var(--primary));       /* Borda de destaque */
+  --accentText: hsl(var(--primary));
+  --accentBorder: hsl(var(--primary));
 
-  /* --- FONTES --- */
+  /* Fontes e Estrutura */
   font-family: inherit;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Estrutura do Wrapper */
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   background-color: hsl(var(--background));
   transition: all 0.2s ease-in-out;
 }
 
-/* --- TOOLBAR --- */
-/* Força a toolbar a ter a cor "muted" (cinza claro no light, cinza escuro no dark) */
+/* =========================================
+   2. Toolbar e Botões
+   ========================================= */
 .mdx-editor-wrapper .mdxeditor-toolbar {
   background-color: hsl(var(--muted)) !important;
   border-bottom: 1px solid hsl(var(--border));
@@ -50,16 +51,88 @@
   border-top-right-radius: var(--radius);
 }
 
-/* --- CORREÇÃO DO CURSOR NOS BOTÕES (NOVO) --- */
+/* Garante cursor pointer e cor correta nos botões da toolbar */
 .mdx-editor-wrapper .mdxeditor-toolbar button {
   cursor: pointer !important;
+  color: hsl(var(--foreground));
 }
 
-/* --- ÁREA DE EDIÇÃO --- */
+.mdx-editor-wrapper .mdxeditor-toolbar button:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+/* Correção específica para o "Trigger" do Dropdown (o botão "Paragraph", "H1", etc)
+   que estava ficando claro no tema escuro */
+.mdx-editor-wrapper button[role="combobox"] {
+  background-color: transparent !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.mdx-editor-wrapper button[role="combobox"]:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+/* =========================================
+   3. Dropdowns e Popups (CORREÇÃO CRÍTICA)
+   ========================================= */
+
+/* NOTA: As classes abaixo NÃO estão aninhadas dentro de .mdx-editor-wrapper 
+   porque o menu dropdown é renderizado em um Portal (fora do elemento pai)
+*/
+
+/* O container do menu dropdown */
+.mdxeditor-select-content {
+  background-color: hsl(var(--popover)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  padding: 4px !important;
+  z-index: 50 !important; /* Garante que fique acima de tudo */
+}
+
+/* Os itens dentro do menu */
+.mdxeditor-select-item {
+  color: hsl(var(--popover-foreground)) !important;
+  border-radius: 2px !important;
+  cursor: pointer !important;
+  outline: none !important;
+}
+
+/* Item quando o mouse passa por cima (Hover/Focus) */
+.mdxeditor-select-item[data-highlighted] {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+/* Item selecionado (check) */
+.mdxeditor-select-item-indicator {
+  color: hsl(var(--primary)) !important;
+}
+
+/* Dialogs Genéricos (Link, Upload de Imagem) */
+.mdx-editor-wrapper [role="dialog"],
+.mdx-editor-wrapper .mdxeditor-popup-container {
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+/* Inputs dentro dos Dialogs */
+.mdx-editor-wrapper input[type="text"] {
+  background-color: hsl(var(--input)) !important;
+  color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+/* =========================================
+   4. Área de Edição (Conteúdo)
+   ========================================= */
 .mdx-editor-wrapper .mdxeditor-root-contenteditable {
   padding: 1rem;
   min-height: 300px;
-  max-height: 600px; /* Ajuste conforme necessário */
+  max-height: 600px;
   overflow-y: auto;
   color: hsl(var(--foreground));
   background-color: hsl(var(--background));
@@ -67,14 +140,13 @@
   border-bottom-right-radius: var(--radius);
 }
 
-/* Remove o outline padrão ao clicar */
 .mdx-editor-wrapper .mdxeditor-root-contenteditable:focus {
   outline: none;
 }
 
-/* --- ESTILIZAÇÃO DE ELEMENTOS INTERNOS (Markdown) --- */
-
-/* Imagens */
+/* =========================================
+   5. Estilização do Markdown Renderizado
+   ========================================= */
 .mdx-editor-wrapper img {
   max-width: 100%;
   height: auto;
@@ -83,36 +155,38 @@
   border: 1px solid hsl(var(--border));
 }
 
-/* Tabelas */
 .mdx-editor-wrapper table {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0;
 }
+
 .mdx-editor-wrapper th,
 .mdx-editor-wrapper td {
   border: 1px solid hsl(var(--border));
   padding: 0.5rem;
   text-align: left;
 }
+
 .mdx-editor-wrapper th {
   background-color: hsl(var(--muted));
   font-weight: 600;
 }
 
-/* Links */
 .mdx-editor-wrapper a {
   color: hsl(var(--primary));
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
-/* Headings */
-.mdx-editor-wrapper h1, .mdx-editor-wrapper h2, .mdx-editor-wrapper h3 {
+.mdx-editor-wrapper h1, 
+.mdx-editor-wrapper h2, 
+.mdx-editor-wrapper h3 {
   color: hsl(var(--foreground));
   font-weight: 600;
   line-height: 1.25;
 }
+
 .mdx-editor-wrapper h1 { font-size: 2em; margin: 0.67em 0; }
 .mdx-editor-wrapper h2 { font-size: 1.5em; margin: 0.75em 0; border-bottom: 1px solid hsl(var(--border)); padding-bottom: 0.3em;}
 
@@ -123,36 +197,14 @@
   border-radius: var(--radius);
   overflow-x: auto;
 }
+
 .mdx-editor-wrapper code {
   font-family: var(--font-mono);
   font-size: 0.875em;
 }
 
-/* Inline Code */
 .mdx-editor-wrapper :not(pre) > code {
   background-color: hsl(var(--muted));
   padding: 0.2em 0.4em;
   border-radius: 0.25rem;
-}
-
-/* --- POPUPS E DIALOGS (Importante para Dark Mode) --- */
-/* Garante que os modais (inserir link, imagem) usem as cores do tema */
-.mdx-editor-wrapper [role="dialog"],
-.mdx-editor-wrapper .mdxeditor-popup-container {
-  background-color: hsl(var(--popover)) !important;
-  color: hsl(var(--popover-foreground)) !important;
-  border: 1px solid hsl(var(--border)) !important;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-}
-
-.mdx-editor-wrapper input[type="text"] {
-  background-color: hsl(var(--input)) !important;
-  color: hsl(var(--foreground)) !important;
-  border: 1px solid hsl(var(--border)) !important;
-}
-
-/* Estilos gerais de hover para botões dentro do container */
-.mdx-editor-wrapper button:hover {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
 }
