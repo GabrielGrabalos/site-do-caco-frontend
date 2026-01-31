@@ -1,199 +1,150 @@
-/* Estilos customizados para o MDXEditor */
-
+/* Definição de variáveis para o escopo do MDXEditor.
+   Mapeamos as variáveis internas do MDXEditor (--base*, --accent*) 
+   para as variáveis do Shadcn/Tailwind (hsl(var(--...))) 
+*/
 .mdx-editor-wrapper {
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
+  /* --- CORES BASE (Fundo, Texto, Bordas) --- */
+  --baseBase: hsl(var(--background));        /* Cor de fundo principal */
+  --baseBg: hsl(var(--background));          /* Cor de fundo dos painéis */
+  --baseBgSubtle: hsl(var(--muted));         /* Fundo sutil (toolbar) */
+  
+  --baseBgHover: hsl(var(--accent));         /* Hover nos botões */
+  --baseBgActive: hsl(var(--accent));        /* Botão ativo */
+  
+  --baseLine: hsl(var(--border));            /* Linhas divisórias */
+  --baseBorder: hsl(var(--border));          /* Bordas principais */
+  --baseBorderHover: hsl(var(--ring));       /* Borda ao passar o mouse */
+  
+  --baseText: hsl(var(--foreground));        /* Texto principal */
+  --baseTextContrast: hsl(var(--background));/* Texto reverso */
+  
+  /* --- CORES DE ACCENT (Destaques, Links, Seleção) --- */
+  --accentBase: hsl(var(--primary));
+  --accentBg: hsl(var(--primary) / 0.1);     /* Fundo da seleção */
+  --accentBgHover: hsl(var(--primary) / 0.2);
+  --accentBgActive: hsl(var(--primary) / 0.3);
+  
+  --accentText: hsl(var(--primary));         /* Cor do texto de destaque/link */
+  --accentBorder: hsl(var(--primary));       /* Borda de destaque */
 
-.mdx-editor-wrapper .mdxeditor {
+  /* --- FONTES --- */
   font-family: inherit;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Estrutura do Wrapper */
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background-color: hsl(var(--background));
+  transition: all 0.2s ease-in-out;
 }
 
+/* --- TOOLBAR --- */
+/* Força a toolbar a ter a cor "muted" (cinza claro no light, cinza escuro no dark) */
 .mdx-editor-wrapper .mdxeditor-toolbar {
-  background-color: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background-color: hsl(var(--muted)) !important;
+  border-bottom: 1px solid hsl(var(--border));
   padding: 0.5rem;
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
 }
 
+/* --- ÁREA DE EDIÇÃO --- */
 .mdx-editor-wrapper .mdxeditor-root-contenteditable {
   padding: 1rem;
   min-height: 300px;
-  max-height: 600px;
+  max-height: 600px; /* Ajuste conforme necessário */
   overflow-y: auto;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
 }
 
+/* Remove o outline padrão ao clicar */
 .mdx-editor-wrapper .mdxeditor-root-contenteditable:focus {
   outline: none;
 }
 
-/* Estilo para imagens dentro do editor */
+/* --- ESTILIZAÇÃO DE ELEMENTOS INTERNOS (Markdown) --- */
+
+/* Imagens */
 .mdx-editor-wrapper img {
   max-width: 100%;
   height: auto;
-  border-radius: 0.375rem;
+  border-radius: var(--radius);
   margin: 1rem 0;
+  border: 1px solid hsl(var(--border));
 }
 
-/* Estilo para tabelas */
+/* Tabelas */
 .mdx-editor-wrapper table {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0;
 }
-
-.mdx-editor-wrapper table th,
-.mdx-editor-wrapper table td {
-  border: 1px solid #e5e7eb;
+.mdx-editor-wrapper th,
+.mdx-editor-wrapper td {
+  border: 1px solid hsl(var(--border));
   padding: 0.5rem;
   text-align: left;
 }
-
-.mdx-editor-wrapper table th {
-  background-color: #f9fafb;
+.mdx-editor-wrapper th {
+  background-color: hsl(var(--muted));
   font-weight: 600;
 }
 
-/* Estilo para code blocks */
+/* Links */
+.mdx-editor-wrapper a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Headings */
+.mdx-editor-wrapper h1, .mdx-editor-wrapper h2, .mdx-editor-wrapper h3 {
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  line-height: 1.25;
+}
+.mdx-editor-wrapper h1 { font-size: 2em; margin: 0.67em 0; }
+.mdx-editor-wrapper h2 { font-size: 1.5em; margin: 0.75em 0; border-bottom: 1px solid hsl(var(--border)); padding-bottom: 0.3em;}
+
+/* Blocos de Código */
 .mdx-editor-wrapper pre {
-  background-color: #1e293b;
-  color: #e2e8f0;
+  background-color: hsl(var(--secondary));
   padding: 1rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius);
   overflow-x: auto;
-  margin: 1rem 0;
 }
-
 .mdx-editor-wrapper code {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.875rem;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
 }
 
-/* Estilo para inline code */
+/* Inline Code */
 .mdx-editor-wrapper :not(pre) > code {
-  background-color: #f1f5f9;
-  color: #0f172a;
-  padding: 0.125rem 0.375rem;
+  background-color: hsl(var(--muted));
+  padding: 0.2em 0.4em;
   border-radius: 0.25rem;
 }
 
-/* Estilo para blockquotes */
-.mdx-editor-wrapper blockquote {
-  border-left: 4px solid #3b82f6;
-  padding-left: 1rem;
-  margin: 1rem 0;
-  color: #64748b;
-  font-style: italic;
+/* --- POPUPS E DIALOGS (Importante para Dark Mode) --- */
+/* Garante que os modais (inserir link, imagem) usem as cores do tema */
+.mdx-editor-wrapper [role="dialog"],
+.mdx-editor-wrapper .mdxeditor-popup-container {
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
-/* Estilo para listas */
-.mdx-editor-wrapper ul,
-.mdx-editor-wrapper ol {
-  margin: 1rem 0;
-  padding-left: 2rem;
+.mdx-editor-wrapper input[type="text"] {
+  background-color: hsl(var(--input)) !important;
+  color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
 }
 
-.mdx-editor-wrapper li {
-  margin: 0.25rem 0;
-}
-/* Estilo para headings */
-.mdx-editor-wrapper h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 1.5rem 0 1rem 0;
-  line-height: 1.2;
-}
-
-.mdx-editor-wrapper h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 1.25rem 0 0.75rem 0;
-  line-height: 1.3;
-}
-
-.mdx-editor-wrapper h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
-  line-height: 1.4;
-}
-
-.mdx-editor-wrapper h4 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
-  line-height: 1.4;
-}
-
-.mdx-editor-wrapper h5 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.5rem 0;
-  line-height: 1.5;
-}
-
-.mdx-editor-wrapper h6 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.5rem 0;
-  line-height: 1.5;
-}
-/* Estilo para headings */
-.mdx-editor-wrapper h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 1.5rem 0 1rem 0;
-  line-height: 1.2;
-}
-
-.mdx-editor-wrapper h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 1.25rem 0 0.75rem 0;
-  line-height: 1.3;
-}
-
-.mdx-editor-wrapper h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
-  line-height: 1.4;
-}
-
-.mdx-editor-wrapper h4 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
-  line-height: 1.4;
-}
-
-.mdx-editor-wrapper h5 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.5rem 0;
-  line-height: 1.5;
-}
-
-.mdx-editor-wrapper h6 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.5rem 0;
-  line-height: 1.5;
-}
-
-/* Estilo para links */
-.mdx-editor-wrapper a {
-  color: #3b82f6;
-  text-decoration: underline;
-}
-
-.mdx-editor-wrapper a:hover {
-  color: #2563eb;
-}
-
-/* Responsividade */
-@media (max-width: 640px) {
-  .mdx-editor-wrapper .mdxeditor-toolbar {
-    overflow-x: auto;
-  }
+.mdx-editor-wrapper button:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
 }
