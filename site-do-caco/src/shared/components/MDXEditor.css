@@ -1,3 +1,5 @@
+/* src/shared/components/MDXEditor.css */
+
 /* Definição de variáveis para o escopo do MDXEditor.
    Mapeamos as variáveis internas do MDXEditor (--base*, --accent*) 
    para as variáveis do Shadcn/Tailwind (hsl(var(--...))) 
@@ -46,6 +48,11 @@
   padding: 0.5rem;
   border-top-left-radius: var(--radius);
   border-top-right-radius: var(--radius);
+}
+
+/* --- CORREÇÃO DO CURSOR NOS BOTÕES (NOVO) --- */
+.mdx-editor-wrapper .mdxeditor-toolbar button {
+  cursor: pointer !important;
 }
 
 /* --- ÁREA DE EDIÇÃO --- */
@@ -144,6 +151,7 @@
   border: 1px solid hsl(var(--border)) !important;
 }
 
+/* Estilos gerais de hover para botões dentro do container */
 .mdx-editor-wrapper button:hover {
   background-color: hsl(var(--accent));
   color: hsl(var(--accent-foreground));
