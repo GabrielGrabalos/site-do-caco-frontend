@@ -2,6 +2,7 @@ export class Event {
   constructor(data) {
     this.id = data.id;
     this.title = data.title;
+    this.slug = data.slug;
     this.description = data.description;
     this.startDate = data.startDate;
     this.endDate = data.endDate;
@@ -111,6 +112,7 @@ export class Event {
   toFormData() {
     const formData = new FormData();
     formData.append('title', this.title || '');
+    formData.append('slug', this.slug || '');
     formData.append('description', this.description || '');
     formData.append('startDate', this.startDate || '');
     formData.append('endDate', this.endDate || '');
