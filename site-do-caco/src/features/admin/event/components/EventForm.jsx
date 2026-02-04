@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '@/shared/utils/imageCrop';
+import { combineDateAndTime, toLocalISOString } from '@/shared/utils/helpers';
 import { DatePicker } from '../../components/DatePicker';
 import { TimeInput } from '../../components/TimeInput';
 import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
@@ -52,18 +53,6 @@ const slugify = (text) => {
 const ErrorMessage = ({ message }) => {
     if (!message) return null;
     return <p className="text-sm font-medium text-destructive mt-1 animate-in slide-in-from-top-1 fade-in">{message}</p>;
-};
-
-const toLocalISOString = (date) => {
-    const pad = (num) => num.toString().padStart(2, '0');
-    return (
-        date.getFullYear() +
-        '-' + pad(date.getMonth() + 1) +
-        '-' + pad(date.getDate()) +
-        'T' + pad(date.getHours()) +
-        ':' + pad(date.getMinutes()) +
-        ':' + pad(date.getSeconds())
-    );
 };
 
 export function EventForm({
@@ -295,23 +284,14 @@ export function EventForm({
         if (!slug.trim()) newErrors.slug = "O slug é obrigatório.";
         if (!description.trim()) newErrors.description = "A descrição é obrigatória.";
         if (!startDate) newErrors.startDate = "Data de início obrigatória.";
-        if (!startTime) newErrors.startTime = "Hora de início obrigatória.";
-        if (!endTime) newErrors.endTime = "Hora de término obrigatória.";
 
         if (differentDay && !endDate) newErrors.endDate = "Data de término obrigatória.";
 
         if (!newErrors.startDate && !newErrors.startTime && !newErrors.endTime) {
-            const combine = (d, t) => {
-                if (!d || !t) return null;
-                const [hh, mm] = t.split(':').map(Number);
-                const newDate = new Date(d);
-                newDate.setHours(hh, mm, 0, 0);
-                return newDate;
-            };
-            const startDateTime = combine(startDate, startTime);
-            let endDateTime = differentDay
-                ? (endDate ? combine(endDate, endTime) : null)
-                : combine(startDate, endTime);
+            const startDateTime = combineDateAndTime(startDate, startTime, '00:00');
+            const endDateTime = differentDay
+                ? combineDateAndTime(endDate, endTime, '23:59')
+                : combineDateAndTime(startDate, endTime, '23:59');
 
             if (endDateTime && startDateTime && endDateTime <= startDateTime) {
                 newErrors.dateLogic = "A data final deve ser posterior à data inicial.";
@@ -342,18 +322,11 @@ export function EventForm({
             return;
         }
 
-        const combine = (d, t) => {
-            if (!d || !t) return null;
-            const [hh, mm] = t.split(':').map(Number);
-            const newDate = new Date(d);
-            newDate.setHours(hh, mm, 0, 0);
-            return newDate;
-        };
-
-        const startDateTime = combine(startDate, startTime);
-        let endDateTime = differentDay
-            ? combine(endDate, endTime)
-            : combine(startDate, endTime);
+        // Combina data e hora usando valores padrão se hora estiver vazia
+        const startDateTime = combineDateAndTime(startDate, startTime, '00:00');
+        const endDateTime = differentDay
+            ? combineDateAndTime(endDate, endTime, '23:59')
+            : combineDateAndTime(startDate, endTime, '23:59');
 
         const formData = new FormData();
         formData.append('title', title);

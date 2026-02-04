@@ -63,3 +63,41 @@ export function throttle(func, limit) {
     }
   };
 }
+
+/**
+ * Combina uma data e hora em uma única Date, usando valores padrão se hora estiver vazia
+ * @param {Date} date - A data base
+ * @param {string} time - A hora no formato HH:MM (pode ser vazia)
+ * @param {string} defaultTime - Hora padrão se time estiver vazio (ex: '00:00' ou '23:59')
+ * @returns {Date|null} A data combinada ou null se date for null/undefined
+ */
+export function combineDateAndTime(date, time, defaultTime = '00:00') {
+  if (!date) return null;
+  
+  const timeToUse = (time && time.trim()) ? time : defaultTime;
+  const [hours, minutes] = timeToUse.split(':').map(Number);
+  
+  const combined = new Date(date);
+  combined.setHours(hours, minutes, 0, 0);
+  
+  return combined;
+}
+
+/**
+ * Converte uma Date para string ISO local (sem conversão de timezone)
+ * @param {Date} date - A data a ser convertida
+ * @returns {string|null} String ISO local ou null se date for null/undefined
+ */
+export function toLocalISOString(date) {
+  if (!date) return null;
+  
+  const pad = (num) => num.toString().padStart(2, '0');
+  return (
+    date.getFullYear() +
+    '-' + pad(date.getMonth() + 1) +
+    '-' + pad(date.getDate()) +
+    'T' + pad(date.getHours()) +
+    ':' + pad(date.getMinutes()) +
+    ':' + pad(date.getSeconds())
+  );
+}

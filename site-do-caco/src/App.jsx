@@ -39,7 +39,7 @@ function App() {
           <Route path="/manual" element={<ManualPage />} />
           <Route path="/manual/:slug" element={<ManualPage />} />
           <Route path="/calendario" element={<CalendarPage />} />
-          <Route path="/eventos/:id" element={<EventPage />} />
+          <Route path="/eventos/:slug" element={<EventPage />} />
           <Route path="/provas" element={<ExamBankPage />} />
           <Route path="/loja" element={<StorePage />} />
           <Route path="/loja/produto/:slug" element={<ProductDetailPage />} />

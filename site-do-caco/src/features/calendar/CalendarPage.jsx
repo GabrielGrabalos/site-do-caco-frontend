@@ -1,7 +1,8 @@
 import { useCalendarVM } from './useCalendarVM';
 import { CalendarHeader } from './components/CalendarHeader';
 import { MonthGrid } from './components/MonthGrid';
-import { MinorEventModal } from './components/MinorEventModal';
+import { MobileCalendarView } from './components/MobileCalendarView';
+import { EventPreviewModal } from './components/EventPreviewModal';
 
 export function CalendarPage() {
   const {
@@ -18,7 +19,10 @@ export function CalendarPage() {
   if (loading && events.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+        <div className="flex flex-col items-center gap-3">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+          <p className="text-sm text-muted-foreground">Carregando eventos...</p>
+        </div>
       </div>
     );
   }
@@ -36,13 +40,35 @@ export function CalendarPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2">Calendário</h1>
+        <p className="text-muted-foreground">
+          Confira as datas importantes e atividades do CACO
+        </p>
+      </div>
+        
       <CalendarHeader currentDate={currentDate} onChangeMonth={changeMonth} />
-      <MonthGrid
-        currentDate={currentDate}
-        events={events}
-        onEventClick={openEventModal}
-      />
-      <MinorEventModal
+
+      <div className="space-y-8">
+        {/* Desktop View: Traditional Calendar Grid */}
+        <div className="hidden lg:block">
+          <MonthGrid
+            currentDate={currentDate}
+            events={events}
+            onEventClick={openEventModal}
+          />
+        </div>
+
+        {/* Mobile/Tablet View: Agenda List */}
+        <div className="lg:hidden">
+          <MobileCalendarView
+            currentDate={currentDate}
+            events={events}
+          />
+        </div>
+      </div>
+
+      <EventPreviewModal
         event={selectedEvent}
         open={!!selectedEvent}
         onClose={closeEventModal}
