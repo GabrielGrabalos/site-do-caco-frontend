@@ -6,6 +6,7 @@ import { DatePicker } from '../../../components/DatePicker';
 import { TimeInput } from '../../../components/TimeInput';
 import { SeveritySelector } from './SeveritySelector';
 import { WarningPreview } from './WarningPreview';
+import { combineDateAndTime } from '@/shared/utils/helpers';
 
 export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading, editingWarning }) {
   const [formData, setFormData] = useState({
@@ -63,11 +64,8 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
     }
 
     if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate);
-      start.setHours(...(formData.startTime || '00:00').split(':').map(Number), 0);
-      
-      const end = new Date(formData.endDate);
-      end.setHours(...(formData.endTime || '23:59').split(':').map(Number), 59);
+      const start = combineDateAndTime(formData.startDate, formData.startTime, '00:00');
+      const end = combineDateAndTime(formData.endDate, formData.endTime, '23:59');
       
       if (end <= start) {
         newErrors.endDate = 'A data de término deve ser posterior à data de início';
@@ -83,12 +81,9 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
     
     if (!validate()) return;
 
-    // Monta as datas ISO
-    const startsAt = new Date(formData.startDate);
-    startsAt.setHours(...(formData.startTime || '00:00').split(':').map(Number), 0);
-    
-    const expiresAt = new Date(formData.endDate);
-    expiresAt.setHours(...(formData.endTime || '23:59').split(':').map(Number), 59);
+    // Monta as datas ISO usando valores padrão se hora estiver vazia
+    const startsAt = combineDateAndTime(formData.startDate, formData.startTime, '00:00');
+    const expiresAt = combineDateAndTime(formData.endDate, formData.endTime, '23:59');
 
     const dto = {
       markdownText: formData.markdownText,

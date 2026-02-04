@@ -28,9 +28,9 @@ export function TimeInput({ value, onChange, onError, error, placeholder = "00:0
   const handleBlur = (e) => {
     const val = e.target.value;
     if (val && !/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val)) {
-      onError('Formato inválido. Use HH:MM (ex: 09:30)');
+      if (onError) onError('Formato inválido. Use HH:MM (ex: 09:30)');
     } else {
-      onError(null);
+      if (onError) onError(null);
     }
   };
 
