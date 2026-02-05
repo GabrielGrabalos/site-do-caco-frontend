@@ -278,6 +278,22 @@ export function EventForm({
         }
     };
 
+    const handleLocationUrlChange = (e) => {
+        let value = e.target.value;
+        // Tenta extrair src se for um iframe
+        if (value.includes('<iframe') && value.includes('src="')) {
+            const match = value.match(/src="([^"]+)"/);
+            if (match && match[1]) {
+                value = match[1];
+                toast({
+                    title: "Link do mapa detectado",
+                    description: "O link foi extraído automaticamente do código iframe.",
+                });
+            }
+        }
+        setLocationUrl(value);
+    };
+
     const validateForm = () => {
         const newErrors = {};
         if (!title.trim()) newErrors.title = "O título é obrigatório.";
@@ -570,7 +586,7 @@ export function EventForm({
                             <div className="space-y-2">
                                 <Label><LinkIcon className="w-4 h-4 inline mr-1" /> Link do Mapa</Label>
                                 <div className="flex gap-2">
-                                    <Input value={locationUrl} onChange={e => setLocationUrl(e.target.value)} placeholder="https://maps.google..." />
+                                    <Input value={locationUrl} onChange={handleLocationUrlChange} placeholder="Cole o link ou iframe do Google Maps" />
                                     {locationUrl && <Button variant="outline" size="icon" asChild><a href={locationUrl} target="_blank" rel="noreferrer"><ExternalLink className="w-4 h-4" /></a></Button>}
                                 </div>
                             </div>
