@@ -1,12 +1,25 @@
-import { ArrowLeft, Calendar, MapPin, Users, CheckCircle2, ExternalLink, Heart, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, MapPin, Clock, Share2, Globe, Video, Bookmark, Users, Check, X, Heart } from 'lucide-react';
 import { useEventVM } from './useEventVM';
 import { EventGallery } from './components/EventGallery';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { MarkdownContent } from '@/shared/components/MarkdownContent';
+import { cn } from '@/lib/utils';
+import { useToast } from '@/components/ui/use-toast';
 
 export function EventPage() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const { 
     event, 
     loading, 
@@ -20,7 +33,10 @@ export function EventPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+        <div className="flex flex-col items-center gap-3">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+          <p className="text-sm text-muted-foreground">Carregando evento...</p>
+        </div>
       </div>
     );
   }
@@ -28,261 +44,316 @@ export function EventPage() {
   if (error || !event) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-2">Erro</h2>
+        <div className="text-center max-w-md mx-auto px-4">
+          <h2 className="text-2xl font-bold text-destructive mb-2">Evento não encontrado</h2>
           <p className="text-muted-foreground">
-            {error || 'Evento não encontrado'}
+            {error || 'O evento que você procura não está disponível ou foi removido.'}
           </p>
-          <Button asChild className="mt-4">
-            <Link to="/calendario">Voltar para calendário</Link>
-          </Button>
         </div>
       </div>
     );
   }
 
-  const formatDate = (dateString) => {
+  const handleParticipationSelect = async (status) => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    try {
+      await handleParticipation(status);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Não foi possível atualizar sua participação. Tente novamente."
+      });
+    }
+  };
+
+  const formatDate = (dateString, full = false) => {
+    if (!dateString) return null;
     return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
+      weekday: full ? 'long' : undefined,
+      day: 'numeric',
       month: 'long',
-      year: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const formatTime = (dateString) => {
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleTimeString('pt-BR', {
       hour: '2-digit',
       minute: '2-digit'
     });
   };
 
-  const getEventTypeLabel = (type) => {
-    const types = {
-      'ONLINE': 'Online',
-      'PRESENCIAL': 'Presencial',
-      'HIBRIDO': 'Híbrido'
-    };
-    return types[type] || type;
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'HAPPENING':
+        return <Badge variant="default" className="bg-green-600 hover:bg-green-700 animate-pulse">Acontecendo Agora</Badge>;
+      case 'UPCOMING':
+        return <Badge variant="outline" className="border-blue-500 text-blue-500">Em Breve</Badge>;
+      case 'ENDED':
+        return <Badge variant="secondary">Encerrado</Badge>;
+      default:
+        return null;
+    }
   };
 
-  const getImportanceColor = (importance) => {
-    const colors = {
-      'ALTA': 'bg-red-500',
-      'MEDIA': 'bg-yellow-500',
-      'BAIXA': 'bg-green-500'
-    };
-    return colors[importance] || 'bg-gray-500';
+  const getTypeIcon = (type) => {
+    switch (type) {
+      case 'ONLINE': return <Globe className="w-4 h-4 mr-1" />;
+      case 'HIBRIDO': return <Video className="w-4 h-4 mr-1" />;
+      default: return <Users className="w-4 h-4 mr-1" />;
+    }
   };
+
+  const hasMultipleDays = event.endDate && new Date(event.startDate).toDateString() !== new Date(event.endDate).toDateString();
+  const hasGallery = event.gallery && event.gallery.length > 0;
 
   return (
-    <div className="min-h-screen">
-      {/* Header com imagem de capa */}
-      {event.coverImage && (
-        <div className="relative w-full h-[400px] overflow-hidden">
-          <img
-            src={event.coverImage}
-            alt={event.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-8">
-            <div className="container mx-auto">
-              <Button 
-                variant="ghost" 
-                asChild 
-                className="mb-4 text-white hover:text-white hover:bg-white/20"
-              >
-                <Link to="/calendario">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Voltar para calendário
-                </Link>
-              </Button>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+    <div className="min-h-screen pb-16 animate-in fade-in duration-500 container mx-auto px-4 py-8">
+      
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Coluna Principal: Conteúdo */}
+        <div className="lg:col-span-8 space-y-8">
+
+          {/* Capa */}
+          {event.coverImage && (
+            <div className="w-full aspect-video relative rounded-xl overflow-hidden bg-muted shadow-sm border">
+              <img
+                src={event.coverImage}
+                alt={`Capa do evento ${event.title}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
+          {/* Cabeçalho do Evento */}
+          <div className="bg-card rounded-xl p-6 shadow-sm border">
+              <div className="flex flex-wrap gap-2 mb-3">
+                {getStatusBadge(event.status)}
+                <Badge variant="outline" className="capitalize flex items-center">
+                  {getTypeIcon(event.type)}
+                  {event.type?.toLowerCase() === 'presencial' ? 'Presencial' : event.type?.toLowerCase() || 'Evento'}
+                </Badge>
+              </div>
+              
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4 leading-tight">
                 {event.title}
               </h1>
-              <div className="flex flex-wrap gap-2">
-                <Badge className={getImportanceColor(event.importance)}>
-                  {event.importance}
-                </Badge>
-                <Badge variant="secondary">
-                  {getEventTypeLabel(event.type)}
-                </Badge>
-                <Badge variant="outline" className="text-white border-white">
-                  {event.status}
-                </Badge>
+
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-muted-foreground text-sm md:text-base">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-primary" />
+                  <span className="capitalize">{formatDate(event.startDate, true)}</span>
+                </div>
+                {event.endDate && (
+                  <>
+                    <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-primary" />
+                      <span>
+                          {formatTime(event.startDate)}
+                          {!hasMultipleDays && ` - ${formatTime(event.endDate)}`}
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
           </div>
-        </div>
-      )}
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Conteúdo Principal */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Descrição */}
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Sobre o Evento</h2>
-              <div className="prose max-w-none">
-                <p className="text-muted-foreground whitespace-pre-wrap">
-                  {event.description}
-                </p>
+          {/* Conteúdo em Abas */}
+          <Tabs defaultValue="about" className="w-full">
+            <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent gap-6">
+              <TabsTrigger 
+                value="about" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-2 font-semibold text-muted-foreground data-[state=active]:text-foreground transition-all"
+              >
+                Sobre o Evento
+              </TabsTrigger>
+              {hasGallery && (
+                <TabsTrigger 
+                  value="gallery" 
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-2 font-semibold text-muted-foreground data-[state=active]:text-foreground transition-all"
+                >
+                  Galeria de Fotos e Vídeos
+                </TabsTrigger>
+              )}
+            </TabsList>
+
+            <TabsContent value="about" className="pt-6 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="prose prose-lg dark:prose-invert max-w-none bg-transparent">
+                <MarkdownContent content={event.description} />
               </div>
-            </Card>
+            </TabsContent>
 
-            {/* Galeria */}
-            {event.gallery && event.gallery.length > 0 && (
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Galeria</h2>
+            {hasGallery && (
+              <TabsContent value="gallery" className="pt-6 animate-in fade-in slide-in-from-top-2 duration-300">
                 <EventGallery images={event.gallery} />
-              </Card>
+              </TabsContent>
             )}
-          </div>
+          </Tabs>
 
-          {/* Sidebar com informações */}
-          <div className="space-y-6">
-            {/* Card de Participação */}
-            <Card className="p-6">
-              <div className="space-y-4">
-                {isAuthenticated && event.status === 'PUBLISHED' && (
-                  <div className="space-y-2">
-                    {!isParticipating ? (
-                      <>
-                        <p className="text-sm font-medium mb-2">Confirmar participação:</p>
-                        <div className="grid grid-cols-1 gap-2">
-                          <Button 
-                            onClick={() => handleParticipation('GOING')}
-                            disabled={participationLoading}
-                            className="w-full justify-start"
-                          >
-                            <CheckCircle2 className="mr-2 h-4 w-4" />
-                            Vou Participar
-                          </Button>
-                          <Button 
-                            onClick={() => handleParticipation('INTERESTED')}
-                            disabled={participationLoading}
-                            variant="outline"
-                            className="w-full justify-start"
-                          >
-                            <Heart className="mr-2 h-4 w-4" />
-                            Tenho Interesse
-                          </Button>
-                          <Button 
-                            onClick={() => handleParticipation('NOT_GOING')}
-                            disabled={participationLoading}
-                            variant="outline"
-                            className="w-full justify-start"
-                          >
-                            <X className="mr-2 h-4 w-4" />
-                            Não Vou
-                          </Button>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-center">
-                          <div className="flex items-center justify-center gap-2 text-primary">
-                            {event.userParticipationStatus === 'GOING' && (
-                              <>
-                                <CheckCircle2 className="h-5 w-5" />
-                                <span className="font-medium">Vou Participar</span>
-                              </>
-                            )}
-                            {event.userParticipationStatus === 'INTERESTED' && (
-                              <>
-                                <Heart className="h-5 w-5" />
-                                <span className="font-medium">Interessado</span>
-                              </>
-                            )}
-                            {event.userParticipationStatus === 'NOT_GOING' && (
-                              <>
-                                <X className="h-5 w-5" />
-                                <span className="font-medium">Não Vou</span>
-                              </>
-                            )}
-                            {!event.userParticipationStatus && (
-                              <>
-                                <CheckCircle2 className="h-5 w-5" />
-                                <span className="font-medium">Participando</span>
-                              </>
+        </div>
+
+        {/* Coluna Lateral: Informações Extras (Cards) */}
+        <div className="lg:col-span-4 space-y-6">
+            <div className="sticky top-24 space-y-6">
+              
+              {/* Card de Ações Rápidas */}
+              <div className="flex items-center gap-3">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        size="lg"
+                        className={cn(
+                          "flex-1 gap-2 shadow-sm font-semibold transition-all",
+                          isParticipating ? "bg-primary text-primary-foreground" : "bg-primary text-primary-foreground"
+                        )}
+                        disabled={participationLoading}
+                      >
+                         <Bookmark className={cn("w-5 h-5", isParticipating ? "fill-current" : "")} />
+                         {event.userParticipationStatus === 'GOING' ? 'Vou participar' : 
+                          event.userParticipationStatus === 'INTERESTED' ? 'Tenho interesse' : 
+                          event.userParticipationStatus === 'NOT_GOING' ? 'Não vou participar' : 'Salvar evento'}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuItem 
+                        onClick={() => handleParticipationSelect('GOING')}
+                        className={cn(event.userParticipationStatus === 'GOING' && "bg-accent")}
+                      >
+                        <Check className={cn("mr-2 h-4 w-4 text-green-500", event.userParticipationStatus === 'GOING' ? "opacity-100" : "opacity-0")} />
+                        <span>Vou participar</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => handleParticipationSelect('INTERESTED')}
+                        className={cn(event.userParticipationStatus === 'INTERESTED' && "bg-accent")}
+                      >
+                        <Heart className={cn("mr-2 h-4 w-4 text-primary", event.userParticipationStatus === 'INTERESTED' ? "fill-current opacity-100" : "opacity-0")} />
+                        <span>Tenho interesse</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => handleParticipationSelect('NOT_GOING')}
+                        className={cn(event.userParticipationStatus === 'NOT_GOING' && "bg-accent")}
+                      >
+                        <X className={cn("mr-2 h-4 w-4 text-destructive", event.userParticipationStatus === 'NOT_GOING' ? "opacity-100" : "opacity-0")} />
+                        <span>Não vou participar</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="h-11 w-11 shrink-0" 
+                    onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: event.title,
+                            text: event.description?.slice(0, 100),
+                            url: window.location.href,
+                          }).catch(() => {});
+                        } else {
+                          navigator.clipboard.writeText(window.location.href);
+                          // Toast ideal here
+                        }
+                    }}
+                    title="Compartilhar"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </Button>
+              </div>
+
+              <Card className="overflow-hidden border-muted shadow-sm">
+                <CardHeader className="bg-muted/30 pb-4">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      Detalhes
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6 space-y-6">
+                    
+                    {/* Localização */}
+                    {event.location ? (
+                      <div className="flex items-start gap-3">
+                          <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                            <MapPin className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-sm mb-1">Localização</h4>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                                {event.location}
+                            </p>
+                            {event.locationUrl && (
+                                <Button variant="link" asChild className="p-0 h-auto mt-1 text-xs">
+                                  <a href={event.locationUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+                                      Ver no mapa <ExternalLink size={12} />
+                                  </a>
+                                </Button>
                             )}
                           </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                          <MapPin className="w-5 h-5 text-primary" />
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleParticipation}
-                          disabled={participationLoading}
-                          className="w-full"
-                        >
-                          {participationLoading ? 'Processando...' : 'Cancelar Participação'}
-                        </Button>
-                      </>
+                        <div>
+                          <h4 className="font-semibold text-sm mb-1">Local</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                              Informação de local indisponível
+                          </p>
+                        </div>
+                    </div>
                     )}
-                  </div>
-                )}
 
-                {!isAuthenticated && (
-                  <Button asChild className="w-full">
-                    <Link to="/login">
-                      Faça login para participar
-                    </Link>
-                  </Button>
-                )}
-              </div>
-            </Card>
+                    {/* Informações detalhadas de data se forem múltiplos dias */}
+                    {hasMultipleDays && (
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                            <Clock className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                            <h4 className="font-semibold text-sm mb-1">Duração</h4>
+                            <div className="text-sm text-muted-foreground space-y-1">
+                              <p>Início: {formatDate(event.startDate)} às {formatTime(event.startDate)}</p>
+                              <p>Fim: {formatDate(event.endDate)} às {formatTime(event.endDate)}</p>
+                            </div>
+                        </div>
+                      </div>
+                    )}
 
-            {/* Card de Informações */}
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4">Informações</h3>
-              <div className="space-y-4">
-                {/* Data de Início */}
-                <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium">Início</p>
-                    <p className="text-sm text-muted-foreground">
-                      {formatDate(event.startDate)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Data de Término */}
-                {event.endDate && (
-                  <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium">Término</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatDate(event.endDate)}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Localização */}
-                {event.location && (
-                  <div className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">Local</p>
-                      <p className="text-sm text-muted-foreground">
-                        {event.location}
-                      </p>
-                      {event.locationUrl && (
-                        <a 
-                          href={event.locationUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline flex items-center gap-1 mt-1"
-                        >
-                          Ver no mapa
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </div>
         </div>
+
       </div>
     </div>
   );
+}
+
+// Helper icon
+function ExternalLink({ size, className }) {
+   return (
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width={size} 
+        height={size} 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        className={className}
+      >
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+   )
 }

@@ -45,39 +45,51 @@ export function useEventVM() {
     }
   };
 
-  const handleParticipation = async (status = 'GOING') => {
-    if (!isAuthenticated) {
-      // Poderia redirecionar para login aqui
-      return;
-    }
+  const handleParticipation = async (status) => {
+    if (!isAuthenticated) return;
+
+    const previousStatus = event.userParticipationStatus;
+    setParticipationLoading(true);
 
     try {
-      setParticipationLoading(true);
-      
-      if (isParticipating) {
-        // Remove participação
+      if (previousStatus === status) {
+        // Se clicar no mesmo status, remove a participação
         await eventService.removeParticipation(event.id);
+        
+        // Atualiza estado local
+        setEvent(prev => ({
+          ...prev,
+          userParticipationStatus: null
+        }));
         setIsParticipating(false);
+        
         analyticsService.track('CANCEL_EVENT_PARTICIPATION', { 
           eventId: event.id, 
           eventTitle: event.title 
         });
       } else {
-        // Salva participação com status (INTERESTED, GOING, NOT_GOING)
+        // Se for novo ou diferente, salva/atualiza
         await eventService.saveParticipation(event.id, status);
+        
+        // Atualiza estado local
+        setEvent(prev => ({
+          ...prev,
+          userParticipationStatus: status
+        }));
         setIsParticipating(true);
+        
         analyticsService.track('PARTICIPATE_EVENT', { 
           eventId: event.id, 
           eventTitle: event.title,
           status: status
         });
       }
-      
-      // Recarrega o evento para atualizar informações
-      await loadEvent();
     } catch (err) {
       console.error('Erro ao gerenciar participação:', err);
-      setError(err.message || 'Erro ao processar participação');
+      // O estado visual não mudou antes do fetch, então não precisa reverter nada complexo,
+      // mas poderíamos disparar um toast de erro aqui se tivéssemos acesso ao toast no VM.
+      // Vamos retornar o erro para a View tratar
+      throw err;
     } finally {
       setParticipationLoading(false);
     }
