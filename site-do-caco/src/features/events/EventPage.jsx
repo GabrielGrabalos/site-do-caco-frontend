@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Clock, Share2, Globe, Video, Bookmark, Users, Check, X, Heart } from 'lucide-react';
+import { Calendar, MapPin, Clock, Share2, Globe, Video, Bookmark, Users, Check, X, Heart, ExternalLink } from 'lucide-react';
 import { useEventVM } from './useEventVM';
 import { EventGallery } from './components/EventGallery';
 import { Button } from '@/components/ui/button';
@@ -278,23 +278,43 @@ export function EventPage() {
                     
                     {/* Localização */}
                     {event.location ? (
-                      <div className="flex items-start gap-3">
-                          <div className="p-2 bg-primary/10 rounded-lg shrink-0">
-                            <MapPin className="w-5 h-5 text-primary" />
+                      <div className="space-y-3">
+                          <div className="flex items-start gap-3">
+                              <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                                <MapPin className="w-5 h-5 text-primary" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-sm mb-1">Localização</h4>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    {event.location}
+                                </p>
+                              </div>
                           </div>
-                          <div>
-                            <h4 className="font-semibold text-sm mb-1">Localização</h4>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                {event.location}
-                            </p>
-                            {event.locationUrl && (
-                                <Button variant="link" asChild className="p-0 h-auto mt-1 text-xs">
-                                  <a href={event.locationUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-                                      Ver no mapa <ExternalLink size={12} />
-                                  </a>
-                                </Button>
-                            )}
-                          </div>
+
+                          {(event.locationUrl || event.location) && (
+                              <div className="rounded-lg overflow-hidden border bg-muted h-[200px] shadow-sm relative group w-full">
+                                <iframe 
+                                    width="100%" 
+                                    height="100%" 
+                                    style={{ border: 0 }} 
+                                    loading="lazy" 
+                                    title="Mapa do evento"
+                                    allowFullScreen
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    src={event.locationUrl || `https://maps.google.com/maps?q=${encodeURIComponent(event.location)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                                    className="grayscale-[20%] hover:grayscale-0 transition-all duration-500"
+                                />
+                                {event.locationUrl && (
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Button size="sm" variant="secondary" className="h-8 text-xs gap-1 shadow-md" asChild>
+                                            <a href={event.locationUrl} target="_blank" rel="noopener noreferrer">
+                                                Abrir Mapa <ExternalLink size={12} />
+                                            </a>
+                                        </Button>
+                                    </div>
+                                )}
+                              </div>
+                          )}
                       </div>
                     ) : (
                       <div className="flex items-start gap-3">
@@ -336,24 +356,3 @@ export function EventPage() {
   );
 }
 
-// Helper icon
-function ExternalLink({ size, className }) {
-   return (
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        width={size} 
-        height={size} 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
-        strokeWidth="2" 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
-        className={className}
-      >
-        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-        <polyline points="15 3 21 3 21 9"></polyline>
-        <line x1="10" y1="14" x2="21" y2="3"></line>
-      </svg>
-   )
-}

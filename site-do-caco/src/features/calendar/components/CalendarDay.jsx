@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Clock, ChevronDown } from 'lucide-react';
 
-export function CalendarDay({ date, events, isToday, onEventClick }) {
+export function CalendarDay({ date, events, isToday, onEventClick, topSpacerHeight = 0 }) {
   const scrollRef = useRef(null);
   const [showIndicator, setShowIndicator] = useState(false);
 
@@ -88,6 +88,10 @@ export function CalendarDay({ date, events, isToday, onEventClick }) {
         onScroll={checkScroll}
         className="flex flex-col gap-1.5 flex-1 overflow-y-auto pr-1 customize-scrollbar pb-1"
       >
+        {topSpacerHeight > 0 && (
+          <div style={{ height: topSpacerHeight }} className="w-full shrink-0 transition-all duration-300 pointer-events-none" />
+        )}
+
         {sortedEvents.map((event) => {
           const hasImage = !!event.coverImage;
           
