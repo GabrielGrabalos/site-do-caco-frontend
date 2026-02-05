@@ -204,68 +204,80 @@ export function EventPage() {
             <div className="sticky top-24 space-y-6">
               
               {/* Card de Ações Rápidas */}
-              <div className="flex items-center gap-3">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button 
-                        size="lg"
-                        className={cn(
-                          "flex-1 gap-2 shadow-sm font-semibold transition-all",
-                          isParticipating ? "bg-primary text-primary-foreground" : "bg-primary text-primary-foreground"
-                        )}
-                        disabled={participationLoading}
-                      >
-                         <Bookmark className={cn("w-5 h-5", isParticipating ? "fill-current" : "")} />
-                         {event.userParticipationStatus === 'GOING' ? 'Vou participar' : 
-                          event.userParticipationStatus === 'INTERESTED' ? 'Tenho interesse' : 
-                          event.userParticipationStatus === 'NOT_GOING' ? 'Não vou participar' : 'Salvar evento'}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuItem 
-                        onClick={() => handleParticipationSelect('GOING')}
-                        className={cn(event.userParticipationStatus === 'GOING' && "bg-accent")}
-                      >
-                        <Check className={cn("mr-2 h-4 w-4 text-green-500", event.userParticipationStatus === 'GOING' ? "opacity-100" : "opacity-0")} />
-                        <span>Vou participar</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleParticipationSelect('INTERESTED')}
-                        className={cn(event.userParticipationStatus === 'INTERESTED' && "bg-accent")}
-                      >
-                        <Heart className={cn("mr-2 h-4 w-4 text-primary", event.userParticipationStatus === 'INTERESTED' ? "fill-current opacity-100" : "opacity-0")} />
-                        <span>Tenho interesse</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleParticipationSelect('NOT_GOING')}
-                        className={cn(event.userParticipationStatus === 'NOT_GOING' && "bg-accent")}
-                      >
-                        <X className={cn("mr-2 h-4 w-4 text-destructive", event.userParticipationStatus === 'NOT_GOING' ? "opacity-100" : "opacity-0")} />
-                        <span>Não vou participar</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+              <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            size="lg"
+                            className={cn(
+                              "flex-1 gap-2 shadow-sm font-semibold transition-all",
+                              isParticipating ? "bg-primary text-primary-foreground" : "bg-primary text-primary-foreground"
+                            )}
+                            disabled={participationLoading}
+                          >
+                             <Bookmark className={cn("w-5 h-5", isParticipating ? "fill-current" : "")} />
+                             {event.userParticipationStatus === 'GOING' ? 'Vou participar' : 
+                              event.userParticipationStatus === 'INTERESTED' ? 'Tenho interesse' : 
+                              event.userParticipationStatus === 'NOT_GOING' ? 'Não vou participar' : 'Quer participar?'}
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                          <DropdownMenuItem 
+                            onClick={() => handleParticipationSelect('GOING')}
+                            className={cn(event.userParticipationStatus === 'GOING' && "bg-accent")}
+                          >
+                            <Check className="mr-2 h-4 w-4 text-green-500" />
+                            <span>Vou participar</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleParticipationSelect('INTERESTED')}
+                            className={cn(event.userParticipationStatus === 'INTERESTED' && "bg-accent")}
+                          >
+                            <Heart className={cn("mr-2 h-4 w-4 text-primary", event.userParticipationStatus === 'INTERESTED' ? "fill-current" : "")} />
+                            <span>Tenho interesse</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleParticipationSelect('NOT_GOING')}
+                            className={cn(event.userParticipationStatus === 'NOT_GOING' && "bg-accent")}
+                          >
+                            <X className="mr-2 h-4 w-4 text-destructive" />
+                            <span>Não vou participar</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
 
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    className="h-11 w-11 shrink-0" 
-                    onClick={() => {
-                        if (navigator.share) {
-                          navigator.share({
-                            title: event.title,
-                            text: event.description?.slice(0, 100),
-                            url: window.location.href,
-                          }).catch(() => {});
-                        } else {
-                          navigator.clipboard.writeText(window.location.href);
-                          // Toast ideal here
-                        }
-                    }}
-                    title="Compartilhar"
-                  >
-                    <Share2 className="w-5 h-5" />
-                  </Button>
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="h-11 w-11 shrink-0" 
+                        onClick={() => {
+                            if (navigator.share) {
+                              navigator.share({
+                                title: event.title,
+                                text: event.description?.slice(0, 100),
+                                url: window.location.href,
+                              }).catch(() => {});
+                            } else {
+                              navigator.clipboard.writeText(window.location.href);
+                              toast({
+                                title: "Link copiado",
+                                description: "O link do evento foi copiado para a área de transferência."
+                              });
+                            }
+                        }}
+                        title="Compartilhar"
+                      >
+                        <Share2 className="w-5 h-5" />
+                      </Button>
+                  </div>
+
+                  <div className="px-1">
+                     <p className="text-xs text-muted-foreground leading-relaxed">
+                        Sua confirmação nos ajuda a estimar o público e preparar melhor o evento. 😁 <br />
+                        Ao selecionar <strong>"Vou participar"</strong>, enviaremos lembretes por e-mail para você não perder nada!
+                     </p>
+                  </div>
               </div>
 
               <Card className="overflow-hidden border-muted shadow-sm">
@@ -291,7 +303,7 @@ export function EventPage() {
                               </div>
                           </div>
 
-                          {(event.locationUrl || event.location) && (
+                          {(event.locationUrl) && (
                               <div className="rounded-lg overflow-hidden border bg-muted h-[200px] shadow-sm relative group w-full">
                                 <iframe 
                                     width="100%" 
@@ -301,18 +313,9 @@ export function EventPage() {
                                     title="Mapa do evento"
                                     allowFullScreen
                                     referrerPolicy="no-referrer-when-downgrade"
-                                    src={event.locationUrl || `https://maps.google.com/maps?q=${encodeURIComponent(event.location)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                                    src={event.locationUrl}
                                     className="grayscale-[20%] hover:grayscale-0 transition-all duration-500"
                                 />
-                                {event.locationUrl && (
-                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Button size="sm" variant="secondary" className="h-8 text-xs gap-1 shadow-md" asChild>
-                                            <a href={event.locationUrl} target="_blank" rel="noopener noreferrer">
-                                                Abrir Mapa <ExternalLink size={12} />
-                                            </a>
-                                        </Button>
-                                    </div>
-                                )}
                               </div>
                           )}
                       </div>
