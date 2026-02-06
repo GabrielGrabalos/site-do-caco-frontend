@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { apiClient } from '@/shared/services/apiClient';
+import { eventService } from '@/shared/services/eventService';
 import { Event } from './Event';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -58,8 +58,8 @@ export function useAdminEventsVM() {
     try {
       setLoading(true);
       const [upcoming, past] = await Promise.all([
-        apiClient.get('public/events/upcoming?size=100'),
-        apiClient.get('public/events/past?size=100'),
+        eventService.getUpcomingEvents(0, 100),
+        eventService.getPastEvents(0, 100),
       ]);
 
       const allEvents = [
@@ -84,7 +84,7 @@ export function useAdminEventsVM() {
   const createEvent = async (formData) => {
     try {
       setIsSubmitting(true);
-      const newEvent = await apiClient.postFormData('admin/events', formData);
+      const newEvent = await eventService.createEvent(formData);
       const eventInstance = Event.fromDTO(newEvent);
 
       setEvents(prev => [eventInstance, ...prev]);
@@ -114,7 +114,7 @@ export function useAdminEventsVM() {
   const updateEvent = async (id, formData) => {
     try {
       setIsSubmitting(true);
-      const updated = await apiClient.putFormData(`admin/events/${id}`, formData);
+      const updated = await eventService.updateEvent(id, formData);
       const eventInstance = Event.fromDTO(updated);
 
       setEvents(prev => prev.map(e => e.id === id ? eventInstance : e));
@@ -141,7 +141,7 @@ export function useAdminEventsVM() {
   const deleteEvent = async (id) => {
     try {
       setLoading(true);
-      await apiClient.delete(`admin/events/${id}`);
+      await eventService.deleteEvent(id);
       setEvents(prev => prev.filter(e => e.id !== id));
 
       if (viewMode === 'FORM') {

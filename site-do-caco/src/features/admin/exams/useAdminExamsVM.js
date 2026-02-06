@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { apiClient } from '@/shared/services/apiClient';
+import { examService } from '@/shared/services/examService';
 import { Subject } from './models/Subject';
 import { Exam } from './models/Exam';
 
@@ -27,7 +27,7 @@ export function useAdminExamsVM() {
       setLoading(true);
       setError(null);
       
-      const data = await apiClient.get('admin/exams/subjects');
+      const data = await examService.getSubjects();
       const subjectInstances = Subject.fromDTOArray(data);
       setSubjects(subjectInstances);
       
@@ -47,7 +47,7 @@ export function useAdminExamsVM() {
       setLoadingExams(true);
       setError(null);
       
-      const data = await apiClient.get(`admin/exams/subject/${subjectCode}`);
+      const data = await examService.getExamsBySubject(subjectCode);
       const examInstances = Exam.fromDTOArray(data);
       setExams(examInstances);
     } catch (err) {
@@ -61,7 +61,7 @@ export function useAdminExamsVM() {
     try {
       setCreating(true);
       
-      const newSubjectDTO = await apiClient.post('admin/exams/subjects', subjectData);
+      const newSubjectDTO = await examService.createSubject(subjectData);
       const newSubject = Subject.fromDTO(newSubjectDTO);
       
       setSubjects(prev => [...prev, newSubject]);
@@ -80,7 +80,7 @@ export function useAdminExamsVM() {
 
   const deleteSubject = async (subjectCode) => {
     try {
-      await apiClient.delete(`admin/exams/subjects/${subjectCode}`);
+      await examService.deleteSubject(subjectCode);
       
       setSubjects(prev => prev.filter(s => s.subjectCode !== subjectCode));
       
@@ -104,7 +104,7 @@ export function useAdminExamsVM() {
     try {
       setCreating(true);
       
-      const newExamDTO = await apiClient.post('admin/exams', examData);
+      const newExamDTO = await examService.createExam(examData);
       const newExam = Exam.fromDTO(newExamDTO);
       
       setExams(prev => [...prev, newExam]);
@@ -122,10 +122,7 @@ export function useAdminExamsVM() {
 
   const updateExam = async (examId, examData) => {
     try {
-      const updatedExamDTO = await apiClient.put(
-        `admin/exams/${examId}`, 
-        examData
-      );
+      const updatedExamDTO = await examService.updateExam(examId, examData);
       
       const updatedExam = Exam.fromDTO(updatedExamDTO);
       setExams(current => 
@@ -143,7 +140,7 @@ export function useAdminExamsVM() {
 
   const deleteExam = async (examId) => {
     try {
-      await apiClient.delete(`admin/exams/${examId}`);
+      await examService.deleteExam(examId);
       setExams(prev => prev.filter(e => e.id !== examId));
       return { success: true };
     } catch (err) {

@@ -125,7 +125,7 @@ class EventService {
    * @returns {Promise<Object>} Evento criado
    */
   async createEvent(formData) {
-    return apiClient.post('/admin/events', formData, {}, true);
+    return apiClient.postFormData('admin/events', formData);
   }
 
   /**
@@ -135,7 +135,7 @@ class EventService {
    * @returns {Promise<Object>} Evento atualizado
    */
   async updateEvent(eventId, formData) {
-    return apiClient.put(`/admin/events/${eventId}`, formData, {}, true);
+    return apiClient.putFormData(`admin/events/${eventId}`, formData);
   }
 
   /**

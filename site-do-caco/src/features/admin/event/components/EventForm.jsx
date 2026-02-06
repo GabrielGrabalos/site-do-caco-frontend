@@ -14,11 +14,12 @@ import {
     Save, Trash2, ArrowLeft, Image as ImageIcon, ExternalLink, Eraser, Crop, X
 } from 'lucide-react';
 import Cropper from 'react-easy-crop';
-import { getCroppedImg } from '@/shared/utils/imageCrop';
 import { combineDateAndTime, toLocalISOString } from '@/shared/utils/helpers';
 import { DatePicker } from '../../components/DatePicker';
 import { TimeInput } from '../../components/TimeInput';
 import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
+import { useImageCropper } from '@/shared/hooks/useImageCropper';
+import { extractUrlFromIframe } from '@/lib/utils';
 
 const DRAFT_KEY = 'event-draft';
 
@@ -65,17 +66,8 @@ export function EventForm({
     const { toast } = useToast();
 
     // --- ESTADOS DE IMAGEM ---
-    const [isCropModalOpen, setIsCropModalOpen] = useState(false);
-    const [imageSrc, setImageSrc] = useState(null);
-    const [crop, setCrop] = useState({ x: 0, y: 0 });
-    const [zoom, setZoom] = useState(1);
-    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-    const [croppedImage, setCroppedImage] = useState(null);
-    const [croppedFile, setCroppedFile] = useState(null);
-
-    // NOVO: Controle de remoção de imagem
-    const [removeCoverImage, setRemoveCoverImage] = useState(false);
-
+    const imageCropper = useImageCropper(initialData?.coverImage || null);
+    
     // --- ESTADOS DO FORMULÁRIO ---
     const [title, setTitle] = useState('');
     const [slug, setSlug] = useState('');
@@ -100,14 +92,6 @@ export function EventForm({
     const [exitDialogOpen, setExitDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [discardDraftDialogOpen, setDiscardDraftDialogOpen] = useState(false);
-
-    // Limpeza de memória
-    useEffect(() => {
-        return () => {
-            if (imageSrc && imageSrc.startsWith('blob:')) URL.revokeObjectURL(imageSrc);
-            if (croppedImage && croppedImage.startsWith('blob:')) URL.revokeObjectURL(croppedImage);
-        };
-    }, []);
 
     // CARREGAMENTO DE DADOS
     useEffect(() => {
@@ -136,11 +120,6 @@ export function EventForm({
                     const start = new Date(initialData.startDate);
                     setDifferentDay(start.toDateString() !== end.toDateString());
                 }
-            }
-
-            if (initialData.coverImage) {
-                setCroppedImage(initialData.coverImage);
-                setRemoveCoverImage(false); // Reseta flag ao carregar
             }
         } else {
             const savedDraft = localStorage.getItem(DRAFT_KEY);
@@ -207,10 +186,7 @@ export function EventForm({
         setEndTime('');
 
         // Limpar imagem
-        if (croppedImage && croppedImage.startsWith('blob:')) URL.revokeObjectURL(croppedImage);
-        setCroppedImage(null);
-        setCroppedFile(null);
-        setRemoveCoverImage(false);
+        imageCropper.reset();
 
         setDiscardDraftDialogOpen(false);
         toast({ title: "Rascunho limpo" });
@@ -237,65 +213,15 @@ export function EventForm({
         }
     };
 
-    const handleFileSelect = (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        if (imageSrc) URL.revokeObjectURL(imageSrc);
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            setImageSrc(reader.result);
-            setZoom(1);
-            setIsCropModalOpen(true);
-            e.target.value = '';
-        };
-        reader.readAsDataURL(file);
-    };
-
-    // Lógica de Recorte (Adiciona imagem)
-    const handleCropConfirm = async () => {
-        try {
-            const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-            const file = new File([croppedBlob], `cover-${Date.now()}.jpg`, { type: 'image/jpeg' });
-            const objectUrl = URL.createObjectURL(croppedBlob);
-
-            setCroppedImage(objectUrl);
-            setCroppedFile(file);
-
-            // Se estamos adicionando uma imagem, garantimos que a flag de remoção seja falsa
-            setRemoveCoverImage(false);
-
-            setIsCropModalOpen(false);
-        } catch (err) {
-            console.error(err);
-            toast({ variant: "destructive", title: "Erro ao recortar imagem" });
-        }
-    };
-
-    // Lógica de Remoção de Imagem
-    const handleRemoveImage = () => {
-        // Limpa visualização
-        setCroppedImage(null);
-        setCroppedFile(null);
-
-        // Se for edição de um evento existente, marca flag para remover no backend
-        if (initialData) {
-            setRemoveCoverImage(true);
-        }
-    };
-
     const handleLocationUrlChange = (e) => {
         let value = e.target.value;
-        // Tenta extrair src se for um iframe
-        if (value.includes('<iframe') && value.includes('src="')) {
-            const match = value.match(/src="([^"]+)"/);
-            if (match && match[1]) {
-                value = match[1];
-                toast({
-                    title: "Link do mapa detectado",
-                    description: "O link foi extraído automaticamente do código iframe.",
-                });
-            }
+        const extracted = extractUrlFromIframe(value);
+        if (extracted !== value) {
+            toast({
+                title: "Link do mapa detectado",
+                description: "O link foi extraído automaticamente do código iframe.",
+            });
+            value = extracted;
         }
         setLocationUrl(value);
     };
@@ -366,12 +292,12 @@ export function EventForm({
         if (initialData) {
             formData.append('status', status);
             // Flag de remoção (para DTO)
-            formData.append('removeCoverImage', removeCoverImage.toString());
+            formData.append('removeCoverImage', imageCropper.isRemoved.toString());
         }
 
         // Se tiver arquivo novo, envia.
-        if (croppedFile) {
-            formData.append('coverImage', croppedFile);
+        if (imageCropper.file) {
+            formData.append('coverImage', imageCropper.file);
         }
 
         const result = await onSubmit(formData, initialData?.id);
@@ -552,16 +478,16 @@ export function EventForm({
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {croppedImage ? (
+                                {imageCropper.previewUrl ? (
                                     <div className="relative group rounded-lg overflow-hidden border aspect-video bg-muted">
-                                        <img src={croppedImage} alt="Cover" className="w-full h-full object-cover" />
+                                        <img src={imageCropper.previewUrl} alt="Cover" className="w-full h-full object-cover" />
 
                                         {/* Overlay com Ações (Trocar e Remover) */}
                                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                                             <Button size="sm" variant="secondary" onClick={() => document.getElementById('cover-upload').click()}>
                                                 Trocar
                                             </Button>
-                                            <Button size="sm" variant="destructive" onClick={handleRemoveImage} title="Remover imagem">
+                                            <Button size="sm" variant="destructive" onClick={imageCropper.handleRemove} title="Remover imagem">
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </div>
@@ -576,7 +502,7 @@ export function EventForm({
                                         <p className="text-xs text-muted-foreground mt-1">Formato 16:9 recomendado</p>
                                     </div>
                                 )}
-                                <input id="cover-upload" type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+                                <input id="cover-upload" type="file" accept="image/*" className="hidden" onChange={imageCropper.handleFileSelect} />
                             </div>
                         </CardContent>
                     </Card>
@@ -635,7 +561,7 @@ export function EventForm({
             </div>
 
             {/* --- MODAL DE RECORTE (Mantido o layout solicitado) --- */}
-            <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+            <Dialog open={imageCropper.isModalOpen} onOpenChange={imageCropper.setIsModalOpen}>
                 <DialogContent className="max-w-2xl">
                     <DialogHeader>
                         <DialogTitle>Ajustar Imagem</DialogTitle>
@@ -645,28 +571,28 @@ export function EventForm({
                     <div className="space-y-4">
                         <div className="relative h-96 bg-black rounded-lg overflow-hidden border">
                             <Cropper
-                                image={imageSrc}
-                                crop={crop}
-                                zoom={zoom}
+                                image={imageCropper.imageSrc}
+                                crop={imageCropper.crop}
+                                zoom={imageCropper.zoom}
                                 aspect={16 / 9}
-                                onCropChange={setCrop}
-                                onZoomChange={setZoom}
-                                onCropComplete={(_, pixels) => setCroppedAreaPixels(pixels)}
+                                onCropChange={imageCropper.setCrop}
+                                onZoomChange={imageCropper.setZoom}
+                                onCropComplete={imageCropper.onCropComplete}
                             />
                         </div>
 
                         <div className="space-y-2">
                             <div className="flex justify-between">
                                 <Label className="text-sm font-medium">Zoom</Label>
-                                <span className="text-xs text-muted-foreground">{zoom.toFixed(1)}x</span>
+                                <span className="text-xs text-muted-foreground">{imageCropper.zoom.toFixed(1)}x</span>
                             </div>
                             <input
                                 type="range"
                                 min={1}
                                 max={3}
                                 step={0.1}
-                                value={zoom}
-                                onChange={(e) => setZoom(Number(e.target.value))}
+                                value={imageCropper.zoom}
+                                onChange={(e) => imageCropper.setZoom(Number(e.target.value))}
                                 className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
                             />
                         </div>
@@ -675,13 +601,12 @@ export function EventForm({
                     <DialogFooter className="gap-2 sm:gap-0 mt-4">
                         <Button
                             variant="outline"
-                            onClick={() => setIsCropModalOpen(false)}
+                            onClick={imageCropper.handleCancelCrop}
                         >
                             Voltar
                         </Button>
-                        <Button onClick={handleCropConfirm}>
-                            <Crop className="h-4 w-4 mr-2" />
-                            Confirmar Recorte
+                        <Button onClick={imageCropper.handleCropConfirm} disabled={imageCropper.loading}>
+                            {imageCropper.loading ? 'Processando...' : <><Crop className="h-4 w-4 mr-2" /> Confirmar Recorte</>}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
