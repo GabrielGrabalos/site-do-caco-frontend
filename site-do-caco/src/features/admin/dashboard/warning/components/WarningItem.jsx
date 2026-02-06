@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import ReactMarkdown from 'react-markdown';
 import { Warning } from '../Warning';
+import { SEVERITY_STYLES, SEVERITY_LABELS } from '../models/WarningSeverity';
 
 export function WarningItem({ warning, onEdit, onDelete, onExpire }) {
   const warningObj = new Warning(warning);
@@ -18,23 +19,9 @@ export function WarningItem({ warning, onEdit, onDelete, onExpire }) {
   };
 
   const getSeverityBadge = () => {
-    const labels = {
-      CRITICAL: 'Crítico',
-      HIGH: 'Alto',
-      MEDIUM: 'Médio',
-      LOW: 'Baixo',
-    };
-    
-    const colors = {
-      CRITICAL: 'bg-gray-200 text-gray-900 border-gray-900',
-      HIGH: 'bg-red-100 text-red-800 border-red-300',
-      MEDIUM: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-      LOW: 'bg-blue-100 text-blue-800 border-blue-300',
-    };
-
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${colors[warning.severityLevel]}`}>
-        {labels[warning.severityLevel]}
+      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${SEVERITY_STYLES[warning.severityLevel] || 'bg-gray-100'}`}>
+        {SEVERITY_LABELS[warning.severityLevel] || warning.severityLevel}
       </span>
     );
   };

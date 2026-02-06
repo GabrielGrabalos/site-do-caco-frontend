@@ -25,11 +25,14 @@
 │   │       ├── card.jsx
 │   │       ├── date-input.jsx
 │   │       ├── dialog.jsx
+│   │       ├── dropdown-menu.jsx
 │   │       ├── input.jsx
 │   │       ├── label.jsx
 │   │       ├── popover.jsx
 │   │       ├── price-input.jsx
 │   │       ├── scroll-area.jsx
+│   │       ├── select.jsx
+│   │       ├── separator.jsx
 │   │       ├── sheet.jsx
 │   │       ├── slider.jsx
 │   │       ├── switch.jsx
@@ -63,12 +66,15 @@
 │   │   │   │       │   ├── WarningItem.jsx
 │   │   │   │       │   ├── WarningPreview.jsx
 │   │   │   │       │   └── WarningsSection.jsx
+│   │   │   │       ├── models
+│   │   │   │       │   └── WarningSeverity.js
 │   │   │   │       └── useAdminWarningsVM.js
 │   │   │   ├── event
 │   │   │   │   ├── AdminEventsPage.jsx
+│   │   │   │   ├── Event.js
 │   │   │   │   ├── components
-│   │   │   │   │   ├── EventItem.jsx
-│   │   │   │   │   └── EventModal.jsx
+│   │   │   │   │   ├── EventForm.jsx
+│   │   │   │   │   └── EventItem.jsx
 │   │   │   │   └── useAdminEventsVM.js
 │   │   │   ├── exams
 │   │   │   │   ├── AdminExamBankPage.jsx
@@ -122,14 +128,22 @@
 │   │   │   ├── components
 │   │   │   │   ├── CalendarDay.jsx
 │   │   │   │   ├── CalendarHeader.jsx
-│   │   │   │   ├── MinorEventModal.jsx
+│   │   │   │   ├── CalendarPageWithFilters.jsx
+│   │   │   │   ├── EventCard.jsx
+│   │   │   │   ├── EventFilters.jsx
+│   │   │   │   ├── EventPreviewModal.jsx
+│   │   │   │   ├── MobileCalendarView.jsx
 │   │   │   │   └── MonthGrid.jsx
+│   │   │   ├── hooks
+│   │   │   │   └── useEventFilters.js
 │   │   │   └── useCalendarVM.js
 │   │   ├── events
 │   │   │   ├── EventPage.jsx
 │   │   │   ├── components
 │   │   │   │   ├── Countdown.jsx
+│   │   │   │   ├── EventGallery.jsx
 │   │   │   │   ├── EventInfo.jsx
+│   │   │   │   ├── EventParticipationStats.jsx
 │   │   │   │   └── GalleryGrid.jsx
 │   │   │   └── useEventVM.js
 │   │   ├── exams
@@ -213,6 +227,7 @@
 │       │   └── ThemeContext.jsx
 │       ├── hooks
 │       │   ├── useHeaderSearch.js
+│       │   ├── useImageCropper.js
 │       │   └── useScrollDirection.js
 │       ├── services
 │       │   ├── analyticsService.js
@@ -220,7 +235,10 @@
 │       │   ├── authService.js
 │       │   ├── contentService.js
 │       │   ├── contentService.new.js
+│       │   ├── eventService.js
+│       │   ├── examService.js
 │       │   ├── imageUploadService.js
+│       │   ├── manualService.js
 │       │   ├── storeService.js
 │       │   └── warningService.js
 │       ├── types
@@ -236,13 +254,13 @@
 ```
 
 ## 🔄 Changes Since Last Export
-- Added: 1
-- Modified: 5
-- Removed: 0
+- Added: 18
+- Modified: 25
+- Removed: 2
 
 ## 🌱 Git Info
 - Branch: cleanup
-- Commit: d262c2d
+- Commit: be0eef5
 
 ## 🤖 AI Instructions
 
@@ -256,6 +274,7 @@ Tasks:
 ## 📄 .ai-export-snapshot.json
 ```json
 {
+  ".ai-export-snapshot.json": "a056ed624b3c0c9462e0db829783cad200fe0c28",
   ".env.example": "8a440e169fa2c55e0729c97fd2c47e92e51c94c8",
   "README.md": "7c3ecbc5f3b26f80b279cb1fe4b7ede6c0011aed",
   "components.json": "e925f13719e33d42e36f763054217fde1fb2f7aa",
@@ -287,7 +306,7 @@ Tasks:
   "src/components/ui/toast.jsx": "cb630f1f2813e7f0b6ad136be81c1011e8449ddd",
   "src/components/ui/use-toast.jsx": "814547a26ca6e4c4df48230d0988f253c03c2a0d",
   "src/features/admin/AdminLayout.jsx": "8545b46b78e7d617ec26b1be5788db302ccce340",
-  "src/features/admin/components/ConfirmDeleteDialog.jsx": "c2760bdfd92037a5ebfa0b7ce88a699f33c2e974",
+  "src/features/admin/components/ConfirmDeleteDialog.jsx": "8ab25085646a31f02ffceefbd4a670b22aec5483",
   "src/features/admin/components/DatePicker.jsx": "46c2c8660c92aced36debe248276c2b5ffc11a30",
   "src/features/admin/components/StatsCards.jsx": "b334e7a48c9dcb5da3a7fc91a8b922741f684f3e",
   "src/features/admin/components/TimeInput.jsx": "407391822316a92ab479274080d8ff7ec91432cb",
@@ -319,12 +338,12 @@ Tasks:
   "src/features/admin/exams/models/Exam.js": "684bb4fe9de974aa9335eb85bac3fdd9897192f1",
   "src/features/admin/exams/models/Subject.js": "2a279f4187bb83831bfab03fa60b6a4d1182b021",
   "src/features/admin/exams/useAdminExamsVM.js": "bd84b489a922d8cc90fca65cd51d905995af4fdd",
-  "src/features/admin/manual/AdminManualPage.jsx": "50ca8d11d05b7ef7bd7ef4a0f21bee08c1508f3b",
+  "src/features/admin/manual/AdminManualPage.jsx": "31ad115bdc3eccba7f8a85ca6d89115cd3b9bdd2",
   "src/features/admin/manual/components/ArticleItem.jsx": "7a74d183e2c040e03d7420a55aea5e151365f806",
   "src/features/admin/manual/components/CategoryItem.jsx": "86aa03cf14cac2d61804c7f7277c18d9ba7f87d8",
   "src/features/admin/manual/components/ChapterItem.jsx": "d4711c17c99f4c62e30f4b983d70d101f60d2325",
   "src/features/admin/manual/components/CreateArticleModal.jsx": "ff8d476f774836a8b2b8490f0386182243ffd758",
-  "src/features/admin/manual/components/CreateCategoryModal.jsx": "1d6ebaf5a2c17f2d4195a1542d5571b978197c02",
+  "src/features/admin/manual/components/CreateCategoryModal.jsx": "d2b6b84b417074d961532cf7cdbc5acfc4db9d8a",
   "src/features/admin/manual/components/CreateChapterModal.jsx": "a447d2c56857ff4387dc2faa0759fa12bd881c4e",
   "src/features/admin/manual/models/ManualArticle.js": "0a25943636a43a0afa0cbd175dddaa534ecc26c3",
   "src/features/admin/manual/models/ManualCategory.js": "934dbe4ae9e72cf9ede39aefecbf153f60365cda",
@@ -340,9 +359,9 @@ Tasks:
   "src/features/admin/store/components/StoreCategoryDialog.jsx": "4af42e350dabeb9ae1e76abf87419048830f668f",
   "src/features/admin/store/components/StoreCategoryTabs.jsx": "923d9dd12e036fc6faff07b07760754fb662cd55",
   "src/features/admin/store/components/StoreProductDialog.jsx": "2cd8df3119097ad6bf35c4be795b178e8fac459d",
-  "src/features/admin/store/components/StoreProductItem.jsx": "38808d037df1ba3cc439b83b01c167c072f22397",
+  "src/features/admin/store/components/StoreProductItem.jsx": "419a2a51fef3003e2ccc07e418e6194a1b7a9c74",
   "src/features/admin/store/components/StoreProductsSection.jsx": "dc41a337880dfcf54ba6356db77d1c8488d65c12",
-  "src/features/admin/store/components/StoreSection.jsx": "06d21d90daad6113115d4278cd816b94cb8b7e46",
+  "src/features/admin/store/components/StoreSection.jsx": "3998e504e6b00fada57b098b6177d60cedb7faf3",
   "src/features/admin/store/useAdminStoreCategoriesVM.js": "c489bdc00d6eda1fa9366f3ecaa9e0b866fb423f",
   "src/features/admin/store/useAdminStoreProductsVM.js": "7c3a5cb3ed8e3eb51e2a44e247f42b05b21fcd25",
   "src/features/auth/CallbackPage.jsx": "ae80d157808ac63757c9e9ea700365473c88e119",
@@ -728,6 +747,7 @@ export default defineConfig([
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slider": "^1.3.6",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-switch": "^1.2.6",
@@ -822,7 +842,7 @@ function App() {
           <Route path="/manual" element={<ManualPage />} />
           <Route path="/manual/:slug" element={<ManualPage />} />
           <Route path="/calendario" element={<CalendarPage />} />
-          <Route path="/eventos/:id" element={<EventPage />} />
+          <Route path="/eventos/:slug" element={<EventPage />} />
           <Route path="/provas" element={<ExamBankPage />} />
           <Route path="/loja" element={<StorePage />} />
           <Route path="/loja/produto/:slug" element={<ProductDetailPage />} />
@@ -1622,6 +1642,161 @@ export {
 }
 ```
 
+## 📄 src/components/ui/dropdown-menu.jsx
+```jsx
+import * as React from "react"
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
+import { Check, ChevronRight, Circle } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+const DropdownMenu = DropdownMenuPrimitive.Root
+
+const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
+
+const DropdownMenuGroup = DropdownMenuPrimitive.Group
+
+const DropdownMenuPortal = DropdownMenuPrimitive.Portal
+
+const DropdownMenuSub = DropdownMenuPrimitive.Sub
+
+const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
+
+const DropdownMenuSubTrigger = React.forwardRef(({ className, inset, children, ...props }, ref) => (
+  <DropdownMenuPrimitive.SubTrigger
+    ref={ref}
+    className={cn(
+      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent",
+      inset && "pl-8",
+      className
+    )}
+    {...props}>
+    {children}
+    <ChevronRight className="ml-auto h-4 w-4" />
+  </DropdownMenuPrimitive.SubTrigger>
+))
+DropdownMenuSubTrigger.displayName =
+  DropdownMenuPrimitive.SubTrigger.displayName
+
+const DropdownMenuSubContent = React.forwardRef(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.SubContent
+    ref={ref}
+    className={cn(
+      "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      className
+    )}
+    {...props} />
+))
+DropdownMenuSubContent.displayName =
+  DropdownMenuPrimitive.SubContent.displayName
+
+const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, ...props }, ref) => (
+  <DropdownMenuPrimitive.Content
+    ref={ref}
+    sideOffset={sideOffset}
+    className={cn(
+      "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      className
+    )}
+    {...props} />
+))
+DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
+
+const DropdownMenuItem = React.forwardRef(({ className, inset, ...props }, ref) => (
+  <DropdownMenuPrimitive.Item
+    ref={ref}
+    className={cn(
+      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      inset && "pl-8",
+      className
+    )}
+    {...props} />
+))
+DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
+
+const DropdownMenuCheckboxItem = React.forwardRef(({ className, children, checked, ...props }, ref) => (
+  <DropdownMenuPrimitive.CheckboxItem
+    ref={ref}
+    className={cn(
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      className
+    )}
+    checked={checked}
+    {...props}>
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <DropdownMenuPrimitive.ItemIndicator>
+        <Check className="h-4 w-4" />
+      </DropdownMenuPrimitive.ItemIndicator>
+    </span>
+    {children}
+  </DropdownMenuPrimitive.CheckboxItem>
+))
+DropdownMenuCheckboxItem.displayName =
+  DropdownMenuPrimitive.CheckboxItem.displayName
+
+const DropdownMenuRadioItem = React.forwardRef(({ className, children, ...props }, ref) => (
+  <DropdownMenuPrimitive.RadioItem
+    ref={ref}
+    className={cn(
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      className
+    )}
+    {...props}>
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <DropdownMenuPrimitive.ItemIndicator>
+        <Circle className="h-2 w-2 fill-current" />
+      </DropdownMenuPrimitive.ItemIndicator>
+    </span>
+    {children}
+  </DropdownMenuPrimitive.RadioItem>
+))
+DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName
+
+const DropdownMenuLabel = React.forwardRef(({ className, inset, ...props }, ref) => (
+  <DropdownMenuPrimitive.Label
+    ref={ref}
+    className={cn("px-2 py-1.5 text-sm font-semibold", inset && "pl-8", className)}
+    {...props} />
+))
+DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
+
+const DropdownMenuSeparator = React.forwardRef(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.Separator
+    ref={ref}
+    className={cn("-mx-1 my-1 h-px bg-muted", className)}
+    {...props} />
+))
+DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
+
+const DropdownMenuShortcut = ({
+  className,
+  ...props
+}) => (
+  <span
+    className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
+    {...props} />
+)
+DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
+
+export {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuGroup,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuRadioGroup,
+}
+```
+
 ## 📄 src/components/ui/input.jsx
 ```jsx
 import * as React from "react"
@@ -1804,6 +1979,156 @@ const ScrollBar = React.forwardRef(({ className, orientation = "vertical", ...pr
 ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName
 
 export { ScrollArea, ScrollBar }
+```
+
+## 📄 src/components/ui/select.jsx
+```jsx
+import * as React from "react"
+import * as SelectPrimitive from "@radix-ui/react-select"
+import { Check, ChevronDown, ChevronUp } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+const Select = SelectPrimitive.Root
+
+const SelectGroup = SelectPrimitive.Group
+
+const SelectValue = SelectPrimitive.Value
+
+const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      className
+    )}
+    {...props}>
+    {children}
+    <SelectPrimitive.Icon asChild>
+      <ChevronDown className="h-4 w-4 opacity-50" />
+    </SelectPrimitive.Icon>
+  </SelectPrimitive.Trigger>
+))
+SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
+
+const SelectScrollUpButton = React.forwardRef(({ className, ...props }, ref) => (
+  <SelectPrimitive.ScrollUpButton
+    ref={ref}
+    className={cn("flex cursor-default items-center justify-center py-1", className)}
+    {...props}>
+    <ChevronUp className="h-4 w-4" />
+  </SelectPrimitive.ScrollUpButton>
+))
+SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
+
+const SelectScrollDownButton = React.forwardRef(({ className, ...props }, ref) => (
+  <SelectPrimitive.ScrollDownButton
+    ref={ref}
+    className={cn("flex cursor-default items-center justify-center py-1", className)}
+    {...props}>
+    <ChevronDown className="h-4 w-4" />
+  </SelectPrimitive.ScrollDownButton>
+))
+SelectScrollDownButton.displayName =
+  SelectPrimitive.ScrollDownButton.displayName
+
+const SelectContent = React.forwardRef(({ className, children, position = "popper", ...props }, ref) => (
+  <SelectPrimitive.Portal>
+    <SelectPrimitive.Content
+      ref={ref}
+      className={cn(
+        "relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-select-content-transform-origin]",
+        position === "popper" &&
+          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+        className
+      )}
+      position={position}
+      {...props}>
+      <SelectScrollUpButton />
+      <SelectPrimitive.Viewport
+        className={cn("p-1", position === "popper" &&
+          "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]")}>
+        {children}
+      </SelectPrimitive.Viewport>
+      <SelectScrollDownButton />
+    </SelectPrimitive.Content>
+  </SelectPrimitive.Portal>
+))
+SelectContent.displayName = SelectPrimitive.Content.displayName
+
+const SelectLabel = React.forwardRef(({ className, ...props }, ref) => (
+  <SelectPrimitive.Label
+    ref={ref}
+    className={cn("px-2 py-1.5 text-sm font-semibold", className)}
+    {...props} />
+))
+SelectLabel.displayName = SelectPrimitive.Label.displayName
+
+const SelectItem = React.forwardRef(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Item
+    ref={ref}
+    className={cn(
+      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      className
+    )}
+    {...props}>
+    <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+      <SelectPrimitive.ItemIndicator>
+        <Check className="h-4 w-4" />
+      </SelectPrimitive.ItemIndicator>
+    </span>
+    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+  </SelectPrimitive.Item>
+))
+SelectItem.displayName = SelectPrimitive.Item.displayName
+
+const SelectSeparator = React.forwardRef(({ className, ...props }, ref) => (
+  <SelectPrimitive.Separator
+    ref={ref}
+    className={cn("-mx-1 my-1 h-px bg-muted", className)}
+    {...props} />
+))
+SelectSeparator.displayName = SelectPrimitive.Separator.displayName
+
+export {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
+}
+```
+
+## 📄 src/components/ui/separator.jsx
+```jsx
+import * as React from "react"
+import * as SeparatorPrimitive from "@radix-ui/react-separator"
+
+import { cn } from "@/lib/utils"
+
+const Separator = React.forwardRef((
+  { className, orientation = "horizontal", decorative = true, ...props },
+  ref
+) => (
+  <SeparatorPrimitive.Root
+    ref={ref}
+    decorative={decorative}
+    orientation={orientation}
+    className={cn(
+      "shrink-0 bg-border",
+      orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
+      className
+    )}
+    {...props} />
+))
+Separator.displayName = SeparatorPrimitive.Root.displayName
+
+export { Separator }
 ```
 
 ## 📄 src/components/ui/sheet.jsx
@@ -2477,7 +2802,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-export function ConfirmDeleteDialog({ open, onOpenChange, onConfirm, title, description, confirmText }) {
+export function ConfirmDeleteDialog({ open, onOpenChange, onConfirm, title, description, confirmText, variant }) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -2491,7 +2816,7 @@ export function ConfirmDeleteDialog({ open, onOpenChange, onConfirm, title, desc
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction 
             onClick={onConfirm}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className={variant || "bg-destructive text-destructive-foreground hover:bg-destructive/90"}
           >
             {confirmText || 'Excluir'}
           </AlertDialogAction>
@@ -2517,7 +2842,6 @@ export function DatePicker({ value, onChange, error, label, placeholder = "Selec
     <div>
       {label && (
         <label className="block text-sm font-medium mb-2 flex items-center gap-2">
-          <CalendarIcon className="h-4 w-4" />
           {label}
         </label>
       )}
@@ -2616,9 +2940,9 @@ export function TimeInput({ value, onChange, onError, error, placeholder = "00:0
   const handleBlur = (e) => {
     const val = e.target.value;
     if (val && !/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val)) {
-      onError('Formato inválido. Use HH:MM (ex: 09:30)');
+      if (onError) onError('Formato inválido. Use HH:MM (ex: 09:30)');
     } else {
-      onError(null);
+      if (onError) onError(null);
     }
   };
 
@@ -3989,6 +4313,7 @@ import { DatePicker } from '../../../components/DatePicker';
 import { TimeInput } from '../../../components/TimeInput';
 import { SeveritySelector } from './SeveritySelector';
 import { WarningPreview } from './WarningPreview';
+import { combineDateAndTime } from '@/shared/utils/helpers';
 
 export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading, editingWarning }) {
   const [formData, setFormData] = useState({
@@ -4046,11 +4371,8 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
     }
 
     if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate);
-      start.setHours(...(formData.startTime || '00:00').split(':').map(Number), 0);
-      
-      const end = new Date(formData.endDate);
-      end.setHours(...(formData.endTime || '23:59').split(':').map(Number), 59);
+      const start = combineDateAndTime(formData.startDate, formData.startTime, '00:00');
+      const end = combineDateAndTime(formData.endDate, formData.endTime, '23:59');
       
       if (end <= start) {
         newErrors.endDate = 'A data de término deve ser posterior à data de início';
@@ -4066,12 +4388,9 @@ export function CreateWarningModal({ open, onClose, onCreate, onUpdate, loading,
     
     if (!validate()) return;
 
-    // Monta as datas ISO
-    const startsAt = new Date(formData.startDate);
-    startsAt.setHours(...(formData.startTime || '00:00').split(':').map(Number), 0);
-    
-    const expiresAt = new Date(formData.endDate);
-    expiresAt.setHours(...(formData.endTime || '23:59').split(':').map(Number), 59);
+    // Monta as datas ISO usando valores padrão se hora estiver vazia
+    const startsAt = combineDateAndTime(formData.startDate, formData.startTime, '00:00');
+    const expiresAt = combineDateAndTime(formData.endDate, formData.endTime, '23:59');
 
     const dto = {
       markdownText: formData.markdownText,
@@ -4325,6 +4644,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import ReactMarkdown from 'react-markdown';
 import { Warning } from '../Warning';
+import { SEVERITY_STYLES, SEVERITY_LABELS } from '../models/WarningSeverity';
 
 export function WarningItem({ warning, onEdit, onDelete, onExpire }) {
   const warningObj = new Warning(warning);
@@ -4340,23 +4660,9 @@ export function WarningItem({ warning, onEdit, onDelete, onExpire }) {
   };
 
   const getSeverityBadge = () => {
-    const labels = {
-      CRITICAL: 'Crítico',
-      HIGH: 'Alto',
-      MEDIUM: 'Médio',
-      LOW: 'Baixo',
-    };
-    
-    const colors = {
-      CRITICAL: 'bg-gray-200 text-gray-900 border-gray-900',
-      HIGH: 'bg-red-100 text-red-800 border-red-300',
-      MEDIUM: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-      LOW: 'bg-blue-100 text-blue-800 border-blue-300',
-    };
-
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${colors[warning.severityLevel]}`}>
-        {labels[warning.severityLevel]}
+      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${SEVERITY_STYLES[warning.severityLevel] || 'bg-gray-100'}`}>
+        {SEVERITY_LABELS[warning.severityLevel] || warning.severityLevel}
       </span>
     );
   };
@@ -4705,6 +5011,33 @@ export function WarningsSection({
 }
 ```
 
+## 📄 src/features/admin/dashboard/warning/models/WarningSeverity.js
+```javascript
+export const WarningSeverity = {
+    CRITICAL: 'CRITICAL',
+    HIGH: 'HIGH',
+    MEDIUM: 'MEDIUM',
+    LOW: 'LOW',
+    INFO: 'INFO',
+};
+
+export const SEVERITY_STYLES = {
+    [WarningSeverity.CRITICAL]: 'bg-red-500 text-white hover:bg-red-600',
+    [WarningSeverity.HIGH]: 'bg-orange-500 text-white hover:bg-orange-600',
+    [WarningSeverity.MEDIUM]: 'bg-yellow-500 text-white hover:bg-yellow-600',
+    [WarningSeverity.LOW]: 'bg-blue-500 text-white hover:bg-blue-600',
+    [WarningSeverity.INFO]: 'bg-gray-500 text-white hover:bg-gray-600',
+};
+
+export const SEVERITY_LABELS = {
+    [WarningSeverity.CRITICAL]: 'Crítico',
+    [WarningSeverity.HIGH]: 'Alto',
+    [WarningSeverity.MEDIUM]: 'Médio',
+    [WarningSeverity.LOW]: 'Baixo',
+    [WarningSeverity.INFO]: 'Info',
+};
+```
+
 ## 📄 src/features/admin/dashboard/warning/useAdminWarningsVM.js
 ```javascript
 import { useState, useEffect } from 'react';
@@ -4927,251 +5260,1316 @@ export function useAdminWarningsVM() {
 
 ## 📄 src/features/admin/event/AdminEventsPage.jsx
 ```jsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAdminEventsVM } from "./useAdminEventsVM";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { EventItem } from "./components/EventItem";
+import { useAdminEventsVM } from './useAdminEventsVM';
+import { EventForm } from './components/EventForm'; 
+import { EventItem } from './components/EventItem';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Plus, PenTool, Trash2, Search, X } from 'lucide-react';
 
 export function AdminEventsPage() {
-  const {
-    events,
-    loading,
-    creating,
-    modalOpen,
-    setModalOpen,
-    createEvent,
-    updateEvent,
-    deleteEvent,
-  } = useAdminEventsVM();
+  const vm = useAdminEventsVM();
 
-  if (loading) {
+  if (vm.viewMode === 'FORM') {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-      </div>
+      <EventForm 
+        key={vm.selectedEvent ? vm.selectedEvent.id : 'new-event'}
+        initialData={vm.selectedEvent}
+        onSubmit={vm.handleSubmit}
+        onCancel={vm.handleCancelForm}
+        onDelete={vm.deleteEvent}
+        loading={vm.loading}
+      />
     );
   }
 
-  return (
-    <div className="space-y-4 md:space-y-6">
-      <h1 className="text-2xl md:text-3xl font-bold">Gerenciamento de Eventos</h1>
+  // Componente Auxiliar para Tags de Filtro
+  const FilterTag = ({ label, active, onClick }) => (
+    <Badge 
+      variant={active ? "default" : "outline"}
+      className={`cursor-pointer px-4 py-1.5 text-sm hover:bg-primary/90 hover:text-primary-foreground transition-all ${
+        !active && "hover:bg-muted text-muted-foreground"
+      }`}
+      onClick={onClick}
+    >
+      {label}
+    </Badge>
+  );
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg md:text-xl flex items-center gap-2">
-              Eventos atuais e previstos
-            </CardTitle>
-            <Button onClick={() => setModalOpen(true)} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Evento
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {events.length === 0 ? (
-            <div className="text-center py-8 md:py-12">
-              <p className="text-sm md:text-base text-muted-foreground mb-4">
-                Nenhum evento programado.
-              </p>
-              <Button onClick={() => setModalOpen(true)} size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Criar Primeiro Evento
+  return (
+    <div className="space-y-6 animate-in fade-in duration-500">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-3xl font-bold tracking-tight">Gerenciar Eventos</h1>
+        <Button onClick={vm.handleCreateClick}>
+          <Plus className="w-4 h-4 mr-2" /> Novo Evento
+        </Button>
+      </div>
+
+      {/* Alerta de Rascunho */}
+      {vm.hasDraft && (
+        <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-950/20 text-orange-800 dark:text-orange-200">
+          <PenTool className="h-4 w-4" />
+          <AlertTitle>Rascunho encontrado!</AlertTitle>
+          <AlertDescription className="flex items-center justify-between mt-2">
+            <span>Você tem um evento não finalizado salvo.</span>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="bg-transparent border-orange-300 hover:bg-orange-100" onClick={vm.discardDraft}>
+                <Trash2 className="w-3 h-3 mr-1" /> Descartar
+              </Button>
+              <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white" onClick={vm.handleCreateClick}>
+                Continuar Editando
               </Button>
             </div>
-          ) : (
-            <div className="w-full flex gap-4 flex-wrap">
-              {events.map((event => (
-                <EventItem
-                  key={event.id}
-                  event={event}
-                  onUpdate={updateEvent}
-                  onDelete={deleteEvent}
-                />
-              )))}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* --- SISTEMA DE FILTROS POR TAGS --- */}
+      <div className="space-y-4">
+        {/* Busca e Limpar */}
+        <div className="relative max-w-md">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input 
+                placeholder="Buscar por título ou local..." 
+                className="pl-8"
+                value={vm.searchTerm}
+                onChange={(e) => vm.setSearchTerm(e.target.value)}
+            />
+            {vm.searchTerm && (
+                <button 
+                    onClick={() => vm.setSearchTerm('')}
+                    className="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground"
+                >
+                    <X className="w-4 h-4" />
+                </button>
+            )}
+        </div>
+
+        {/* Grupos de Tags */}
+        <div className="flex flex-col gap-3">
+            {/* Status (Temporal) */}
+            <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-xs font-semibold text-muted-foreground uppercase mr-2 w-20">Período:</span>
+                <FilterTag label="Todos" active={vm.filters.period === 'ALL'} onClick={() => vm.setFilter('period', 'ALL')} />
+                <FilterTag label="Próximos" active={vm.filters.period === 'UPCOMING'} onClick={() => vm.setFilter('period', 'UPCOMING')} />
+                <FilterTag label="Passados" active={vm.filters.period === 'PAST'} onClick={() => vm.setFilter('period', 'PAST')} />
             </div>
-          )}
-        </CardContent>
-      </Card>
+
+            {/* Tipo */}
+            <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-xs font-semibold text-muted-foreground uppercase mr-2 w-20">Tipo:</span>
+                <FilterTag label="Todos" active={vm.filters.type === 'ALL'} onClick={() => vm.setFilter('type', 'ALL')} />
+                <FilterTag label="CACo" active={vm.filters.type === 'CACO'} onClick={() => vm.setFilter('type', 'CACO')} />
+                <FilterTag label="IC" active={vm.filters.type === 'IC'} onClick={() => vm.setFilter('type', 'IC')} />
+                <FilterTag label="Feriado" active={vm.filters.type === 'FERIADO'} onClick={() => vm.setFilter('type', 'FERIADO')} />
+            </div>
+
+            {/* Importância */}
+            <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-xs font-semibold text-muted-foreground uppercase mr-2 w-20">Destaque:</span>
+                <FilterTag label="Todos" active={vm.filters.importance === 'ALL'} onClick={() => vm.setFilter('importance', 'ALL')} />
+                <FilterTag label="Importante" active={vm.filters.importance === 'MAJOR'} onClick={() => vm.setFilter('importance', 'MAJOR')} />
+                <FilterTag label="Comum" active={vm.filters.importance === 'MINOR'} onClick={() => vm.setFilter('importance', 'MINOR')} />
+            </div>
+        </div>
+      </div>
+
+      {/* Lista de Eventos (Unificada) */}
+      {vm.loading ? (
+        <div className="py-20 text-center text-muted-foreground">Carregando eventos...</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
+            {vm.filteredList.length === 0 ? (
+                 <div className="col-span-full text-center py-12 border-2 border-dashed rounded-lg text-muted-foreground">
+                    Nenhum evento encontrado com os filtros selecionados.
+                 </div>
+            ) : (
+                vm.filteredList.map(event => (
+                    <EventItem 
+                        key={event.id} 
+                        event={event} 
+                        onUpdate={() => vm.handleEditClick(event)} 
+                        onDelete={() => vm.deleteEvent(event.id)} 
+                    />
+                ))
+            )}
+        </div>
+      )}
     </div>
   );
 }
 ```
 
-## 📄 src/features/admin/event/components/EventItem.jsx
-```jsx
-import { ImageIcon } from "lucide-react";
+## 📄 src/features/admin/event/Event.js
+```javascript
+export class Event {
+  constructor(data) {
+    this.id = data.id;
+    this.title = data.title;
+    this.slug = data.slug;
+    this.description = data.description;
+    this.startDate = data.startDate;
+    this.endDate = data.endDate;
+    this.location = data.location;
+    this.locationUrl = data.locationUrl;
+    this.coverImage = data.coverImage;
+    this.type = data.type; // 'CACO', 'IC', 'FERIADO'
+    this.importance = data.importance; // 'MAJOR', 'MINOR'
+    this.status = data.status; // 'SCHEDULED', 'HAPPENING', 'ENDED'
+    this.galleryItems = data.galleryItems || [];
+  }
 
-export function EventItem({ id, event, onUpdate, onDelete }) {
-    return (
-        <>
-            <div className="border rounded-lg overflow-hidden max-w-64 w-full">
-                <div className="aspect-square bg-muted relative">
-                    {event.coverImage ? (
-                        <img
-                            src={event.coverImage}
-                            alt={event.name}
-                            className="w-full h-full object-cover"
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                            <ImageIcon className="h-10 w-10 text-muted-foreground/30" />
-                        </div>
-                    )}
-                </div>
-            </div>
-        </>
-    );
+  static fromDTO(dto) {
+    return new Event({
+      ...dto,
+      galleryItems: dto.galleryItems || []
+    });
+  }
+
+  static fromDTOArray(dtos) {
+    return dtos.map(dto => Event.fromDTO(dto));
+  }
+
+  clone(updates = {}) {
+    return new Event({ ...this, ...updates });
+  }
+
+  // Propriedades computadas
+  get isMajor() {
+    return this.importance === 'MAJOR';
+  }
+
+  get isMinor() {
+    return this.importance === 'MINOR';
+  }
+
+  get isScheduled() {
+    return this.status === 'SCHEDULED';
+  }
+
+  get isHappening() {
+    return this.status === 'HAPPENING';
+  }
+
+  get isEnded() {
+    return this.status === 'ENDED';
+  }
+
+  get isCacoEvent() {
+    return this.type === 'CACO';
+  }
+
+  get isIcEvent() {
+    return this.type === 'IC';
+  }
+
+  get isHoliday() {
+    return this.type === 'FERIADO';
+  }
+
+  get hasCoverImage() {
+    return !!this.coverImage;
+  }
+
+  get galleryImageUrls() {
+    return this.galleryItems
+      .filter(item => item.type === 'IMAGE')
+      .map(item => item.mediaUrl);
+  }
+
+  get formattedStartDate() {
+    return this.formatDateTime(this.startDate);
+  }
+
+  get formattedEndDate() {
+    return this.formatDateTime(this.endDate);
+  }
+
+  get durationInHours() {
+    if (!this.startDate || !this.endDate) return 0;
+    const start = new Date(this.startDate);
+    const end = new Date(this.endDate);
+    return Math.round((end - start) / (1000 * 60 * 60));
+  }
+
+  // Método auxiliar para formatação
+  formatDateTime(dateTime) {
+    if (!dateTime) return '';
+    const date = new Date(dateTime);
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  // Validação
+  isValid() {
+    return this.title && 
+           this.startDate && 
+           this.endDate && 
+           new Date(this.startDate) < new Date(this.endDate);
+  }
+
+  // Para formulários
+  toFormData() {
+    const formData = new FormData();
+    formData.append('title', this.title || '');
+    formData.append('slug', this.slug || '');
+    formData.append('description', this.description || '');
+    formData.append('startDate', this.startDate || '');
+    formData.append('endDate', this.endDate || '');
+    formData.append('location', this.location || '');
+    formData.append('locationUrl', this.locationUrl || '');
+    formData.append('type', this.type || 'CACO');
+    formData.append('importance', this.importance || 'MINOR');
+    formData.append('status', this.status || 'SCHEDULED');
+    
+    // Para arquivos (coverImage), você precisa lidar separadamente
+    return formData;
+  }
 }
 ```
 
-## 📄 src/features/admin/event/components/EventModal.jsx
+## 📄 src/features/admin/event/components/EventForm.jsx
 ```jsx
-import { useState } from "react";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
+import { MDXEditor } from '@/shared/components/MDXEditor';
+import { useToast } from '@/components/ui/use-toast';
+import {
+    CalendarIcon, Upload, MapPin, Type, AlertCircle, Link as LinkIcon,
+    Save, Trash2, ArrowLeft, Image as ImageIcon, ExternalLink, Eraser, Crop, X
+} from 'lucide-react';
+import Cropper from 'react-easy-crop';
+import { combineDateAndTime, toLocalISOString } from '@/shared/utils/helpers';
+import { DatePicker } from '../../components/DatePicker';
+import { TimeInput } from '../../components/TimeInput';
+import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
+import { useImageCropper } from '@/shared/hooks/useImageCropper';
+import { extractUrlFromIframe } from '@/lib/utils';
 
-export function EventModal({ isOpen, onClose, onSubmit, initialData }) {
-    const [title, setTitle] = useState(initialData ? initialData.title : '');
-    const [date, setDate] = useState(initialData ? initialData.date : '');
-    const [loading, setLoading] = useState(false);
-    const isEditing = Boolean(initialData);
+const DRAFT_KEY = 'event-draft';
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        const eventData = { title, date };
-        await onSubmit(eventData);
-        setLoading(false);
-        onClose();
+const EVENT_TYPES = [
+    { value: 'CACO', label: 'Evento CACo' },
+    { value: 'IC', label: 'IC' },
+    { value: 'FERIADO', label: 'Feriado' },
+];
+
+const IMPORTANCE_TYPES = [
+    { value: 'MAJOR', label: 'Importante' },
+    { value: 'MINOR', label: 'Comum' },
+];
+
+const STATUS_TYPES = [
+    { value: 'SCHEDULED', label: 'Agendado' },
+    { value: 'HAPPENING', label: 'Ocorrendo' },
+    { value: 'ENDED', label: 'Finalizado' },
+];
+
+const slugify = (text) => {
+    return text
+        .toString()
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w-]+/g, '')
+        .replace(/--+/g, '-');
+};
+
+const ErrorMessage = ({ message }) => {
+    if (!message) return null;
+    return <p className="text-sm font-medium text-destructive mt-1 animate-in slide-in-from-top-1 fade-in">{message}</p>;
+};
+
+export function EventForm({
+    initialData,
+    onSubmit,
+    onCancel,
+    loading,
+    onDelete
+}) {
+    const { toast } = useToast();
+
+    // --- ESTADOS DE IMAGEM ---
+    const imageCropper = useImageCropper(initialData?.coverImage || null);
+    
+    // --- ESTADOS DO FORMULÁRIO ---
+    const [title, setTitle] = useState('');
+    const [slug, setSlug] = useState('');
+    const [slugEdited, setSlugEdited] = useState(false);
+    const [description, setDescription] = useState('');
+    const [editorKey, setEditorKey] = useState(0);
+
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
+    const [location, setLocation] = useState('');
+    const [locationUrl, setLocationUrl] = useState('');
+    const [type, setType] = useState('CACO');
+    const [importance, setImportance] = useState('MINOR');
+    const [status, setStatus] = useState('SCHEDULED');
+    const [differentDay, setDifferentDay] = useState(false);
+
+    const [errors, setErrors] = useState({});
+
+    // Dialogs
+    const [exitDialogOpen, setExitDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [discardDraftDialogOpen, setDiscardDraftDialogOpen] = useState(false);
+
+    // CARREGAMENTO DE DADOS
+    useEffect(() => {
+        if (initialData) {
+            setTitle(initialData.title || '');
+            setSlug(initialData.slug || '');
+            setDescription(initialData.description || '');
+            setEditorKey(prev => prev + 1);
+            setLocation(initialData.location || '');
+            setLocationUrl(initialData.locationUrl || '');
+            setType(initialData.type || 'CACO');
+            setImportance(initialData.importance || 'MINOR');
+            setStatus(initialData.status || 'SCHEDULED');
+
+            if (initialData.startDate) {
+                const start = new Date(initialData.startDate);
+                setStartDate(start);
+                setStartTime(formatTime(start));
+            }
+
+            if (initialData.endDate) {
+                const end = new Date(initialData.endDate);
+                setEndDate(end);
+                setEndTime(formatTime(end));
+                if (initialData.startDate) {
+                    const start = new Date(initialData.startDate);
+                    setDifferentDay(start.toDateString() !== end.toDateString());
+                }
+            }
+        } else {
+            const savedDraft = localStorage.getItem(DRAFT_KEY);
+            if (savedDraft) {
+                try {
+                    const draft = JSON.parse(savedDraft);
+                    if (draft.title) setTitle(draft.title);
+                    if (draft.slug) setSlug(draft.slug);
+                    if (draft.description) {
+                        setDescription(draft.description);
+                        setEditorKey(prev => prev + 1);
+                    }
+                    if (draft.location) setLocation(draft.location);
+                    if (draft.locationUrl) setLocationUrl(draft.locationUrl);
+                    if (draft.type) setType(draft.type);
+                    if (draft.importance) setImportance(draft.importance);
+                    if (draft.startTime) setStartTime(draft.startTime);
+                    if (draft.endTime) setEndTime(draft.endTime);
+                    if (draft.differentDay) setDifferentDay(draft.differentDay);
+                    if (draft.startDate) setStartDate(new Date(draft.startDate));
+                    if (draft.endDate) setEndDate(new Date(draft.endDate));
+
+                    // Nota: Imagens não são salvas no rascunho do localStorage por serem pesadas
+                } catch (e) {
+                    console.error("Erro ao ler rascunho", e);
+                }
+            }
+        }
+    }, [initialData]);
+
+   // Salvar rascunho com DEBOUNCE (atraso)
+    useEffect(() => {
+        if (!initialData) {
+            // Cria um timer para salvar apenas após 2 segundos sem digitar
+            const timeoutId = setTimeout(() => {
+                if (title || description || startDate) {
+                    const draft = {
+                        title, slug, description, location, locationUrl,
+                        type, importance, startDate, endDate, startTime, endTime, differentDay
+                    };
+                    console.log("Salvando rascunho..."); // Opcional: para debug
+                    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+                }
+            }, 2000);
+
+            // Se o usuário digitar novamente antes de 2s, limpa o timer anterior
+            return () => clearTimeout(timeoutId);
+        }
+    }, [initialData, title, slug, description, location, locationUrl, type, importance, startDate, endDate, startTime, endTime, differentDay]);
+
+    const formatTime = (date) => date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+    const handleDiscardDraft = () => {
+        localStorage.removeItem(DRAFT_KEY);
+        setTitle('');
+        setSlug('');
+        setDescription('');
+        setEditorKey(prev => prev + 1);
+        setLocation('');
+        setLocationUrl('');
+        setStartDate(null);
+        setEndDate(null);
+        setStartTime('');
+        setEndTime('');
+
+        // Limpar imagem
+        imageCropper.reset();
+
+        setDiscardDraftDialogOpen(false);
+        toast({ title: "Rascunho limpo" });
     };
 
-    if (!isOpen) return null;
+    const handleTitleChange = (e) => {
+        const newTitle = e.target.value;
+        setTitle(newTitle);
+        if (!slugEdited) setSlug(slugify(newTitle));
+        if (errors.title) setErrors(prev => ({ ...prev, title: null }));
+    };
+
+    const handleSlugChange = (e) => {
+        setSlug(slugify(e.target.value));
+        setSlugEdited(true);
+        if (errors.slug) setErrors(prev => ({ ...prev, slug: null }));
+    };
+
+    const handleBackClick = () => {
+        if (!initialData) {
+            setExitDialogOpen(true);
+        } else {
+            onCancel();
+        }
+    };
+
+    const handleLocationUrlChange = (e) => {
+        let value = e.target.value;
+        const extracted = extractUrlFromIframe(value);
+        if (extracted !== value) {
+            toast({
+                title: "Link do mapa detectado",
+                description: "O link foi extraído automaticamente do código iframe.",
+            });
+            value = extracted;
+        }
+        setLocationUrl(value);
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!title.trim()) newErrors.title = "O título é obrigatório.";
+        if (!slug.trim()) newErrors.slug = "O slug é obrigatório.";
+        if (!description.trim()) newErrors.description = "A descrição é obrigatória.";
+        if (!startDate) newErrors.startDate = "Data de início obrigatória.";
+
+        if (differentDay && !endDate) newErrors.endDate = "Data de término obrigatória.";
+
+        if (!newErrors.startDate && !newErrors.startTime && !newErrors.endTime) {
+            const startDateTime = combineDateAndTime(startDate, startTime, '00:00');
+            const endDateTime = differentDay
+                ? combineDateAndTime(endDate, endTime, '23:59')
+                : combineDateAndTime(startDate, endTime, '23:59');
+
+            if (endDateTime && startDateTime && endDateTime <= startDateTime) {
+                newErrors.dateLogic = "A data final deve ser posterior à data inicial.";
+            }
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleFormSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) {
+            toast({
+                variant: "destructive",
+                title: "Campos inválidos",
+                description: "Por favor, verifique os campos em vermelho.",
+            });
+
+            setTimeout(() => {
+                const firstErrorElement = document.querySelector('[data-error="true"]');
+                if (firstErrorElement) {
+                    firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstErrorElement.focus({ preventScroll: true });
+                }
+            }, 100);
+            return;
+        }
+
+        // Combina data e hora usando valores padrão se hora estiver vazia
+        const startDateTime = combineDateAndTime(startDate, startTime, '00:00');
+        const endDateTime = differentDay
+            ? combineDateAndTime(endDate, endTime, '23:59')
+            : combineDateAndTime(startDate, endTime, '23:59');
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('slug', slug);
+        formData.append('description', description);
+
+        if (startDateTime) formData.append('startDate', toLocalISOString(startDateTime));
+        if (endDateTime) formData.append('endDate', toLocalISOString(endDateTime));
+
+        formData.append('location', location);
+        formData.append('locationUrl', locationUrl);
+        formData.append('type', type);
+        formData.append('importance', importance);
+
+        if (initialData) {
+            formData.append('status', status);
+            // Flag de remoção (para DTO)
+            formData.append('removeCoverImage', imageCropper.isRemoved.toString());
+        }
+
+        // Se tiver arquivo novo, envia.
+        if (imageCropper.file) {
+            formData.append('coverImage', imageCropper.file);
+        }
+
+        const result = await onSubmit(formData, initialData?.id);
+
+        if (result?.success) {
+            localStorage.removeItem(DRAFT_KEY);
+        }
+    };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg w-full max-w-md">
-                <h2 className="text-xl font-semibold mb-4">
-                    {isEditing ? 'Editar Evento' : 'Criar Evento'}
-                </h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block mb-1">Título</label>
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className="w-full border border-gray-300 rounded px-3 py-2"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-1">Data</label>
-                        <input
-                            type="date"
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            className="w-full border border-gray-300 rounded px-3 py-2"
-                            required
-                        />
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 border border-gray-300 rounded"
-                            disabled={loading}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-primary text-white rounded"
-                            disabled={loading}
-                        >
-                            {loading ? 'Salvando...' : 'Salvar'}
-                        </button>
-                    </div>
-                </form>
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+
+            {/* Cabeçalho */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" onClick={handleBackClick}>
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Voltar
+                    </Button>
+                    <h1 className="text-2xl font-bold tracking-tight">
+                        {initialData ? 'Editar Evento' : 'Novo Evento'}
+                    </h1>
+                </div>
+                <div className="flex gap-2">
+                    {!initialData && (
+                        <Button variant="ghost" className="text-muted-foreground hover:text-destructive" size="sm" onClick={() => setDiscardDraftDialogOpen(true)}>
+                            <Eraser className="w-4 h-4 mr-2" /> Descartar Rascunho
+                        </Button>
+                    )}
+                    {initialData && (
+                        <Button variant="destructive" size="sm" onClick={() => setDeleteDialogOpen(true)} disabled={loading}>
+                            <Trash2 className="w-4 h-4 mr-2" /> Excluir
+                        </Button>
+                    )}
+                </div>
             </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                {/* COLUNA ESQUERDA: Conteúdo */}
+                <div className="lg:col-span-2 space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Informações do Evento</CardTitle>
+                            <CardDescription>Detalhes principais do evento.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className={errors.title ? "text-destructive" : ""}>Título *</Label>
+                                <Input
+                                    value={title}
+                                    onChange={handleTitleChange}
+                                    placeholder="Ex: Recepção de Calouros"
+                                    className={errors.title ? "border-destructive" : ""}
+                                    data-error={!!errors.title}
+                                />
+                                <ErrorMessage message={errors.title} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className={`text-xs font-bold ${errors.slug ? "text-destructive" : "text-muted-foreground"}`}>Slug (URL-Friendly) *</Label>
+                                <Input
+                                    value={slug}
+                                    onChange={handleSlugChange}
+                                    placeholder="Ex: recepcao-de-calouros"
+                                    className={`font-mono text-sm ${errors.slug ? "border-destructive" : ""}`}
+                                    data-error={!!errors.slug}
+                                />
+                                <ErrorMessage message={errors.slug} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className={errors.description ? "text-destructive" : ""}>Descrição (Markdown) *</Label>
+                                <div
+                                    className={`rounded-md ${errors.description ? "border-destructive" : ""}`}
+                                    data-error={!!errors.description}
+                                >
+                                    <MDXEditor
+                                        editorKey={editorKey.toString()}
+                                        value={description}
+                                        onChange={(val) => {
+                                            setDescription(val);
+                                            if (errors.description && val.trim()) setErrors(prev => ({ ...prev, description: null }));
+                                        }}
+                                        placeholder="Descreva o evento..."
+                                    />
+                                </div>
+                                <ErrorMessage message={errors.description} />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><CalendarIcon className="w-5 h-5" /> Data e Horário</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <ErrorMessage message={errors.dateLogic} />
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <div data-error={!!errors.startDate}>
+                                        <DatePicker
+                                            value={startDate}
+                                            onChange={(val) => {
+                                                setStartDate(val);
+                                                if (val) setErrors(prev => ({ ...prev, startDate: null }));
+                                            }}
+                                            label="Data Início *"
+                                            hasError={!!errors.startDate}
+                                        />
+                                    </div>
+                                    <ErrorMessage message={errors.startDate} />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <TimeInput
+                                        value={startTime}
+                                        onChange={(val) => {
+                                            setStartTime(val);
+                                            if (val) setErrors(prev => ({ ...prev, startTime: null }));
+                                        }}
+                                        label="Hora Início *"
+                                        className={errors.startTime ? "border-destructive" : ""}
+                                        data-error={!!errors.startTime}
+                                    />
+                                    <ErrorMessage message={errors.startTime} />
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-2 py-2">
+                                <Switch id="diff-day" checked={differentDay} onCheckedChange={setDifferentDay} />
+                                <Label htmlFor="diff-day">Termina em outro dia?</Label>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {differentDay ? (
+                                    <div className="space-y-1">
+                                        <div data-error={!!errors.endDate}>
+                                            <DatePicker
+                                                value={endDate}
+                                                onChange={(val) => {
+                                                    setEndDate(val);
+                                                    if (val) setErrors(prev => ({ ...prev, endDate: null }));
+                                                }}
+                                                label="Data Término *"
+                                                hasError={!!errors.endDate}
+                                            />
+                                        </div>
+                                        <ErrorMessage message={errors.endDate} />
+                                    </div>
+                                ) : <div className="hidden md:block"></div>}
+
+                                <div className="space-y-1">
+                                    <TimeInput
+                                        value={endTime}
+                                        onChange={(val) => {
+                                            setEndTime(val);
+                                            if (val) setErrors(prev => ({ ...prev, endTime: null }));
+                                        }}
+                                        label="Hora Término *"
+                                        placeholder="23:59"
+                                        className={errors.endTime ? "border-destructive" : ""}
+                                        data-error={!!errors.endTime}
+                                    />
+                                    <ErrorMessage message={errors.endTime} />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* COLUNA DIREITA: Mídia e Configs */}
+                <div className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><ImageIcon className="w-5 h-5" /> Imagem de Capa</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {imageCropper.previewUrl ? (
+                                    <div className="relative group rounded-lg overflow-hidden border aspect-video bg-muted">
+                                        <img src={imageCropper.previewUrl} alt="Cover" className="w-full h-full object-cover" />
+
+                                        {/* Overlay com Ações (Trocar e Remover) */}
+                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                            <Button size="sm" variant="secondary" onClick={() => document.getElementById('cover-upload').click()}>
+                                                Trocar
+                                            </Button>
+                                            <Button size="sm" variant="destructive" onClick={imageCropper.handleRemove} title="Remover imagem">
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:bg-muted/50 transition group"
+                                        onClick={() => document.getElementById('cover-upload').click()}
+                                    >
+                                        <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground group-hover:text-primary transition-colors" />
+                                        <p className="text-sm text-muted-foreground">Clique para enviar (Opcional)</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Formato 16:9 recomendado</p>
+                                    </div>
+                                )}
+                                <input id="cover-upload" type="file" accept="image/*" className="hidden" onChange={imageCropper.handleFileSelect} />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader><CardTitle>Configurações</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label><MapPin className="w-4 h-4 inline mr-1" /> Local (Nome)</Label>
+                                <Input value={location} onChange={e => setLocation(e.target.value)} placeholder="Ex: Auditório Central" />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label><LinkIcon className="w-4 h-4 inline mr-1" /> Link do Mapa</Label>
+                                <div className="flex gap-2">
+                                    <Input value={locationUrl} onChange={handleLocationUrlChange} placeholder="Cole o link ou iframe do Google Maps" />
+                                    {locationUrl && <Button variant="outline" size="icon" asChild><a href={locationUrl} target="_blank" rel="noreferrer"><ExternalLink className="w-4 h-4" /></a></Button>}
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            <div className="space-y-2">
+                                <Label><Type className="w-4 h-4 inline mr-1" /> Tipo</Label>
+                                <div className="flex flex-wrap gap-2">
+                                    {EVENT_TYPES.map(t => (
+                                        <Badge key={t.value} variant={type === t.value ? "default" : "outline"} className="cursor-pointer" onClick={() => setType(t.value)}>{t.label}</Badge>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label><AlertCircle className="w-4 h-4 inline mr-1" /> Importância</Label>
+                                <div className="flex flex-wrap gap-2">
+                                    {IMPORTANCE_TYPES.map(t => (
+                                        <Badge key={t.value} variant={importance === t.value ? "default" : "outline"} className="cursor-pointer" onClick={() => setImportance(t.value)}>{t.label}</Badge>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {initialData && (
+                                <div className="space-y-2 pt-2">
+                                    <Label>Status</Label>
+                                    <select className="w-full border rounded-md p-2 text-sm bg-background" value={status} onChange={e => setStatus(e.target.value)}>
+                                        {STATUS_TYPES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                                    </select>
+                                </div>
+                            )}
+                        </CardContent>
+                        <CardFooter className="bg-muted/20 border-t p-4 flex justify-end gap-3">
+                            <Button variant="outline" onClick={handleBackClick} disabled={loading}>Cancelar</Button>
+                            <Button onClick={handleFormSubmit} disabled={loading}>{loading ? 'Salvando...' : <><Save className="w-4 h-4 mr-2" /> Salvar</>}</Button>
+                        </CardFooter>
+                    </Card>
+                </div>
+            </div>
+
+            {/* --- MODAL DE RECORTE (Mantido o layout solicitado) --- */}
+            <Dialog open={imageCropper.isModalOpen} onOpenChange={imageCropper.setIsModalOpen}>
+                <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle>Ajustar Imagem</DialogTitle>
+                        <DialogDescription>Recorte e ajuste a imagem para melhor visualização.</DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4">
+                        <div className="relative h-96 bg-black rounded-lg overflow-hidden border">
+                            <Cropper
+                                image={imageCropper.imageSrc}
+                                crop={imageCropper.crop}
+                                zoom={imageCropper.zoom}
+                                aspect={16 / 9}
+                                onCropChange={imageCropper.setCrop}
+                                onZoomChange={imageCropper.setZoom}
+                                onCropComplete={imageCropper.onCropComplete}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="flex justify-between">
+                                <Label className="text-sm font-medium">Zoom</Label>
+                                <span className="text-xs text-muted-foreground">{imageCropper.zoom.toFixed(1)}x</span>
+                            </div>
+                            <input
+                                type="range"
+                                min={1}
+                                max={3}
+                                step={0.1}
+                                value={imageCropper.zoom}
+                                onChange={(e) => imageCropper.setZoom(Number(e.target.value))}
+                                className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                            />
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:gap-0 mt-4">
+                        <Button
+                            variant="outline"
+                            onClick={imageCropper.handleCancelCrop}
+                        >
+                            Voltar
+                        </Button>
+                        <Button onClick={imageCropper.handleCropConfirm} disabled={imageCropper.loading}>
+                            {imageCropper.loading ? 'Processando...' : <><Crop className="h-4 w-4 mr-2" /> Confirmar Recorte</>}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <ConfirmDeleteDialog
+                open={exitDialogOpen}
+                onOpenChange={setExitDialogOpen}
+                title="Rascunho Salvo"
+                description="Suas alterações foram salvas. Deseja sair?"
+                onConfirm={onCancel}
+                confirmText="Sair"
+                cancelText="Continuar Editando"
+            />
+
+            <ConfirmDeleteDialog
+                open={discardDraftDialogOpen}
+                onOpenChange={setDiscardDraftDialogOpen}
+                title="Descartar Rascunho?"
+                description="Você perderá todo o progresso deste evento novo."
+                onConfirm={handleDiscardDraft}
+                confirmText="Descartar"
+            />
+
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                title="Excluir Evento?"
+                description="Essa ação não pode ser desfeita."
+                onConfirm={() => onDelete(initialData.id)}
+                confirmText="Excluir Definitivamente"
+            />
         </div>
     );
 }
 ```
 
+## 📄 src/features/admin/event/components/EventItem.jsx
+```jsx
+import { useState } from "react";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ConfirmDeleteDialog } from "../../components/ConfirmDeleteDialog"; // Ajuste o caminho conforme necessário
+import { CalendarIcon, MapPin, Image as ImageIcon, Edit2, Trash2, ExternalLink } from "lucide-react";
+
+export function EventItem({ event, onUpdate, onDelete }) {
+  // Estado local para controlar o Dialog de exclusão deste item específico
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  // Ação ao clicar no card (abrir evento)
+  const handleCardClick = () => {
+    if (event.slug) {
+        window.open(`/eventos/${event.slug}`, '_blank');
+    } else {
+        // Fallback ou apenas ignorar se não tiver slug
+        console.warn("Evento sem slug");
+    }
+  };
+
+  const handleDeleteClick = (e) => {
+    e.stopPropagation(); // Impede que o clique no botão abra o card
+    setIsDeleteDialogOpen(true); // Abre o dialog
+  };
+
+  // Cores e Labels
+  const getStatusColor = () => {
+      if (event.isHappening) return "default";
+      if (event.isScheduled) return "secondary";
+      return "outline";
+  };
+
+  const getStatusLabel = () => {
+      if (event.isHappening) return "Acontecendo Agora";
+      if (event.isScheduled) return "Agendado";
+      return "Finalizado";
+  };
+
+  return (
+    <>
+        <Card 
+            className="flex flex-col overflow-hidden hover:shadow-lg transition-all cursor-pointer group border-transparent hover:border-muted-foreground/20"
+            onClick={handleCardClick}
+        >
+        {/* Imagem */}
+        <div className="relative w-full aspect-video bg-muted overflow-hidden">
+            {event.coverImage ? (
+            <img
+                src={event.coverImage}
+                alt={event.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            ) : (
+                <div className="w-full h-full flex items-center justify-center flex-col text-muted-foreground/40">
+                    <ImageIcon className="h-10 w-10 mb-2" />
+                    <span className="text-xs">Sem capa</span>
+                </div>
+            )}
+            
+            <div className="absolute top-2 right-2">
+                <Badge variant={getStatusColor()} className="shadow-sm uppercase text-[10px] tracking-wider">
+                    {getStatusLabel()}
+                </Badge>
+            </div>
+
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <span className="bg-background/80 text-foreground text-xs px-2 py-1 rounded-full flex items-center shadow-sm">
+                    <ExternalLink className="w-3 h-3 mr-1" /> Ver no site
+                </span>
+            </div>
+        </div>
+
+        <CardHeader className="p-4 pb-2">
+            <h3 className="font-bold text-lg leading-tight line-clamp-2 mb-2 group-hover:text-primary transition-colors" title={event.title}>
+                {event.title}
+            </h3>
+            
+            <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="text-[10px] px-1.5 h-5 border-primary/20 text-primary/80">
+                    {event.type}
+                </Badge>
+                {event.importance === 'MAJOR' && (
+                    <Badge variant="destructive" className="text-[10px] px-1.5 h-5">
+                        ★ Importante
+                    </Badge>
+                )}
+            </div>
+        </CardHeader>
+
+        <CardContent className="p-4 py-2 flex-1 space-y-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+                <CalendarIcon className="w-4 h-4 shrink-0" />
+                <span>
+                    {new Date(event.startDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                    {' • '}
+                    {new Date(event.startDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute:'2-digit' })}
+                </span>
+            </div>
+            {event.location && (
+                <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 shrink-0" />
+                    <span className="line-clamp-1">{event.location}</span>
+                </div>
+            )}
+        </CardContent>
+
+        <CardFooter className="p-3 border-t bg-muted/5 gap-2">
+            <div className="flex w-full gap-2 justify-end">
+                <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    className="h-8 px-3 text-xs"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdate();
+                    }}
+                >
+                    <Edit2 className="w-3 h-3 mr-1.5" /> Editar
+                </Button>
+                
+                {/* Botão de Excluir que abre o Dialog */}
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive" 
+                    onClick={handleDeleteClick}
+                >
+                    <Trash2 className="w-4 h-4" />
+                </Button>
+            </div>
+        </CardFooter>
+        </Card>
+
+        {/* DIALOG DE CONFIRMAÇÃO DENTRO DO ITEM */}
+        <ConfirmDeleteDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+            title="Excluir Evento?"
+            description={`Tem certeza que deseja excluir "${event.title}"? Essa ação não pode ser desfeita.`}
+            onConfirm={(e) => {
+                onDelete();
+            }}
+            confirmText="Excluir"
+        />
+    </>
+  );
+}
+```
+
 ## 📄 src/features/admin/event/useAdminEventsVM.js
 ```javascript
-import { useState, useEffect } from 'react';
-import { apiClient } from '@/shared/services/apiClient';
+import { useState, useEffect, useMemo } from 'react';
+import { eventService } from '@/shared/services/eventService';
+import { Event } from './Event';
+import { useToast } from '@/components/ui/use-toast';
+
+const DRAFT_KEY = 'event-draft';
 
 export function useAdminEventsVM() {
+  const { toast } = useToast();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Controle de Visualização
+  const [viewMode, setViewMode] = useState('LIST');
+  const [selectedEvent, setSelectedEvent] = useState(null);
+
+  // Controle de Rascunho
+  const [hasDraft, setHasDraft] = useState(false);
+
+  // Filtros
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    period: 'UPCOMING',
+    type: 'ALL',
+    importance: 'ALL'
+  });
 
   useEffect(() => {
     loadEvents();
+    checkForDraft();
   }, []);
+
+  // Helper para extrair mensagem de erro do backend
+  const getErrorMessage = (err) => {
+    if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+      // Formato comum de validação do Spring (BindingResult)
+      return err.response.data.errors.map(e => e.defaultMessage || e.message).join(' | ');
+    }
+    return err.response?.data?.message || err.message || "Ocorreu um erro inesperado.";
+  };
+
+  const checkForDraft = () => {
+    const draft = localStorage.getItem(DRAFT_KEY);
+    setHasDraft(!!draft);
+  };
+
+  const discardDraft = () => {
+    localStorage.removeItem(DRAFT_KEY);
+    setHasDraft(false);
+    toast({
+      title: "Rascunho descartado",
+      description: "As informações não salvas foram removidas.",
+    });
+  };
 
   const loadEvents = async () => {
     try {
       setLoading(true);
       const [upcoming, past] = await Promise.all([
-        apiClient.get('public/events/upcoming?size=100'),
-        apiClient.get('public/events/past?size=100'),
+        eventService.getUpcomingEvents(0, 100),
+        eventService.getPastEvents(0, 100),
       ]);
-      const allEvents = [...(upcoming.content || []), ...(past.content || [])];
+
+      const allEvents = [
+        ...Event.fromDTOArray(upcoming.content || []),
+        ...Event.fromDTOArray(past.content || [])
+      ];
+
+      allEvents.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
       setEvents(allEvents);
     } catch (err) {
       console.error('Erro ao carregar eventos:', err);
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar",
+        description: "Não foi possível buscar a lista de eventos.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const createEvent = async (eventData) => {
+  const createEvent = async (formData) => {
     try {
-      setCreating(true);
-      const newEvent = await apiClient.postFormData('admin/events', eventData);
-      setEvents([...events, newEvent]);
-      return { success: true, data: newEvent };
+      setIsSubmitting(true);
+      const newEvent = await eventService.createEvent(formData);
+      const eventInstance = Event.fromDTO(newEvent);
+
+      setEvents(prev => [eventInstance, ...prev]);
+      setViewMode('LIST');
+
+      localStorage.removeItem(DRAFT_KEY);
+      setHasDraft(false);
+
+      toast({
+        title: "Evento criado!",
+        description: `O evento "${eventInstance.title}" foi salvo com sucesso.`,
+      });
+      return { success: true };
     } catch (err) {
+      console.error(err);
+      toast({
+        variant: "destructive",
+        title: "Erro ao criar",
+        description: getErrorMessage(err),
+      });
       return { success: false, error: err.message };
     } finally {
-      setCreating(false);
+      setIsSubmitting(false);
     }
   };
 
-  const updateEvent = async (id, eventData) => {
+  const updateEvent = async (id, formData) => {
     try {
-      const updated = await apiClient.putFormData(`admin/events/${id}`, eventData);
-      setEvents(events.map(e => e.id === id ? updated : e));
-      return { success: true, data: updated };
+      setIsSubmitting(true);
+      const updated = await eventService.updateEvent(id, formData);
+      const eventInstance = Event.fromDTO(updated);
+
+      setEvents(prev => prev.map(e => e.id === id ? eventInstance : e));
+      setViewMode('LIST');
+
+      toast({
+        title: "Evento atualizado!",
+        description: "As alterações foram salvas com sucesso.",
+      });
+      return { success: true };
     } catch (err) {
+      console.error(err);
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar",
+        description: getErrorMessage(err),
+      });
       return { success: false, error: err.message };
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const deleteEvent = async (id) => {
     try {
-      await apiClient.delete(`admin/events/${id}`);
-      setEvents(events.filter(e => e.id !== id));
-      return { success: true };
+      setLoading(true);
+      await eventService.deleteEvent(id);
+      setEvents(prev => prev.filter(e => e.id !== id));
+
+      if (viewMode === 'FORM') {
+        setViewMode('LIST');
+        setSelectedEvent(null);
+      }
+
+      toast({
+        title: "Evento excluído",
+        description: "O evento foi removido permanentemente.",
+      });
     } catch (err) {
-      return { success: false, error: err.message };
+      console.error(err);
+      toast({
+        variant: "destructive",
+        title: "Erro ao excluir",
+        description: getErrorMessage(err),
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
+  // --- FILTRAGEM ---
+  const setFilter = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const filteredList = useMemo(() => {
+    return events.filter(event => {
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch =
+        event.title.toLowerCase().includes(searchLower) ||
+        (event.location && event.location.toLowerCase().includes(searchLower));
+
+      if (!matchesSearch) return false;
+      if (filters.type !== 'ALL' && event.type !== filters.type) return false;
+      if (filters.importance !== 'ALL' && event.importance !== filters.importance) return false;
+
+      if (filters.period === 'UPCOMING') return event.isScheduled || event.isHappening;
+      if (filters.period === 'PAST') return event.isEnded;
+
+      return true;
+    });
+  }, [events, searchTerm, filters]);
+
+  const handleCreateClick = () => { setSelectedEvent(null); setViewMode('FORM'); };
+  
+  const handleEditClick = async (eventSummary) => {
+    try {
+      setLoading(true);
+      // Busca o DTO completo usando o ID do evento
+      const fullEventData = await apiClient.get(`public/events/${eventSummary.id}`);
+
+      // Transforma o DTO completo em uma instância da classe Event
+      const eventInstance = Event.fromDTO(fullEventData);
+
+      setSelectedEvent(eventInstance);
+      setViewMode('FORM');
+    } catch (err) {
+      console.error('Erro ao buscar detalhes do evento:', err);
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar detalhes",
+        description: "Não foi possível recuperar todas as informações do evento.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelForm = () => {
+    setSelectedEvent(null);
+    setViewMode('LIST');
+    checkForDraft();
+  };
+  const handleSubmit = async (data, id) => id ? await updateEvent(id, data) : await createEvent(data);
+
   return {
-    events,
-    loading,
-    creating,
-    modalOpen,
-    setModalOpen,
-    loadEvents,
-    createEvent,
-    updateEvent,
-    deleteEvent,
+    loading: loading || isSubmitting,
+    viewMode,
+    selectedEvent,
+    hasDraft,
+    searchTerm, setSearchTerm,
+    filters, setFilter, filteredList,
+    loadEvents, deleteEvent, discardDraft, handleSubmit,
+    handleCreateClick, handleEditClick, handleCancelForm,
   };
 }
 ```
@@ -6131,7 +7529,7 @@ export class Subject {
 ## 📄 src/features/admin/exams/useAdminExamsVM.js
 ```javascript
 import { useState, useEffect } from 'react';
-import { apiClient } from '@/shared/services/apiClient';
+import { examService } from '@/shared/services/examService';
 import { Subject } from './models/Subject';
 import { Exam } from './models/Exam';
 
@@ -6159,7 +7557,7 @@ export function useAdminExamsVM() {
       setLoading(true);
       setError(null);
       
-      const data = await apiClient.get('admin/exams/subjects');
+      const data = await examService.getSubjects();
       const subjectInstances = Subject.fromDTOArray(data);
       setSubjects(subjectInstances);
       
@@ -6179,7 +7577,7 @@ export function useAdminExamsVM() {
       setLoadingExams(true);
       setError(null);
       
-      const data = await apiClient.get(`admin/exams/subject/${subjectCode}`);
+      const data = await examService.getExamsBySubject(subjectCode);
       const examInstances = Exam.fromDTOArray(data);
       setExams(examInstances);
     } catch (err) {
@@ -6193,7 +7591,7 @@ export function useAdminExamsVM() {
     try {
       setCreating(true);
       
-      const newSubjectDTO = await apiClient.post('admin/exams/subjects', subjectData);
+      const newSubjectDTO = await examService.createSubject(subjectData);
       const newSubject = Subject.fromDTO(newSubjectDTO);
       
       setSubjects(prev => [...prev, newSubject]);
@@ -6212,7 +7610,7 @@ export function useAdminExamsVM() {
 
   const deleteSubject = async (subjectCode) => {
     try {
-      await apiClient.delete(`admin/exams/subjects/${subjectCode}`);
+      await examService.deleteSubject(subjectCode);
       
       setSubjects(prev => prev.filter(s => s.subjectCode !== subjectCode));
       
@@ -6236,7 +7634,7 @@ export function useAdminExamsVM() {
     try {
       setCreating(true);
       
-      const newExamDTO = await apiClient.post('admin/exams', examData);
+      const newExamDTO = await examService.createExam(examData);
       const newExam = Exam.fromDTO(newExamDTO);
       
       setExams(prev => [...prev, newExam]);
@@ -6254,10 +7652,7 @@ export function useAdminExamsVM() {
 
   const updateExam = async (examId, examData) => {
     try {
-      const updatedExamDTO = await apiClient.put(
-        `admin/exams/${examId}`, 
-        examData
-      );
+      const updatedExamDTO = await examService.updateExam(examId, examData);
       
       const updatedExam = Exam.fromDTO(updatedExamDTO);
       setExams(current => 
@@ -6275,7 +7670,7 @@ export function useAdminExamsVM() {
 
   const deleteExam = async (examId) => {
     try {
-      await apiClient.delete(`admin/exams/${examId}`);
+      await examService.deleteExam(examId);
       setExams(prev => prev.filter(e => e.id !== examId));
       return { success: true };
     } catch (err) {
@@ -7635,6 +9030,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MDXEditor } from '@/shared/components/MDXEditor';
 import { Trash2 } from 'lucide-react';
+import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
 
 const DRAFT_KEY = 'article-draft';
 
@@ -7809,26 +9205,14 @@ export function CreateArticleModal({
         </form>
       </DialogContent>
 
-      {/* Dialog de confirmação de descarte */}
-      <AlertDialog open={discardDialogOpen} onOpenChange={setDiscardDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Descartar rascunho?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja descartar este rascunho? Todo o conteúdo será perdido e esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDiscard}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Descartar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        open={discardDialogOpen}
+        onOpenChange={setDiscardDialogOpen}
+        title="Descartar rascunho?"
+        description="Tem certeza que deseja descartar este rascunho? Todo o conteúdo será perdido e esta ação não pode ser desfeita."
+        onConfirm={confirmDiscard}
+        confirmText="Descartar"
+      />    
     </Dialog>
   );
 }
@@ -8161,7 +9545,7 @@ export class ManualChapter {
 ## 📄 src/features/admin/manual/useAdminManualVM.js
 ```javascript
 import { useState, useEffect } from 'react';
-import { apiClient } from '@/shared/services/apiClient';
+import { manualService } from '@/shared/services/manualService';
 import { ManualCategory } from './models/ManualCategory';
 import { ManualChapter } from './models/ManualChapter';
 import { ManualArticle } from './models/ManualArticle';
@@ -8201,7 +9585,7 @@ export function useAdminManualVM() {
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get('public/manual/categories');
+      const data = await manualService.getCategories();
       setCategories(ManualCategory.fromDTOArray(data));
     } catch (err) {
       console.error('Erro ao carregar categorias:', err);
@@ -8213,7 +9597,7 @@ export function useAdminManualVM() {
   const createCategory = async (categoryData) => {
     try {
       setCreating(true);
-      const newCategoryDTO = await apiClient.post('admin/manual/categories', categoryData);
+      const newCategoryDTO = await manualService.createCategory(categoryData);
       const newCategory = ManualCategory.fromDTO(newCategoryDTO);
       setCategories([...categories, newCategory]);
       return { success: true, data: newCategory };
@@ -8226,7 +9610,7 @@ export function useAdminManualVM() {
 
   const updateCategory = async (id, categoryData) => {
     try {
-      const updatedDTO = await apiClient.put(`admin/manual/categories/${id}`, categoryData);
+      const updatedDTO = await manualService.updateCategory(id, categoryData);
       const updatedCategory = ManualCategory.fromDTO(updatedDTO);
       setCategories(categories.map(c => c.id === id ? updatedCategory : c));
       
@@ -8243,7 +9627,7 @@ export function useAdminManualVM() {
 
   const deleteCategory = async (id) => {
     try {
-      await apiClient.delete(`admin/manual/categories/${id}`);
+      await manualService.deleteCategory(id);
       setCategories(categories.filter(c => c.id !== id));
       
       // Remove seleção se for a categoria deletada
@@ -8261,7 +9645,7 @@ export function useAdminManualVM() {
     try {
       setCategories(newOrder);
       const categoryIds = newOrder.map(c => c.id);
-      await apiClient.put('admin/manual/categories/r/reorder', { categoryIds });
+      await manualService.reorderCategories(categoryIds);
       return { success: true };
     } catch (err) {
       await loadCategories(); // Reverte em caso de erro
@@ -8272,7 +9656,7 @@ export function useAdminManualVM() {
   // === CAPÍTULOS ===
   const loadChapters = async (categoryId) => {
     try {
-      const data = await apiClient.get(`public/manual/chapters/category/${categoryId}`);
+      const data = await manualService.getChaptersByCategory(categoryId);
       setChapters(ManualChapter.fromDTOArray(data));
     } catch (err) {
       console.error('Erro ao carregar capítulos:', err);
@@ -8282,7 +9666,7 @@ export function useAdminManualVM() {
   const createChapter = async (chapterData) => {
     try {
       setCreating(true);
-      const newChapterDTO = await apiClient.post('admin/manual/chapters', chapterData);
+      const newChapterDTO = await manualService.createChapter(chapterData);
       const newChapter = ManualChapter.fromDTO(newChapterDTO);
       setChapters([...chapters, newChapter]);
       
@@ -8303,7 +9687,7 @@ export function useAdminManualVM() {
 
   const updateChapter = async (id, chapterData) => {
     try {
-      const updatedDTO = await apiClient.put(`admin/manual/chapters/${id}`, chapterData);
+      const updatedDTO = await manualService.updateChapter(id, chapterData);
       const updatedChapter = ManualChapter.fromDTO(updatedDTO);
       setChapters(chapters.map(ch => ch.id === id ? updatedChapter : ch));
       
@@ -8321,7 +9705,7 @@ export function useAdminManualVM() {
   const deleteChapter = async (id) => {
     try {
       const chapter = chapters.find(ch => ch.id === id);
-      await apiClient.delete(`admin/manual/chapters/${id}`);
+      await manualService.deleteChapter(id);
       setChapters(chapters.filter(ch => ch.id !== id));
       
       // Remove seleção se for o capítulo deletado
@@ -8348,7 +9732,7 @@ export function useAdminManualVM() {
     try {
       setChapters(newOrder);
       const chapterIds = newOrder.map(ch => ch.id);
-      await apiClient.put('admin/manual/chapters/r/reorder', { categoryId, chapterIds });
+      await manualService.reorderChapters(categoryId, chapterIds);
       return { success: true };
     } catch (err) {
       if (selectedCategory) {
@@ -8361,7 +9745,7 @@ export function useAdminManualVM() {
   // === ARTIGOS ===
   const loadArticles = async (chapterId) => {
     try {
-      const data = await apiClient.get(`public/manual/articles/chapter/${chapterId}`);
+      const data = await manualService.getArticlesByChapter(chapterId);
       setArticles(ManualArticle.fromDTOArray(data));
     } catch (err) {
       console.error('Erro ao carregar artigos:', err);
@@ -8371,7 +9755,7 @@ export function useAdminManualVM() {
   const createArticle = async (articleData) => {
     try {
       setCreating(true);
-      const newArticleDTO = await apiClient.post('admin/manual/articles', articleData);
+      const newArticleDTO = await manualService.createArticle(articleData);
       const newArticle = ManualArticle.fromDTO(newArticleDTO);
       setArticles([...articles, newArticle]);
       
@@ -8392,7 +9776,7 @@ export function useAdminManualVM() {
 
   const updateArticle = async (id, articleData) => {
     try {
-      const updatedDTO = await apiClient.put(`admin/manual/articles/${id}`, articleData);
+      const updatedDTO = await manualService.updateArticle(id, articleData);
       const updatedArticle = ManualArticle.fromDTO(updatedDTO);
       setArticles(articles.map(a => a.id === id ? updatedArticle : a));
       return { success: true, data: updatedArticle };
@@ -8404,7 +9788,7 @@ export function useAdminManualVM() {
   const deleteArticle = async (id) => {
     try {
       const article = articles.find(a => a.id === id);
-      await apiClient.delete(`admin/manual/articles/${id}`);
+      await manualService.deleteArticle(id);
       setArticles(articles.filter(a => a.id !== id));
       
       // Atualiza contador do capítulo
@@ -8426,7 +9810,7 @@ export function useAdminManualVM() {
     try {
       setArticles(newOrder);
       const articleIds = newOrder.map(a => a.id);
-      await apiClient.put('admin/manual/articles/r/reorder', { chapterId, articleIds });
+      await manualService.reorderArticles(chapterId, articleIds);
       return { success: true };
     } catch (err) {
       if (selectedChapter) {
@@ -12533,7 +13917,8 @@ export function LoginPage() {
 import { useCalendarVM } from './useCalendarVM';
 import { CalendarHeader } from './components/CalendarHeader';
 import { MonthGrid } from './components/MonthGrid';
-import { MinorEventModal } from './components/MinorEventModal';
+import { MobileCalendarView } from './components/MobileCalendarView';
+import { EventPreviewModal } from './components/EventPreviewModal';
 
 export function CalendarPage() {
   const {
@@ -12546,6 +13931,330 @@ export function CalendarPage() {
     openEventModal,
     closeEventModal,
   } = useCalendarVM();
+
+  if (loading && events.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+          <p className="text-sm text-muted-foreground">Carregando eventos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-2">Erro</h2>
+          <p className="text-muted-foreground">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2">Calendário</h1>
+        <p className="text-muted-foreground">
+          Confira as datas importantes e atividades do CACO
+        </p>
+      </div>
+        
+      <CalendarHeader currentDate={currentDate} onChangeMonth={changeMonth} />
+
+      <div className="space-y-8">
+        {/* Desktop View: Traditional Calendar Grid */}
+        <div className="hidden lg:block">
+          <MonthGrid
+            currentDate={currentDate}
+            events={events}
+            onEventClick={openEventModal}
+          />
+        </div>
+
+        {/* Mobile/Tablet View: Agenda List */}
+        <div className="lg:hidden">
+          <MobileCalendarView
+            currentDate={currentDate}
+            events={events}
+          />
+        </div>
+      </div>
+
+      <EventPreviewModal
+        event={selectedEvent}
+        open={!!selectedEvent}
+        onClose={closeEventModal}
+      />
+    </div>
+  );
+}
+```
+
+## 📄 src/features/calendar/components/CalendarDay.jsx
+```jsx
+import { useRef, useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
+import { Clock, ChevronDown } from 'lucide-react';
+
+export function CalendarDay({ date, events, isToday, onEventClick, topSpacerHeight = 0 }) {
+  const scrollRef = useRef(null);
+  const [showIndicator, setShowIndicator] = useState(false);
+
+  const checkScroll = () => {
+    if (scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      const hasContentBelow = scrollHeight > clientHeight + scrollTop + 5;
+      setShowIndicator(hasContentBelow);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+  }, [events]);
+
+  if (!date) {
+    return <div className="min-h-[160px] bg-muted/10 border-r border-b last:border-r-0" />;
+  }
+
+  // Prioritize events: Happening -> With Image -> Others
+  const sortedEvents = [...events].sort((a, b) => {
+    if (a.status === 'HAPPENING' && b.status !== 'HAPPENING') return -1;
+    if (b.status === 'HAPPENING' && a.status !== 'HAPPENING') return 1;
+    if (a.coverImage && !b.coverImage) return -1;
+    if (!a.coverImage && b.coverImage) return 1;
+    return new Date(a.startDate) - new Date(b.startDate);
+  });
+
+  const getEventStyle = (event) => {
+    if (event.status === 'HAPPENING') {
+        return 'bg-green-600 hover:bg-green-700 text-white shadow-md animate-pulse border-green-700';
+    }
+    if (event.status === 'ENDED') {
+        return 'bg-muted text-muted-foreground hover:bg-muted/80 line-through opacity-70';
+    }
+    if (event.coverImage) {
+        return 'bg-primary text-primary-foreground hover:bg-primary/90 font-semibold shadow-sm border-primary/20';
+    }
+    
+    switch (event.type) {
+      case 'ONLINE':
+        return 'bg-blue-100 text-blue-700 hover:bg-blue-200 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800';
+      case 'HYBRID':
+        return 'bg-purple-100 text-purple-700 hover:bg-purple-200 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800';
+      default: 
+        return 'bg-primary/10 text-primary hover:bg-primary/20 border-primary/20';
+    }
+  };
+
+  const formatTimeRange = (startDate, endDate) => {
+    const start = new Date(startDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    if (!endDate) return start;
+    const end = new Date(endDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return `${start} - ${end}`;
+  };
+
+  return (
+    <div
+      className={cn(
+        'h-[180px] border-r border-b last:border-r-0 p-1.5 hover:bg-muted/5 transition-colors relative group flex flex-col gap-1',
+        isToday && 'bg-accent/5 ring-2 ring-primary ring-inset z-10'
+      )}
+    >
+      {/* Header do Dia */}
+      <div className="flex justify-between items-start mb-1 h-8 shrink-0">
+        <span
+          className={cn(
+            'text-[15px] font-medium w-8 h-8 flex items-center justify-center rounded-full transition-all',
+            isToday 
+              ? 'bg-primary text-primary-foreground font-bold shadow-sm scale-110' 
+              : 'text-muted-foreground group-hover:bg-muted group-hover:text-foreground'
+          )}
+        >
+          {date}
+        </span>
+        
+        {events.length > 0 && <span className="text-xs text-muted-foreground font-medium pt-1 pr-1">{events.length}</span>}
+      </div>
+
+      {/* Lista de eventos scrollable */}
+      <div 
+        ref={scrollRef}
+        onScroll={checkScroll}
+        className="flex flex-col gap-1.5 flex-1 overflow-y-auto pr-1 customize-scrollbar pb-1"
+      >
+        {topSpacerHeight > 0 && (
+          <div style={{ height: topSpacerHeight }} className="w-full shrink-0 transition-all duration-300 pointer-events-none" />
+        )}
+
+        {sortedEvents.map((event) => {
+          const hasImage = !!event.coverImage;
+          
+          return (
+            <button
+              key={event.id}
+              onClick={(e) => { e.stopPropagation(); onEventClick(event); }}
+              className={cn(
+                'w-full text-left rounded-md transition-all group/event relative overflow-hidden shrink-0',
+                hasImage ? 'h-[72px] p-0 border-0' : 'px-2.5 py-2 text-xs border border-transparent',
+                getEventStyle(event)
+              )}
+              title={event.title}
+            >
+              {hasImage ? (
+                <>
+                  <div className="absolute inset-0">
+                    <img 
+                      src={event.coverImage} 
+                      alt="" 
+                      className="w-full h-full object-cover opacity-90 group-hover/event:opacity-100 group-hover/event:scale-105 transition-all duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-2 text-white flex flex-col justify-end h-full">
+                     <div className="text-sm font-bold leading-tight line-clamp-2 shadow-sm mb-0.5">{event.title}</div>
+                     <div className="text-xs opacity-90 font-medium flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {formatTimeRange(event.startDate, event.endDate)}
+                     </div>
+                  </div>
+                  
+                  {event.status === 'HAPPENING' && (
+                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white animate-pulse" />
+                  )}
+                </>
+              ) : (
+                <div className="flex flex-col gap-0.5">
+                   <div className="flex items-center gap-1.5">
+                        {event.status === 'HAPPENING' && (
+                                <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0 animate-ping" />
+                        )}
+                        <span className="truncate font-medium leading-tight text-[13px]">{event.title}</span>
+                   </div>
+                   <div className="text-[11px] opacity-80 flex items-center gap-1">
+                        {formatTimeRange(event.startDate, event.endDate)}
+                   </div>
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {showIndicator && (
+         <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-card via-card/95 to-transparent pointer-events-none flex items-end justify-center rounded-b-sm z-20 pb-1 duration-300 animate-in fade-in">
+            <ChevronDown className="w-5 h-5 text-primary drop-shadow-sm animate-bounce" />
+         </div>
+      )}
+    </div>
+  );
+}
+```
+
+## 📄 src/features/calendar/components/CalendarHeader.jsx
+```jsx
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+const MONTHS = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+];
+
+export function CalendarHeader({ currentDate, onChangeMonth }) {
+  const handleTodayClick = () => {
+    onChangeMonth(0, new Date());
+  };
+
+  return (
+    <div className="flex flex-col sm:grid sm:grid-cols-3 items-center gap-4 mb-6 w-full">
+      <div className="hidden sm:block"></div>
+      
+      <h2 className="text-2xl sm:text-3xl font-bold capitalize text-nowrap text-center order-1 sm:order-none">
+        {MONTHS[currentDate.getMonth()]} <span className="text-muted-foreground ml-1">{currentDate.getFullYear()}</span>
+      </h2>
+      
+      <div className="flex items-center justify-center sm:justify-end gap-2 w-full order-2 sm:order-none">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onChangeMonth(-1)}
+          title="Mês anterior"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          className="px-6"
+          onClick={handleTodayClick}
+          title="Ir para o mês atual"
+        >
+          Hoje
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onChangeMonth(1)}
+          title="Próximo mês"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+```
+
+## 📄 src/features/calendar/components/CalendarPageWithFilters.jsx
+```jsx
+import { useState } from 'react';
+import { useCalendarVM } from '../useCalendarVM';
+import { useEventFilters } from '../hooks/useEventFilters';
+import { CalendarHeader } from './CalendarHeader';
+import { MonthGrid } from './MonthGrid';
+import { MinorEventModal } from './MinorEventModal';
+import { EventCard } from './EventCard';
+import { EventFilters } from './EventFilters';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Calendar, List, Search, SlidersHorizontal } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+
+export function CalendarPageWithFilters() {
+  const {
+    currentDate,
+    events,
+    loading,
+    error,
+    selectedEvent,
+    changeMonth,
+    openEventModal,
+    closeEventModal,
+  } = useCalendarVM();
+
+  const {
+    filters,
+    setFilters,
+    filteredEvents,
+    clearFilters,
+    setSearchTerm,
+    hasActiveFilters,
+  } = useEventFilters(events);
+
+  const [viewMode, setViewMode] = useState('calendar');
+  const [showFilters, setShowFilters] = useState(false);
 
   if (loading && events.length === 0) {
     return (
@@ -12566,14 +14275,121 @@ export function CalendarPage() {
     );
   }
 
+  // Filtra eventos futuros para a view de lista
+  const upcomingEvents = filteredEvents
+    .filter(event => new Date(event.startDate) >= new Date())
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <CalendarHeader currentDate={currentDate} onChangeMonth={changeMonth} />
-      <MonthGrid
-        currentDate={currentDate}
-        events={events}
-        onEventClick={openEventModal}
-      />
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2">Calendário de Eventos</h1>
+        <p className="text-muted-foreground">
+          Acompanhe todos os eventos do CACO
+        </p>
+      </div>
+
+      {/* Barra de Busca e Filtros */}
+      <div className="mb-6 flex gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar eventos..."
+            value={filters.searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        
+        <Sheet open={showFilters} onOpenChange={setShowFilters}>
+          <SheetTrigger asChild>
+            <Button variant="outline" className="shrink-0">
+              <SlidersHorizontal className="h-4 w-4 mr-2" />
+              Filtros
+              {hasActiveFilters && (
+                <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                  !
+                </span>
+              )}
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Filtros de Eventos</SheetTitle>
+              <SheetDescription>
+                Filtre os eventos por tipo, importância ou status
+              </SheetDescription>
+            </SheetHeader>
+            <div className="mt-6">
+              <EventFilters
+                filters={filters}
+                onFilterChange={setFilters}
+                onClearFilters={clearFilters}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Contador de Resultados */}
+      {hasActiveFilters && (
+        <Card className="mb-6 p-4">
+          <p className="text-sm text-muted-foreground">
+            {filteredEvents.length} evento{filteredEvents.length !== 1 ? 's' : ''} encontrado
+            {filteredEvents.length !== 1 ? 's' : ''}
+            {filters.searchTerm && ` para "${filters.searchTerm}"`}
+          </p>
+        </Card>
+      )}
+
+      <Tabs value={viewMode} onValueChange={setViewMode} className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="calendar" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Calendário
+          </TabsTrigger>
+          <TabsTrigger value="list" className="flex items-center gap-2">
+            <List className="h-4 w-4" />
+            Lista
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="calendar" className="space-y-6">
+          <CalendarHeader currentDate={currentDate} onChangeMonth={changeMonth} />
+          <MonthGrid
+            currentDate={currentDate}
+            events={filteredEvents}
+            onEventClick={openEventModal}
+          />
+        </TabsContent>
+
+        <TabsContent value="list" className="space-y-6">
+          <div className="mb-4">
+            <h2 className="text-2xl font-semibold mb-2">Próximos Eventos</h2>
+            <p className="text-sm text-muted-foreground">
+              {upcomingEvents.length} evento{upcomingEvents.length !== 1 ? 's' : ''} programado{upcomingEvents.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+          
+          {upcomingEvents.length === 0 ? (
+            <div className="text-center py-12">
+              <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">
+                {hasActiveFilters 
+                  ? 'Nenhum evento encontrado com os filtros aplicados'
+                  : 'Nenhum evento programado no momento'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingEvents.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+
       <MinorEventModal
         event={selectedEvent}
         open={!!selectedEvent}
@@ -12584,148 +14400,486 @@ export function CalendarPage() {
 }
 ```
 
-## 📄 src/features/calendar/components/CalendarDay.jsx
+## 📄 src/features/calendar/components/EventCard.jsx
 ```jsx
+import { Link } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, MapPin, Video, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export function CalendarDay({ date, events, isToday, onEventClick }) {
-  if (!date) {
-    return <div className="min-h-[120px] bg-muted/30 border-r border-b" />;
-  }
+export function EventCard({ event, className }) {
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
+  const getStatusConfig = (status) => {
+    switch (status) {
+      case 'HAPPENING':
+        return { label: 'Acontecendo Agora', color: 'bg-green-500 animate-pulse text-white' };
+      case 'ENDED':
+        return { label: 'Encerrado', color: 'bg-muted text-muted-foreground' };
+      default:
+        return null; 
+    }
+  };
+
+  const getTypeIcon = (type) => {
+    switch (type) {
+      case 'ONLINE':
+        return <Globe className="h-3 w-3" />;
+      case 'HYBRID':
+        return <Video className="h-3 w-3" />;
+      default:
+        return <MapPin className="h-3 w-3" />;
+    }
+  };
+
+  const getTypeLabel = (type) => {
+    switch (type) {
+      case 'ONLINE': return 'Online';
+      case 'IN_PERSON': return 'Presencial';
+      case 'HYBRID': return 'Híbrido';
+      default: return type;
+    }
+  };
+
+  const statusConfig = getStatusConfig(event.status);
 
   return (
-    <div
-      className={cn(
-        'min-h-[120px] border-r border-b last:border-r-0 p-2 hover:bg-muted/30 transition-colors',
-        isToday && 'bg-primary/5'
-      )}
-    >
-      <div
-        className={cn(
-          'text-sm font-medium mb-1',
-          isToday && 'text-primary font-bold'
-        )}
-      >
-        {date}
-      </div>
-      <div className="space-y-1">
-        {events.slice(0, 3).map((event) => (
-          <button
-            key={event.id}
-            onClick={() => onEventClick(event)}
-            className={cn(
-              'w-full text-left text-xs px-2 py-1 rounded truncate transition-colors',
-              event.type === 'MAJOR'
-                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                : 'bg-blue-100 text-blue-900 hover:bg-blue-200'
-            )}
-          >
-            {event.title}
-          </button>
-        ))}
-        {events.length > 3 && (
-          <div className="text-xs text-muted-foreground px-2">
-            +{events.length - 3} mais
+    <Link to={`/eventos/${event.slug}`}>
+      <Card className={cn("overflow-hidden hover:shadow-lg transition-all duration-300 h-full group", className)}>
+        {event.coverImage && (
+          <div className="relative h-48 overflow-hidden">
+            <img
+              src={event.coverImage}
+              alt={event.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute top-2 right-2 flex gap-2">
+               {statusConfig && (
+                <Badge className={cn("text-xs font-medium border-0 shadow-sm", statusConfig.color)}>
+                  {statusConfig.label}
+                </Badge>
+              )}
+            </div>
           </div>
         )}
-      </div>
-    </div>
+        
+        <div className="p-4 space-y-3">
+          <div className="space-y-1">
+            <div className="flex items-center justify-between gap-2 mb-2">
+                 <Badge variant="secondary" className="text-[10px] px-2 py-0 h-5 flex items-center gap-1 font-medium bg-secondary/50 text-secondary-foreground">
+                    {getTypeIcon(event.type)}
+                    {getTypeLabel(event.type)}
+                 </Badge>
+                 {!event.coverImage && statusConfig && (
+                    <Badge className={cn("text-[10px] h-5 border-0", statusConfig.color)}>
+                      {statusConfig.label}
+                    </Badge>
+                 )}
+            </div>
+            <h3 className="font-bold text-lg leading-tight line-clamp-2 text-foreground group-hover:text-primary transition-colors">
+              {event.title}
+            </h3>
+          </div>
+
+          <div className="space-y-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 shrink-0 text-primary/70" />
+              <span>{formatDate(event.startDate)}</span>
+            </div>
+            
+            {event.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 shrink-0 text-primary/70" />
+                <span className="line-clamp-1">{event.location}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </Card>
+    </Link>
   );
 }
 ```
 
-## 📄 src/features/calendar/components/CalendarHeader.jsx
+## 📄 src/features/calendar/components/EventFilters.jsx
 ```jsx
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
-const MONTHS = [
-  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-];
+export function EventFilters({ filters, onFilterChange, onClearFilters }) {
+  const hasActiveFilters = filters.type || filters.importance || filters.status;
 
-export function CalendarHeader({ currentDate, onChangeMonth }) {
+  const toggleFilter = (category, value) => {
+    onFilterChange({
+      ...filters,
+      [category]: filters[category] === value ? null : value,
+    });
+  };
+
   return (
-    <div className="flex items-center justify-between mb-6">
-      <h1 className="text-3xl font-bold">
-        {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
-      </h1>
-      <div className="flex gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => onChangeMonth(-1)}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => onChangeMonth(0, new Date())}
-        >
-          Hoje
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => onChangeMonth(1)}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold">Filtros</h3>
+        {hasActiveFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClearFilters}
+            className="h-8 px-2 text-xs"
+          >
+            <X className="h-3 w-3 mr-1" />
+            Limpar
+          </Button>
+        )}
+      </div>
+
+      {/* Tipo de Evento */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Tipo</label>
+        <div className="flex flex-wrap gap-2">
+          {['ONLINE', 'PRESENCIAL', 'HIBRIDO'].map((type) => (
+            <Badge
+              key={type}
+              variant={filters.type === type ? 'default' : 'outline'}
+              className="cursor-pointer"
+              onClick={() => toggleFilter('type', type)}
+            >
+              {type}
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      {/* Importância */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Importância</label>
+        <div className="flex flex-wrap gap-2">
+          {['ALTA', 'MEDIA', 'BAIXA'].map((importance) => (
+            <Badge
+              key={importance}
+              variant={filters.importance === importance ? 'default' : 'outline'}
+              className="cursor-pointer"
+              onClick={() => toggleFilter('importance', importance)}
+            >
+              {importance}
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      {/* Status */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Status</label>
+        <div className="flex flex-wrap gap-2">
+          {['PUBLISHED', 'DRAFT'].map((status) => (
+            <Badge
+              key={status}
+              variant={filters.status === status ? 'default' : 'outline'}
+              className="cursor-pointer"
+              onClick={() => toggleFilter('status', status)}
+            >
+              {status === 'PUBLISHED' ? 'Publicado' : 'Rascunho'}
+            </Badge>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 ```
 
-## 📄 src/features/calendar/components/MinorEventModal.jsx
+## 📄 src/features/calendar/components/EventPreviewModal.jsx
 ```jsx
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog';
-import { formatDate, formatTime } from '@/shared/utils/helpers';
-import { MapPin, Calendar, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { MapPin, Calendar, Clock, ExternalLink, Globe, Video } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export function MinorEventModal({ event, open, onClose }) {
+export function EventPreviewModal({ event, open, onClose }) {
+  const navigate = useNavigate();
+
   if (!event) return null;
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+  };
+
+  const formatTime = (dateString) => {
+    return new Date(dateString).toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const handleViewDetails = () => {
+    navigate(`/eventos/${event.slug}`);
+    onClose();
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'HAPPENING':
+        return <Badge className="bg-green-600 animate-pulse border-0">Acontecendo Agora</Badge>;
+      case 'ENDED':
+        return <Badge variant="secondary">Encerrado</Badge>;
+      default:
+        return null;
+    }
+  };
+  
+  const getTypeLabel = (type) => {
+    switch (type) {
+      case 'ONLINE': return <span className="flex items-center gap-1"><Globe className="w-3 h-3"/> Online</span>;
+      case 'IN_PERSON': return <span className="flex items-center gap-1"><MapPin className="w-3 h-3"/> Presencial</span>;
+      case 'HYBRID': return <span className="flex items-center gap-1"><Video className="w-3 h-3"/> Híbrido</span>;
+      default: return type.replace('_', ' ');
+    }
+  };
+
+  const isMultiDay = () => {
+    const start = new Date(event.startDate);
+    const end = new Date(event.endDate);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+    return end > start;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{event.title}</DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          <DialogDescription>{event.description}</DialogDescription>
-
-          <div className="space-y-2 text-sm">
-            <div className="flex items-start gap-2">
-              <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground" />
-              <div>
-                <div className="font-medium">
-                  {formatDate(event.start)}
-                </div>
-                <div className="text-muted-foreground">
-                  {formatTime(event.start)}
-                  {event.end && ` - ${formatTime(event.end)}`}
-                </div>
-              </div>
+      <DialogContent className="max-w-lg p-0 overflow-hidden gap-0">
+        {/* Imagem de capa */}
+        {event.coverImage && (
+          <div className="relative w-full h-56 overflow-hidden bg-muted">
+            <img
+              src={event.coverImage}
+              alt={event.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="absolute top-4 right-4 flex gap-2">
+                 {getStatusBadge(event.status)}
             </div>
-
-            {event.location && (
-              <div className="flex items-start gap-2">
-                <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                <div>{event.location}</div>
-              </div>
-            )}
+            <div className="absolute bottom-4 left-4 right-4 text-white">
+                 <div className="flex gap-2 mb-2">
+                    <Badge variant="secondary" className="bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border-0">
+                        {getTypeLabel(event.type)}
+                    </Badge>
+                 </div>
+                 <h2 className="text-2xl font-bold leading-tight shadow-sm">
+                    {event.title}
+                 </h2>
+            </div>
           </div>
+        )}
+
+        <div className="p-6 space-y-6">
+            {!event.coverImage && (
+                <div className="space-y-4">
+                    <div className="flex gap-2 items-center">
+                        <Badge variant="outline" className="gap-1">
+                            {getTypeLabel(event.type)}
+                        </Badge>
+                        {getStatusBadge(event.status)}
+                    </div>
+                </div>
+            )}
+            
+            {!event.coverImage && (
+                 <DialogTitle className="text-2xl font-bold">{event.title}</DialogTitle>
+            )}
+
+            <div className="grid gap-4">
+                 {/* Date & Time */}
+                 <div className="flex items-start gap-3 text-sm">
+                    <Calendar className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                        <div className="font-medium">
+                            {formatDate(event.startDate)}
+                            {isMultiDay() && ` - ${formatDate(event.endDate)}`}
+                        </div>
+                        <div className="text-muted-foreground flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            {formatTime(event.startDate)}
+                            {!isMultiDay() && ` - ${formatTime(event.endDate)}`}
+                        </div>
+                    </div>
+                 </div>
+                 
+                 {/* Location */}
+                 {event.location && (
+                    <div className="flex items-start gap-3 text-sm">
+                        <MapPin className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                        <div>
+                            <div className="font-medium">Localização</div>
+                            <div className="text-muted-foreground">{event.location}</div>
+                            {event.locationUrl && (
+                                <a 
+                                    href={event.locationUrl} 
+                                    target="_blank" 
+                                    rel="noreferrer"
+                                    className="text-primary hover:underline text-xs inline-flex items-center gap-1 mt-1"
+                                >
+                                    Ver no mapa <ExternalLink className="w-3 h-3" />
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                 )}
+            </div>
+            
+            <DialogFooter className="gap-2 sm:gap-0 pt-2">
+                <Button variant="outline" onClick={onClose}>Cancelar</Button>
+                <Button onClick={handleViewDetails}>Ver Detalhes Completos</Button>
+            </DialogFooter>
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+```
+
+## 📄 src/features/calendar/components/MobileCalendarView.jsx
+```jsx
+import { EventCard } from './EventCard';
+import { Calendar } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+
+/**
+ * Mobile-friendly calendar view
+ * Groups events by date in a list format
+ */
+export function MobileCalendarView({ currentDate, events }) {
+  // Sort events by date
+  const sortedEvents = [...events].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+  
+  // Group events by date (group by start date for simplicity in this improved view, 
+  // or keeping the logic of showing on every day specific, but usually users want to see when it starts)
+  // The user complained about "gambiarra", duplicating events for every day they occur might be cluttered.
+  // Standard agenda view: List events by start date. If it spans, the card shows the date range.
+  
+  // Let's change the grouping strategy to unique events sorted by start date, grouped by Day.
+  // If an event is long running, it appears on the start day.
+  
+  const eventsByDate = {};
+  
+  sortedEvents.forEach(event => {
+    const startDate = new Date(event.startDate);
+    // Adjust logic if you want to show it on the current month view properly
+    // even if it started last month.
+    // The VM returns events for the specific month window.
+    
+    // Let's stick to "Start Date" grouping.
+    const dateKey = startDate.toDateString();
+    if (!eventsByDate[dateKey]) {
+      eventsByDate[dateKey] = [];
+    }
+    eventsByDate[dateKey].push(event);
+  });
+
+  const sortedDates = Object.keys(eventsByDate).sort((a, b) => new Date(a) - new Date(b));
+  
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (date.toDateString() === today.toDateString()) {
+      return 'Hoje';
+    }
+    if (date.toDateString() === tomorrow.toDateString()) {
+      return 'Amanhã';
+    }
+    
+    return date.toLocaleDateString('pt-BR', { 
+      weekday: 'long', 
+      day: 'numeric', 
+      month: 'long' 
+    });
+  };
+  
+  if (events.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="bg-muted rounded-full p-6 mb-4">
+            <Calendar className="h-10 w-10 text-muted-foreground" />
+        </div>
+        <h3 className="text-lg font-semibold mb-1">Sem eventos</h3>
+        <p className="text-muted-foreground max-w-xs">
+          Nenhum evento encontrado para este mês.
+        </p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="space-y-8 pb-10">
+      {sortedDates.map(dateStr => {
+        const dateEvents = eventsByDate[dateStr];
+        const date = new Date(dateStr);
+        const isToday = date.toDateString() === new Date().toDateString();
+        
+        return (
+          <div key={dateStr} className="space-y-4">
+            {/* Date Header */}
+            <div className="flex items-center gap-3">
+               <div className={cn(
+                  "flex flex-col items-center justify-center w-12 h-14 rounded-lg bg-card border shadow-sm shrink-0",
+                  isToday && "bg-primary text-primary-foreground border-primary"
+               )}>
+                  <span className="text-xs font-medium uppercase opacity-80">
+                      {date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
+                  </span>
+                  <span className="text-xl font-bold">
+                      {date.getDate()}
+                  </span>
+               </div>
+               
+               <div className="flex flex-col">
+                  {isToday && (
+                      <span className="text-sm font-semibold text-primary uppercase tracking-wider">Hoje</span>
+                  )}
+                  <h3 className="text-lg font-semibold capitalize leading-none">
+                      {date.toLocaleDateString('pt-BR', { weekday: 'long' })}
+                  </h3>
+               </div>
+            </div>
+            
+            {/* Events Grid for this date */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-0 md:pl-16">
+              {dateEvents.map(event => (
+                <div key={event.id} className="w-full">
+                    <EventCard event={event} />
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 ```
@@ -12734,116 +14888,255 @@ export function MinorEventModal({ event, open, onClose }) {
 ```jsx
 import { useNavigate } from 'react-router-dom';
 import { CalendarDay } from './CalendarDay';
+import { useMemo } from 'react';
+import { cn } from '@/lib/utils';
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
+/**
+ * Normaliza data para comparar apenas dia/mês/ano
+ */
+function normalizeDate(dateStr) {
+  const d = new Date(dateStr);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/**
+ * Verifica se dois dias são iguais (apenas data)
+ */
+function isSameDay(d1, d2) {
+    return d1.getFullYear() === d2.getFullYear() &&
+           d1.getMonth() === d2.getMonth() &&
+           d1.getDate() === d2.getDate();
+}
+
+/**
+ * Gera as semanas para a visualização do mês
+ */
+function getWeeksForMonth(year, month) {
+  const firstDayOfMonth = new Date(year, month, 1);
+  const startingDayOfWeek = firstDayOfMonth.getDay();
+  
+  // Começar do Domingo anterior à data inicial se não for Domingo
+  const startDate = new Date(firstDayOfMonth);
+  startDate.setDate(1 - startingDayOfWeek);
+
+  const weeks = [];
+  const current = new Date(startDate);
+  
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+  
+  // Condição: até passar do fim do mês E ser sábado (para fechar a semana)
+  // Ou garantir minimo de semanas
+  while (true) {
+     const weekDays = [];
+     for (let i = 0; i < 7; i++) {
+        weekDays.push(new Date(current));
+        current.setDate(current.getDate() + 1);
+     }
+     weeks.push({ id: weekDays[0].toISOString(), days: weekDays });
+
+     // Se o primeiro dia da proxima semana já é outro mês (e maior que o ultimo dia do mes atual), paramos
+     if (current > lastDayOfMonth) break;
+  }
+  
+  return weeks;
+}
+
 export function MonthGrid({ currentDate, events, onEventClick }) {
-  const navigate = useNavigate();
-
-  const getDaysInMonth = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-
-    const days = [];
-
-    // Previous month days
-    for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push({ date: null, events: [] });
-    }
-
-    // Current month days
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const dayEvents = events.filter(e => e.start.startsWith(dateStr));
-      days.push({ date: day, events: dayEvents });
-    }
-
-    return days;
-  };
-
-  const handleEventClick = (event) => {
-    if (event.action === 'PAGE') {
-      navigate(`/eventos/${event.id}`);
-    } else {
-      onEventClick(event);
-    }
-  };
-
-  const days = getDaysInMonth();
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  
+  const weeks = useMemo(() => getWeeksForMonth(year, month), [year, month]);
   const today = new Date();
-  const isCurrentMonth =
-    currentDate.getMonth() === today.getMonth() &&
-    currentDate.getFullYear() === today.getFullYear();
+
+  // Função para pegar eventos de um dia especifico
+  const getEventsForDay = (date) => {
+      // Normalizar target date
+      const target = normalizeDate(date);
+      const targetTime = target.getTime();
+
+      return events.filter(e => {
+          const start = normalizeDate(e.startDate);
+          const end = normalizeDate(e.endDate);
+          
+          // Se é evento de um dia: start == target
+          // Se é multi-day: target >= start AND target <= end
+          return targetTime >= start.getTime() && targetTime <= end.getTime();
+      });
+  };
 
   return (
-    <div className="border rounded-lg overflow-hidden">
-      {/* Weekday headers */}
-      <div className="grid grid-cols-7 bg-muted">
+    <div className="border rounded-lg overflow-hidden bg-card shadow-sm">
+      {/* Header com dias da semana */}
+      <div className="grid grid-cols-7 bg-muted/30 border-b">
         {WEEKDAYS.map((day) => (
           <div
             key={day}
-            className="p-2 text-center font-semibold text-sm border-r last:border-r-0"
+            className="p-3 text-center font-medium text-sm text-muted-foreground border-r last:border-r-0 uppercase tracking-wide"
           >
-            {day}
+            <span className="hidden sm:inline">{day}</span>
+            <span className="sm:hidden">{day.substring(0, 1)}</span>
           </div>
         ))}
       </div>
+      
+      {/* Grid de Semanas */}
+      <div className="flex flex-col bg-card">
+         {weeks.map((week) => (
+             <div key={week.id} className="grid grid-cols-7 min-h-[160px]">
+                 {week.days.map((date, dIndex) => {
+                     const isCurrentMonth = date.getMonth() === month && date.getFullYear() === year;
+                     const isTodayDate = isSameDay(date, today);
+                     const daysEvents = getEventsForDay(date);
 
-      {/* Calendar grid */}
-      <div className="grid grid-cols-7 auto-rows-fr">
-        {days.map((day, index) => (
-          <CalendarDay
-            key={index}
-            date={day.date}
-            events={day.events}
-            isToday={
-              isCurrentMonth && day.date === today.getDate()
-            }
-            onEventClick={handleEventClick}
-          />
-        ))}
+                     return (
+                         <div key={dIndex} className={cn(!isCurrentMonth && "bg-muted/10 opacity-60")}>
+                             <CalendarDay
+                                 date={date.getDate()}
+                                 events={daysEvents}
+                                 isToday={isTodayDate}
+                                 onEventClick={onEventClick}
+                                 // Sem espaçadores complexos, apenas grid normal
+                             />
+                         </div>
+                     );
+                 })}
+             </div>
+         ))}
       </div>
     </div>
   );
 }
 ```
 
+## 📄 src/features/calendar/hooks/useEventFilters.js
+```javascript
+import { useState, useMemo } from 'react';
+
+/**
+ * Hook para gerenciar filtros de eventos
+ */
+export function useEventFilters(events) {
+  const [filters, setFilters] = useState({
+    type: null,
+    importance: null,
+    status: null,
+    searchTerm: '',
+  });
+
+  const filteredEvents = useMemo(() => {
+    return events.filter((event) => {
+      // Filtro por tipo
+      if (filters.type && event.type !== filters.type) {
+        return false;
+      }
+
+      // Filtro por importância
+      if (filters.importance && event.importance !== filters.importance) {
+        return false;
+      }
+
+      // Filtro por status
+      if (filters.status && event.status !== filters.status) {
+        return false;
+      }
+
+      // Filtro por termo de busca
+      if (filters.searchTerm) {
+        const searchLower = filters.searchTerm.toLowerCase();
+        const matchesTitle = event.title?.toLowerCase().includes(searchLower);
+        const matchesDescription = event.description?.toLowerCase().includes(searchLower);
+        const matchesLocation = event.location?.toLowerCase().includes(searchLower);
+        
+        if (!matchesTitle && !matchesDescription && !matchesLocation) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [events, filters]);
+
+  const clearFilters = () => {
+    setFilters({
+      type: null,
+      importance: null,
+      status: null,
+      searchTerm: '',
+    });
+  };
+
+  const setSearchTerm = (term) => {
+    setFilters((prev) => ({ ...prev, searchTerm: term }));
+  };
+
+  return {
+    filters,
+    setFilters,
+    filteredEvents,
+    clearFilters,
+    setSearchTerm,
+    hasActiveFilters: filters.type || filters.importance || filters.status || filters.searchTerm,
+  };
+}
+```
+
 ## 📄 src/features/calendar/useCalendarVM.js
 ```javascript
 import { useState, useEffect } from 'react';
-import { contentService } from '@/shared/services/contentService';
+import { eventService } from '@/shared/services/eventService';
+import { authService } from '@/shared/services/authService';
 
 export function useCalendarVM() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);
+  const [myParticipations, setMyParticipations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
+  const isAuthenticated = authService.isAuthenticated();
+
   useEffect(() => {
     loadEvents();
-  }, [currentDate]);
+    if (isAuthenticated) {
+      loadMyParticipations();
+    }
+  }, [currentDate]); // Recarrega quando o mês muda
 
   const loadEvents = async () => {
     try {
       setLoading(true);
       const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      const data = await contentService.getCalendarEvents(year, month);
+      const month = currentDate.getMonth() + 1; // JavaScript months são 0-based
+      
+      const response = await eventService.getEventsByMonth({ year, month });
+      const data = response.content || response || [];
+      
       setEvents(data);
+      setError(null);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Erro ao carregar eventos');
     } finally {
       setLoading(false);
     }
   };
 
-  const changeMonth = (delta) => {
+  const loadMyParticipations = async () => {
+    try {
+      const response = await eventService.getSavedEvents(0, 100);
+      const data = response.content || response || [];
+      setMyParticipations(data);
+    } catch (err) {
+      console.error('Erro ao carregar participações:', err);
+    }
+  };
+
+  const changeMonth = (delta, specificDate = null) => {
     setCurrentDate((prev) => {
+      if (specificDate) return specificDate;
       const newDate = new Date(prev);
       newDate.setMonth(prev.getMonth() + delta);
       return newDate;
@@ -12858,36 +15151,69 @@ export function useCalendarVM() {
     setSelectedEvent(null);
   };
 
+  const isParticipating = (eventId) => {
+    return myParticipations.some(event => event.id === eventId);
+  };
+
   return {
     currentDate,
     events,
     loading,
     error,
     selectedEvent,
+    isAuthenticated,
+    myParticipations,
     changeMonth,
     openEventModal,
     closeEventModal,
+    isParticipating,
+    refreshEvents: loadEvents,
+    refreshParticipations: loadMyParticipations,
   };
 }
 ```
 
 ## 📄 src/features/events/EventPage.jsx
 ```jsx
-import { ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, MapPin, Clock, Share2, Globe, Video, Bookmark, Users, Check, X, Heart, ExternalLink } from 'lucide-react';
 import { useEventVM } from './useEventVM';
-import { Countdown } from './components/Countdown';
-import { EventInfo } from './components/EventInfo';
-import { GalleryGrid } from './components/GalleryGrid';
+import { EventGallery } from './components/EventGallery';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { MarkdownContent } from '@/shared/components/MarkdownContent';
+import { cn } from '@/lib/utils';
+import { useToast } from '@/components/ui/use-toast';
 
 export function EventPage() {
-  const { event, loading, error } = useEventVM();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { 
+    event, 
+    loading, 
+    error, 
+    isAuthenticated,
+    isParticipating,
+    participationLoading,
+    handleParticipation 
+  } = useEventVM();
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+        <div className="flex flex-col items-center gap-3">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+          <p className="text-sm text-muted-foreground">Carregando evento...</p>
+        </div>
       </div>
     );
   }
@@ -12895,76 +15221,316 @@ export function EventPage() {
   if (error || !event) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-2">Erro</h2>
+        <div className="text-center max-w-md mx-auto px-4">
+          <h2 className="text-2xl font-bold text-destructive mb-2">Evento não encontrado</h2>
           <p className="text-muted-foreground">
-            {error || 'Evento não encontrado'}
+            {error || 'O evento que você procura não está disponível ou foi removido.'}
           </p>
-          <Button asChild className="mt-4">
-            <Link to="/calendario">Voltar para calendário</Link>
-          </Button>
         </div>
       </div>
     );
   }
 
+  const handleParticipationSelect = async (status) => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    try {
+      await handleParticipation(status);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Não foi possível atualizar sua participação. Tente novamente."
+      });
+    }
+  };
+
+  const formatDate = (dateString, full = false) => {
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleDateString('pt-BR', {
+      weekday: full ? 'long' : undefined,
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  const formatTime = (dateString) => {
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'HAPPENING':
+        return <Badge variant="default" className="bg-green-600 hover:bg-green-700 animate-pulse">Acontecendo Agora</Badge>;
+      case 'UPCOMING':
+        return <Badge variant="outline" className="border-blue-500 text-blue-500">Em Breve</Badge>;
+      case 'ENDED':
+        return <Badge variant="secondary">Encerrado</Badge>;
+      default:
+        return null;
+    }
+  };
+
+  const getTypeIcon = (type) => {
+    switch (type) {
+      case 'ONLINE': return <Globe className="w-4 h-4 mr-1" />;
+      case 'HIBRIDO': return <Video className="w-4 h-4 mr-1" />;
+      default: return <Users className="w-4 h-4 mr-1" />;
+    }
+  };
+
+  const hasMultipleDays = event.endDate && new Date(event.startDate).toDateString() !== new Date(event.endDate).toDateString();
+  const hasGallery = event.gallery && event.gallery.length > 0;
+
   return (
-    <div>
-      {/* Header com imagem de fundo */}
-      {event.imageUrl && (
-        <div className="relative w-full h-[400px] overflow-hidden">
-          <img
-            src={event.imageUrl}
-            alt={event.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-8">
-            <div className="container mx-auto">
-              <Button variant="ghost" asChild className="mb-4 text-white hover:text-white hover:bg-white/20">
-                <Link to="/calendario">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Voltar para calendário
-                </Link>
-              </Button>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
+    <div className="min-h-screen pb-16 animate-in fade-in duration-500 container mx-auto px-4 py-8">
+      
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Coluna Principal: Conteúdo */}
+        <div className="lg:col-span-8 space-y-8">
+
+          {/* Capa */}
+          {event.coverImage && (
+            <div className="w-full aspect-video relative rounded-xl overflow-hidden bg-muted shadow-sm border">
+              <img
+                src={event.coverImage}
+                alt={`Capa do evento ${event.title}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
+          {/* Cabeçalho do Evento */}
+          <div className="bg-card rounded-xl p-6 shadow-sm border">
+              <div className="flex flex-wrap gap-2 mb-3">
+                {getStatusBadge(event.status)}
+                <Badge variant="outline" className="capitalize flex items-center">
+                  {getTypeIcon(event.type)}
+                  {event.type?.toLowerCase() === 'presencial' ? 'Presencial' : event.type?.toLowerCase() || 'Evento'}
+                </Badge>
+              </div>
+              
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-4 leading-tight">
                 {event.title}
               </h1>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    event.status === 'UPCOMING'
-                      ? 'bg-blue-500 text-white'
-                      : event.status === 'ONGOING'
-                      ? 'bg-green-500 text-white'
-                      : 'bg-gray-500 text-white'
-                  }`}
-                >
-                  {event.status === 'UPCOMING'
-                    ? 'Em breve'
-                    : event.status === 'ONGOING'
-                    ? 'Acontecendo agora'
-                    : 'Finalizado'}
-                </span>
+
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-muted-foreground text-sm md:text-base">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-primary" />
+                  <span className="capitalize">{formatDate(event.startDate, true)}</span>
+                </div>
+                {event.endDate && (
+                  <>
+                    <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-primary" />
+                      <span>
+                          {formatTime(event.startDate)}
+                          {!hasMultipleDays && ` - ${formatTime(event.endDate)}`}
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
           </div>
+
+          {/* Conteúdo em Abas */}
+          <Tabs defaultValue="about" className="w-full">
+            <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent gap-6">
+              <TabsTrigger 
+                value="about" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-2 font-semibold text-muted-foreground data-[state=active]:text-foreground transition-all"
+              >
+                Sobre o Evento
+              </TabsTrigger>
+              {hasGallery && (
+                <TabsTrigger 
+                  value="gallery" 
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-2 font-semibold text-muted-foreground data-[state=active]:text-foreground transition-all"
+                >
+                  Galeria de Fotos e Vídeos
+                </TabsTrigger>
+              )}
+            </TabsList>
+
+            <TabsContent value="about" className="pt-6 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="prose prose-lg dark:prose-invert max-w-none bg-transparent">
+                <MarkdownContent content={event.description} />
+              </div>
+            </TabsContent>
+
+            {hasGallery && (
+              <TabsContent value="gallery" className="pt-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                <EventGallery images={event.gallery} />
+              </TabsContent>
+            )}
+          </Tabs>
+
         </div>
-      )}
 
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Countdown para eventos futuros */}
-        {event.status !== 'ENDED' && (
-          <Countdown targetDate={event.start} />
-        )}
+        {/* Coluna Lateral: Informações Extras (Cards) */}
+        <div className="lg:col-span-4 space-y-6">
+            <div className="sticky top-24 space-y-6">
+              
+              {/* Card de Ações Rápidas */}
+              <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            size="lg"
+                            className={cn(
+                              "flex-1 gap-2 shadow-sm font-semibold transition-all",
+                              isParticipating ? "bg-primary text-primary-foreground" : "bg-primary text-primary-foreground"
+                            )}
+                            disabled={participationLoading}
+                          >
+                             <Bookmark className={cn("w-5 h-5", isParticipating ? "fill-current" : "")} />
+                             {event.userParticipationStatus === 'GOING' ? 'Vou participar' : 
+                              event.userParticipationStatus === 'INTERESTED' ? 'Tenho interesse' : 
+                              event.userParticipationStatus === 'NOT_GOING' ? 'Não vou participar' : 'Quer participar?'}
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                          <DropdownMenuItem 
+                            onClick={() => handleParticipationSelect('GOING')}
+                            className={cn(event.userParticipationStatus === 'GOING' && "bg-accent")}
+                          >
+                            <Check className="mr-2 h-4 w-4 text-green-500" />
+                            <span>Vou participar</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleParticipationSelect('INTERESTED')}
+                            className={cn(event.userParticipationStatus === 'INTERESTED' && "bg-accent")}
+                          >
+                            <Heart className={cn("mr-2 h-4 w-4 text-primary", event.userParticipationStatus === 'INTERESTED' ? "fill-current" : "")} />
+                            <span>Tenho interesse</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleParticipationSelect('NOT_GOING')}
+                            className={cn(event.userParticipationStatus === 'NOT_GOING' && "bg-accent")}
+                          >
+                            <X className="mr-2 h-4 w-4 text-destructive" />
+                            <span>Não vou participar</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
 
-        {/* Informações do evento */}
-        <EventInfo event={event} />
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="h-11 w-11 shrink-0" 
+                        onClick={() => {
+                            if (navigator.share) {
+                              navigator.share({
+                                title: event.title,
+                                text: event.description?.slice(0, 100),
+                                url: window.location.href,
+                              }).catch(() => {});
+                            } else {
+                              navigator.clipboard.writeText(window.location.href);
+                              toast({
+                                title: "Link copiado",
+                                description: "O link do evento foi copiado para a área de transferência."
+                              });
+                            }
+                        }}
+                        title="Compartilhar"
+                      >
+                        <Share2 className="w-5 h-5" />
+                      </Button>
+                  </div>
 
-        {/* Galeria (apenas para eventos finalizados) */}
-        {event.status === 'ENDED' && event.gallery && event.gallery.length > 0 && (
-          <GalleryGrid media={event.gallery} />
-        )}
+                  <div className="px-1">
+                     <p className="text-xs text-muted-foreground leading-relaxed">
+                        Sua confirmação nos ajuda a estimar o público e preparar melhor o evento. 😁 <br />
+                        Ao selecionar <strong>"Vou participar"</strong>, enviaremos lembretes por e-mail para você não perder nada!
+                     </p>
+                  </div>
+              </div>
+
+              <Card className="overflow-hidden border-muted shadow-sm">
+                <CardHeader className="bg-muted/30 pb-4">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      Detalhes
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6 space-y-6">
+                    
+                    {/* Localização */}
+                    {event.location ? (
+                      <div className="space-y-3">
+                          <div className="flex items-start gap-3">
+                              <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                                <MapPin className="w-5 h-5 text-primary" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-sm mb-1">Localização</h4>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    {event.location}
+                                </p>
+                              </div>
+                          </div>
+
+                          {(event.locationUrl) && (
+                              <div className="rounded-lg overflow-hidden border bg-muted h-[200px] shadow-sm relative group w-full">
+                                <iframe 
+                                    width="100%" 
+                                    height="100%" 
+                                    style={{ border: 0 }} 
+                                    loading="lazy" 
+                                    title="Mapa do evento"
+                                    allowFullScreen
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    src={event.locationUrl}
+                                    className="grayscale-[20%] hover:grayscale-0 transition-all duration-500"
+                                />
+                              </div>
+                          )}
+                      </div>
+                    ) : (
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                          <MapPin className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-sm mb-1">Local</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                              Informação de local indisponível
+                          </p>
+                        </div>
+                    </div>
+                    )}
+
+                    {/* Informações detalhadas de data se forem múltiplos dias */}
+                    {hasMultipleDays && (
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                            <Clock className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                            <h4 className="font-semibold text-sm mb-1">Duração</h4>
+                            <div className="text-sm text-muted-foreground space-y-1">
+                              <p>Início: {formatDate(event.startDate)} às {formatTime(event.startDate)}</p>
+                              <p>Fim: {formatDate(event.endDate)} às {formatTime(event.endDate)}</p>
+                            </div>
+                        </div>
+                      </div>
+                    )}
+
+                </CardContent>
+              </Card>
+            </div>
+        </div>
+
       </div>
     </div>
   );
@@ -13012,6 +15578,112 @@ function TimeUnit({ value, label }) {
       </div>
       <div className="text-sm opacity-90">{label}</div>
     </div>
+  );
+}
+```
+
+## 📄 src/features/events/components/EventGallery.jsx
+```jsx
+import { useState } from 'react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+export function EventGallery({ images }) {
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  if (!images || images.length === 0) return null;
+
+  const openLightbox = (index) => {
+    setSelectedIndex(index);
+  };
+
+  const closeLightbox = () => {
+    setSelectedIndex(null);
+  };
+
+  const goToNext = () => {
+    setSelectedIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const goToPrevious = () => {
+    setSelectedIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  return (
+    <>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {images.map((item, index) => (
+          <button
+            key={item.id}
+            onClick={() => openLightbox(index)}
+            className="relative aspect-square overflow-hidden rounded-lg hover:opacity-90 transition-opacity group"
+          >
+            <img
+              src={item.mediaUrl}
+              alt={`Galeria ${index + 1}`}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </button>
+        ))}
+      </div>
+
+      {/* Lightbox */}
+      <Dialog open={selectedIndex !== null} onOpenChange={closeLightbox}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0">
+          {selectedIndex !== null && (
+            <div className="relative w-full h-full flex items-center justify-center bg-black">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={closeLightbox}
+                className="absolute top-4 right-4 z-50 text-white hover:bg-white/20"
+              >
+                <X className="h-6 w-6" />
+              </Button>
+
+              {images.length > 1 && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPrevious();
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-50 text-white hover:bg-white/20"
+                  >
+                    <ChevronLeft className="h-8 w-8" />
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNext();
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-50 text-white hover:bg-white/20"
+                  >
+                    <ChevronRight className="h-8 w-8" />
+                  </Button>
+                </>
+              )}
+
+              <img
+                src={images[selectedIndex].mediaUrl}
+                alt={`Galeria ${selectedIndex + 1}`}
+                className="max-w-full max-h-[90vh] object-contain"
+              />
+
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-3 py-1 rounded">
+                {selectedIndex + 1} / {images.length}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 ```
@@ -13095,6 +15767,97 @@ export function EventInfo({ event }) {
 }
 ```
 
+## 📄 src/features/events/components/EventParticipationStats.jsx
+```jsx
+import { Users, Heart, CheckCircle2, X } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+
+/**
+ * Componente para exibir estatísticas de participação
+ * Usado quando o evento inclui participationStats (geralmente em contextos admin)
+ */
+export function EventParticipationStats({ stats }) {
+  if (!stats) return null;
+
+  const total = stats.totalParticipants || 0;
+  const going = stats.goingCount || 0;
+  const interested = stats.interestedCount || 0;
+  const notGoing = stats.notGoingCount || 0;
+
+  return (
+    <Card className="p-4">
+      <h3 className="font-semibold mb-3 flex items-center gap-2">
+        <Users className="h-4 w-4" />
+        Estatísticas de Participação
+      </h3>
+      
+      <div className="space-y-2 text-sm">
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-muted-foreground">
+            <Users className="h-4 w-4" />
+            Total
+          </span>
+          <span className="font-semibold">{total}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-green-600">
+            <CheckCircle2 className="h-4 w-4" />
+            Confirmados
+          </span>
+          <span className="font-semibold text-green-600">{going}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-blue-600">
+            <Heart className="h-4 w-4" />
+            Interessados
+          </span>
+          <span className="font-semibold text-blue-600">{interested}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-red-600">
+            <X className="h-4 w-4" />
+            Não Vão
+          </span>
+          <span className="font-semibold text-red-600">{notGoing}</span>
+        </div>
+
+        {/* Barra de progresso visual */}
+        {total > 0 && (
+          <div className="mt-3 pt-3 border-t">
+            <div className="h-2 bg-gray-200 rounded-full overflow-hidden flex">
+              {going > 0 && (
+                <div 
+                  className="bg-green-500 h-full"
+                  style={{ width: `${(going / total) * 100}%` }}
+                  title={`${going} confirmados`}
+                />
+              )}
+              {interested > 0 && (
+                <div 
+                  className="bg-blue-500 h-full"
+                  style={{ width: `${(interested / total) * 100}%` }}
+                  title={`${interested} interessados`}
+                />
+              )}
+              {notGoing > 0 && (
+                <div 
+                  className="bg-red-500 h-full"
+                  style={{ width: `${(notGoing / total) * 100}%` }}
+                  title={`${notGoing} não vão`}
+                />
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+}
+```
+
 ## 📄 src/features/events/components/GalleryGrid.jsx
 ```jsx
 import { useState } from 'react';
@@ -13155,29 +15918,98 @@ export function GalleryGrid({ media = [] }) {
 ```javascript
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { contentService } from '@/shared/services/contentService';
+import { eventService } from '@/shared/services/eventService';
+import { authService } from '@/shared/services/authService';
 import { analyticsService } from '@/shared/services/analyticsService';
 
 export function useEventVM() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isParticipating, setIsParticipating] = useState(false);
+  const [participationLoading, setParticipationLoading] = useState(false);
+
+  const isAuthenticated = authService.isAuthenticated();
 
   useEffect(() => {
     loadEvent();
-  }, [id]);
+  }, [slug]);
 
   const loadEvent = async () => {
     try {
       setLoading(true);
-      const data = await contentService.getEvent(id);
+      const data = await eventService.getEventBySlug(slug);
       setEvent(data);
-      analyticsService.track('VIEW_EVENT', { eventId: id, eventTitle: data.title });
+      
+      // Verifica se o usuário está participando através do userParticipationStatus
+      if (isAuthenticated && data.userParticipationStatus) {
+        setIsParticipating(true);
+      } else {
+        setIsParticipating(false);
+      }
+      
+      analyticsService.track('VIEW_EVENT', { 
+        eventId: data.id, 
+        eventTitle: data.title,
+        slug: slug
+      });
+      
+      setError(null);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Erro ao carregar evento');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleParticipation = async (status) => {
+    if (!isAuthenticated) return;
+
+    const previousStatus = event.userParticipationStatus;
+    setParticipationLoading(true);
+
+    try {
+      if (previousStatus === status) {
+        // Se clicar no mesmo status, remove a participação
+        await eventService.removeParticipation(event.id);
+        
+        // Atualiza estado local
+        setEvent(prev => ({
+          ...prev,
+          userParticipationStatus: null
+        }));
+        setIsParticipating(false);
+        
+        analyticsService.track('CANCEL_EVENT_PARTICIPATION', { 
+          eventId: event.id, 
+          eventTitle: event.title 
+        });
+      } else {
+        // Se for novo ou diferente, salva/atualiza
+        await eventService.saveParticipation(event.id, status);
+        
+        // Atualiza estado local
+        setEvent(prev => ({
+          ...prev,
+          userParticipationStatus: status
+        }));
+        setIsParticipating(true);
+        
+        analyticsService.track('PARTICIPATE_EVENT', { 
+          eventId: event.id, 
+          eventTitle: event.title,
+          status: status
+        });
+      }
+    } catch (err) {
+      console.error('Erro ao gerenciar participação:', err);
+      // O estado visual não mudou antes do fetch, então não precisa reverter nada complexo,
+      // mas poderíamos disparar um toast de erro aqui se tivéssemos acesso ao toast no VM.
+      // Vamos retornar o erro para a View tratar
+      throw err;
+    } finally {
+      setParticipationLoading(false);
     }
   };
 
@@ -13185,6 +16017,11 @@ export function useEventVM() {
     event,
     loading,
     error,
+    isAuthenticated,
+    isParticipating,
+    participationLoading,
+    handleParticipation,
+    refreshEvent: loadEvent,
   };
 }
 ```
@@ -17996,6 +20833,16 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
+
+export function extractUrlFromIframe(input) {
+  if (input.includes('<iframe') && input.includes('src="')) {
+    const match = input.match(/src="([^"]+)"/);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  return input;
+}
 ```
 
 ## 📄 src/main.jsx
@@ -18526,213 +21373,222 @@ export default ImageUploadDialog;
 
 ## 📄 src/shared/components/MDXEditor.css
 ```css
-/* Estilos customizados para o MDXEditor */
+/* src/shared/components/MDXEditor.css */
 
+/* =========================================
+   1. Variáveis e Escopo Principal
+   ========================================= */
 .mdx-editor-wrapper {
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
+  /* Mapeamento de Cores */
+  --baseBase: hsl(var(--background));
+  --baseBg: hsl(var(--background));
+  --baseBgSubtle: hsl(var(--muted));
+  
+  --baseBgHover: hsl(var(--accent));
+  --baseBgActive: hsl(var(--accent));
+  
+  --baseLine: hsl(var(--border));
+  --baseBorder: hsl(var(--border));
+  --baseBorderHover: hsl(var(--ring));
+  
+  --baseText: hsl(var(--foreground));
+  --baseTextContrast: hsl(var(--background));
+  
+  --accentBase: hsl(var(--primary));
+  --accentBg: hsl(var(--primary) / 0.1);
+  --accentBgHover: hsl(var(--primary) / 0.2);
+  --accentBgActive: hsl(var(--primary) / 0.3);
+  
+  --accentText: hsl(var(--primary));
+  --accentBorder: hsl(var(--primary));
 
-.mdx-editor-wrapper .mdxeditor {
   font-family: inherit;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background-color: hsl(var(--background));
+  transition: all 0.2s ease-in-out;
 }
 
+/* =========================================
+   2. Toolbar e Botões
+   ========================================= */
 .mdx-editor-wrapper .mdxeditor-toolbar {
-  background-color: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background-color: hsl(var(--muted)) !important;
+  border-bottom: 1px solid hsl(var(--border));
   padding: 0.5rem;
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
 }
 
+.mdx-editor-wrapper .mdxeditor-toolbar button {
+  cursor: pointer !important;
+  color: hsl(var(--foreground));
+}
+
+.mdx-editor-wrapper .mdxeditor-toolbar button:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+/* Trigger do Dropdown (Paragraph, etc) */
+.mdx-editor-wrapper button[role="combobox"] {
+  background-color: transparent !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.mdx-editor-wrapper button[role="combobox"]:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+/* =========================================
+   3. Elementos Globais / Portals (CORREÇÃO AQUI)
+   Estes elementos ficam fora do .mdx-editor-wrapper no DOM
+   ========================================= */
+
+/* --- Dropdowns (Selects) --- */
+.mdxeditor-select-content {
+  background-color: hsl(var(--popover)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  padding: 4px !important;
+  z-index: 50 !important;
+}
+
+.mdxeditor-select-item {
+  color: hsl(var(--popover-foreground)) !important;
+  border-radius: 2px !important;
+  cursor: pointer !important;
+  outline: none !important;
+}
+
+.mdxeditor-select-item[data-highlighted] {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+.mdxeditor-select-item-indicator {
+  color: hsl(var(--primary)) !important;
+}
+
+/* --- Popups e Dialogs (Link, Imagem) --- */
+/* Removemos o aninhamento .mdx-editor-wrapper para funcionar globalmente */
+
+.mdxeditor-popup-container {
+  z-index: 50 !important;
+}
+
+/* O cartão do formulário (Inserir Link/Imagem) */
+.mdxeditor-popup-container [role="dialog"], 
+.mdxeditor-popup-container form {
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
+}
+
+/* Botões dentro dos popups (Salvar/Cancelar) */
+.mdxeditor-popup-container button {
+  cursor: pointer !important;
+}
+
+/* Inputs dentro dos popups */
+.mdxeditor-popup-container input[type="text"] {
+  background-color: hsl(var(--input)) !important;
+  color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+/* =========================================
+   4. Área de Edição (Conteúdo)
+   ========================================= */
 .mdx-editor-wrapper .mdxeditor-root-contenteditable {
   padding: 1rem;
   min-height: 300px;
   max-height: 600px;
   overflow-y: auto;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
 }
 
 .mdx-editor-wrapper .mdxeditor-root-contenteditable:focus {
   outline: none;
 }
 
-/* Estilo para imagens dentro do editor */
+/* =========================================
+   5. Estilização do Markdown Renderizado
+   ========================================= */
 .mdx-editor-wrapper img {
   max-width: 100%;
   height: auto;
-  border-radius: 0.375rem;
+  border-radius: var(--radius);
   margin: 1rem 0;
+  border: 1px solid hsl(var(--border));
 }
 
-/* Estilo para tabelas */
 .mdx-editor-wrapper table {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0;
 }
 
-.mdx-editor-wrapper table th,
-.mdx-editor-wrapper table td {
-  border: 1px solid #e5e7eb;
+.mdx-editor-wrapper th,
+.mdx-editor-wrapper td {
+  border: 1px solid hsl(var(--border));
   padding: 0.5rem;
   text-align: left;
 }
 
-.mdx-editor-wrapper table th {
-  background-color: #f9fafb;
+.mdx-editor-wrapper th {
+  background-color: hsl(var(--muted));
   font-weight: 600;
 }
 
-/* Estilo para code blocks */
+.mdx-editor-wrapper a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.mdx-editor-wrapper h1, 
+.mdx-editor-wrapper h2, 
+.mdx-editor-wrapper h3 {
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.mdx-editor-wrapper h1 { font-size: 2em; margin: 0.67em 0; }
+.mdx-editor-wrapper h2 { font-size: 1.5em; margin: 0.75em 0; border-bottom: 1px solid hsl(var(--border)); padding-bottom: 0.3em;}
+
+/* Blocos de Código */
 .mdx-editor-wrapper pre {
-  background-color: #1e293b;
-  color: #e2e8f0;
+  background-color: hsl(var(--secondary));
   padding: 1rem;
-  border-radius: 0.375rem;
+  border-radius: var(--radius);
   overflow-x: auto;
-  margin: 1rem 0;
 }
 
 .mdx-editor-wrapper code {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.875rem;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
 }
 
-/* Estilo para inline code */
 .mdx-editor-wrapper :not(pre) > code {
-  background-color: #f1f5f9;
-  color: #0f172a;
-  padding: 0.125rem 0.375rem;
+  background-color: hsl(var(--muted));
+  padding: 0.2em 0.4em;
   border-radius: 0.25rem;
-}
-
-/* Estilo para blockquotes */
-.mdx-editor-wrapper blockquote {
-  border-left: 4px solid #3b82f6;
-  padding-left: 1rem;
-  margin: 1rem 0;
-  color: #64748b;
-  font-style: italic;
-}
-
-/* Estilo para listas */
-.mdx-editor-wrapper ul,
-.mdx-editor-wrapper ol {
-  margin: 1rem 0;
-  padding-left: 2rem;
-}
-
-.mdx-editor-wrapper li {
-  margin: 0.25rem 0;
-}
-/* Estilo para headings */
-.mdx-editor-wrapper h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 1.5rem 0 1rem 0;
-  line-height: 1.2;
-}
-
-.mdx-editor-wrapper h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 1.25rem 0 0.75rem 0;
-  line-height: 1.3;
-}
-
-.mdx-editor-wrapper h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
-  line-height: 1.4;
-}
-
-.mdx-editor-wrapper h4 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
-  line-height: 1.4;
-}
-
-.mdx-editor-wrapper h5 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.5rem 0;
-  line-height: 1.5;
-}
-
-.mdx-editor-wrapper h6 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.5rem 0;
-  line-height: 1.5;
-}
-/* Estilo para headings */
-.mdx-editor-wrapper h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 1.5rem 0 1rem 0;
-  line-height: 1.2;
-}
-
-.mdx-editor-wrapper h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 1.25rem 0 0.75rem 0;
-  line-height: 1.3;
-}
-
-.mdx-editor-wrapper h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
-  line-height: 1.4;
-}
-
-.mdx-editor-wrapper h4 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
-  line-height: 1.4;
-}
-
-.mdx-editor-wrapper h5 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.5rem 0;
-  line-height: 1.5;
-}
-
-.mdx-editor-wrapper h6 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin: 0.75rem 0 0.5rem 0;
-  line-height: 1.5;
-}
-
-/* Estilo para links */
-.mdx-editor-wrapper a {
-  color: #3b82f6;
-  text-decoration: underline;
-}
-
-.mdx-editor-wrapper a:hover {
-  color: #2563eb;
-}
-
-/* Responsividade */
-@media (max-width: 640px) {
-  .mdx-editor-wrapper .mdxeditor-toolbar {
-    overflow-x: auto;
-  }
 }
 ```
 
 ## 📄 src/shared/components/MDXEditor.jsx
 ```jsx
-/**
- * Componente MDXEditor reutilizável com suporte a upload de imagens
- */
-
 import React, { useState, useRef } from 'react';
 import {
   MDXEditor as BaseMDXEditor,
@@ -18761,20 +21617,10 @@ import {
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 import './MDXEditor.css';
-import { imageUploadService } from '../services/imageUploadService';
 import { useToast } from '@/components/ui/use-toast';
 import { ImageUploadDialog } from './ImageUploadDialog';
+import { useTheme } from '../contexts/ThemeContext';
 
-/**
- * Componente MDXEditor configurado com todos os plugins necessários
- * @param {Object} props
- * @param {string} props.value - Conteúdo markdown atual
- * @param {function} props.onChange - Callback quando o conteúdo mudar
- * @param {string} props.placeholder - Texto placeholder
- * @param {string} props.className - Classes CSS adicionais
- * @param {boolean} props.readOnly - Define se o editor é apenas leitura
- * @param {string} props.editorKey - Key única para forçar re-montagem do editor
- */
 export const MDXEditor = ({
   value = '',
   onChange,
@@ -18784,12 +21630,14 @@ export const MDXEditor = ({
   editorKey,
 }) => {
   const { toast } = useToast();
+  // Obtém o tema atual para passar a classe correta ao editor
+  const { theme } = useTheme(); 
+  
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const uploadResolveRef = useRef(null);
 
   const handleImageUpload = async (image) => {
-    // Previne múltiplos uploads simultâneos
     if (isUploading) {
       throw new Error('Já existe um upload em andamento');
     }
@@ -18797,7 +21645,6 @@ export const MDXEditor = ({
     setIsUploading(true);
     setIsUploadDialogOpen(true);
 
-    // Cria uma Promise que será resolvida quando o dialog completar
     return new Promise((resolve, reject) => {
       uploadResolveRef.current = { resolve, reject, image };
     });
@@ -18829,8 +21676,10 @@ export const MDXEditor = ({
         onChange={onChange}
         placeholder={placeholder}
         readOnly={readOnly}
+        // Aplica a classe 'dark-theme' se o tema for escuro. 
+        // Isso ativa as variáveis internas de cor do MDXEditor.
+        className={theme === 'dark' ? 'dark-theme' : ''}
         plugins={[
-          // Plugins de formatação
           headingsPlugin(),
           listsPlugin(),
           quotePlugin(),
@@ -18849,18 +21698,13 @@ export const MDXEditor = ({
               html: 'HTML',
               json: 'JSON',
               bash: 'Bash',
+              sql: 'SQL'
             },
           }),
-          
-          // Plugin de imagens com função de upload
           imagePlugin({
             imageUploadHandler: handleImageUpload,
           }),
-
-          // Atalhos de teclado
           markdownShortcutPlugin(),
-
-          // Toolbar
           toolbarPlugin({
             toolbarContents: () => (
               <>
@@ -18884,7 +21728,6 @@ export const MDXEditor = ({
         ]}
       />
 
-      {/* Dialog de upload com progresso */}
       <ImageUploadDialog
         isOpen={isUploadDialogOpen}
         onClose={handleUploadCancel}
@@ -19482,6 +22325,142 @@ export function useHeaderSearch() {
     handleQueryChange,
     closeDropdown,
     clearSearch,
+  };
+}
+```
+
+## 📄 src/shared/hooks/useImageCropper.js
+```javascript
+import { useState, useCallback, useEffect } from 'react';
+import { getCroppedImg } from '@/shared/utils/imageCrop';
+
+/**
+ * Hook to manage image uploading, cropping and removal.
+ * @param {string|null} initialImageUrl - Initial URL of the image (for editing mode)
+ */
+export function useImageCropper(initialImageUrl = null) {
+  const [imageSrc, setImageSrc] = useState(null); // The source image for cropping (Base64)
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  
+  const [previewUrl, setPreviewUrl] = useState(initialImageUrl); // The final cropped image URL for display
+  const [file, setFile] = useState(null); // The final File object to send to backend
+  const [isRemoved, setIsRemoved] = useState(false); // Flag indicating if the initial image was removed
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Initialize/Reset when initialImageUrl changes
+  useEffect(() => {
+    if (initialImageUrl) {
+        setPreviewUrl(initialImageUrl);
+        setIsRemoved(false);
+    }
+  }, [initialImageUrl]);
+
+  // Cleanup object URLs to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      if (imageSrc && imageSrc.startsWith('blob:')) {
+        URL.revokeObjectURL(imageSrc);
+      }
+    };
+  }, [previewUrl, imageSrc]);
+
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleFileSelect = useCallback((e) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    // TODO: Add file validation here if needed (size, type)
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageSrc(reader.result);
+      setZoom(1);
+      setIsModalOpen(true);
+      // Reset input
+      e.target.value = ''; 
+    };
+    reader.readAsDataURL(selectedFile);
+  }, []);
+
+  const handleCropConfirm = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+      const newFile = new File([croppedBlob], `image-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      const newUrl = URL.createObjectURL(croppedBlob);
+
+      setPreviewUrl(newUrl);
+      setFile(newFile);
+      setIsRemoved(false); // We have a new image, so it's not "removed"
+      
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      setError('Erro ao recortar imagem');
+    } finally {
+      setLoading(false);
+    }
+  }, [imageSrc, croppedAreaPixels]);
+
+  const handleRemove = useCallback(() => {
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+    setFile(null);
+    setIsRemoved(true); // Mark as removed so backend knows to delete the old image
+  }, [previewUrl]);
+
+  const handleCancelCrop = useCallback(() => {
+     setIsModalOpen(false);
+     setImageSrc(null);
+  }, []);
+
+  const reset = useCallback(() => {
+      setPreviewUrl(initialImageUrl);
+      setFile(null);
+      setIsRemoved(false);
+      setImageSrc(null);
+      setIsModalOpen(false);
+  }, [initialImageUrl]);
+
+  return {
+    // State
+    imageSrc,
+    crop,
+    zoom,
+    previewUrl,
+    file,
+    isRemoved,
+    isModalOpen,
+    loading,
+    error,
+
+    // Setters
+    setCrop,
+    setZoom,
+    setIsModalOpen,
+
+    // Actions
+    onCropComplete,
+    handleFileSelect,
+    handleCropConfirm,
+    handleRemove,
+    handleCancelCrop,
+    reset
   };
 }
 ```
@@ -20311,6 +23290,198 @@ class ContentService {
 export const contentService = new ContentService();
 ```
 
+## 📄 src/shared/services/eventService.js
+```javascript
+/**
+ * Serviço para gerenciar eventos
+ */
+
+import { apiClient } from './apiClient';
+
+class EventService {
+  // ==================== ENDPOINTS PÚBLICOS ====================
+
+  /**
+   * Lista eventos de um mês específico (inclui 7 dias antes/depois)
+   * @param {Object} params - Parâmetros de busca
+   * @param {number} params.year - Ano (opcional, usa atual se não informado)
+   * @param {number} params.month - Mês 1-12 (opcional, usa atual se não informado)
+   * @param {string} params.date - Data específica YYYY-MM-DD (opcional)
+   * @param {number} params.page - Número da página (padrão: 0)
+   * @param {number} params.size - Tamanho da página (padrão: 100)
+   * @returns {Promise<Object>} Eventos do mês
+   */
+  async getEventsByMonth(params = {}) {
+    const queryParams = new URLSearchParams();
+    
+    if (params.year) queryParams.append('year', params.year);
+    if (params.month) queryParams.append('month', params.month);
+    if (params.date) queryParams.append('date', params.date);
+    queryParams.append('page', params.page || 0);
+    queryParams.append('size', params.size || 100);
+    
+    return apiClient.get(`/public/events/month?${queryParams.toString()}`);
+  }
+
+  /**
+   * Lista eventos futuros com paginação
+   * @param {number} page - Número da página (padrão: 0)
+   * @param {number} size - Tamanho da página (padrão: 20)
+   * @returns {Promise<Object>} Página de eventos futuros
+   */
+  async getUpcomingEvents(page = 0, size = 20) {
+    return apiClient.get(`/public/events/upcoming?page=${page}&size=${size}`);
+  }
+
+  /**
+   * Lista eventos passados com paginação
+   * @param {number} page - Número da página (padrão: 0)
+   * @param {number} size - Tamanho da página (padrão: 20)
+   * @returns {Promise<Object>} Página de eventos passados
+   */
+  async getPastEvents(page = 0, size = 20) {
+    return apiClient.get(`/public/events/past?page=${page}&size=${size}`);
+  }
+
+  /**
+   * Busca evento por ID
+   * @param {string} eventId - ID do evento
+   * @returns {Promise<Object>} Detalhes completos do evento (EventResponseDTO)
+   */
+  async getEventById(eventId) {
+    return apiClient.get(`/public/events/${eventId}`);
+  }
+
+  /**
+   * Busca evento por slug
+   * @param {string} slug - Slug do evento
+   * @returns {Promise<Object>} Detalhes completos do evento (EventResponseDTO)
+   */
+  async getEventBySlug(slug) {
+    return apiClient.get(`/public/events/slug/${slug}`);
+  }
+
+  // ==================== ENDPOINTS PRIVADOS (Autenticação Requerida) ====================
+
+  /**
+   * Salva/atualiza participação do usuário no evento
+   * @param {string} eventId - ID do evento
+   * @param {string} status - Status de participação (INTERESTED, GOING, NOT_GOING)
+   * @returns {Promise<Object>} Dados da participação
+   */
+  async saveParticipation(eventId, status) {
+    return apiClient.post(`/private/user/events/${eventId}/save`, { status });
+  }
+
+  /**
+   * Remove participação do usuário no evento
+   * @param {string} eventId - ID do evento
+   * @returns {Promise<void>}
+   */
+  async removeParticipation(eventId) {
+    return apiClient.delete(`/private/user/events/${eventId}/save`);
+  }
+
+  /**
+   * Lista eventos salvos pelo usuário com paginação
+   * @param {number} page - Número da página (padrão: 0)
+   * @param {number} size - Tamanho da página (padrão: 20)
+   * @returns {Promise<Object>} Página de eventos salvos
+   */
+  async getSavedEvents(page = 0, size = 20) {
+    return apiClient.get(`/private/user/events/saved?page=${page}&size=${size}`);
+  }
+
+  /**
+   * Busca detalhes da participação do usuário em um evento específico
+   * @param {string} eventId - ID do evento
+   * @returns {Promise<Object>} Detalhes da participação
+   */
+  async getUserParticipationDetails(eventId) {
+    return apiClient.get(`/private/user/events/${eventId}/details`);
+  }
+
+  /**
+   * Atualiza status de participação do usuário
+   * @param {string} eventId - ID do evento
+   * @param {string} status - Novo status (INTERESTED, GOING, NOT_GOING)
+   * @returns {Promise<Object>} Participação atualizada
+   */
+  async updateParticipationStatus(eventId, status) {
+    return apiClient.put(`/private/user/events/${eventId}/status`, { status });
+  }
+
+  // ==================== ENDPOINTS ADMINISTRATIVOS (Papel ADMIN Requerido) ====================
+
+  /**
+   * Cria novo evento (admin)
+   * @param {FormData} formData - Dados do evento incluindo possível imagem
+   * @returns {Promise<Object>} Evento criado
+   */
+  async createEvent(formData) {
+    return apiClient.postFormData('admin/events', formData);
+  }
+
+  /**
+   * Atualiza evento existente (admin)
+   * @param {string} eventId - ID do evento
+   * @param {FormData} formData - Dados atualizados incluindo possível imagem
+   * @returns {Promise<Object>} Evento atualizado
+   */
+  async updateEvent(eventId, formData) {
+    return apiClient.putFormData(`admin/events/${eventId}`, formData);
+  }
+
+  /**
+   * Exclui evento (admin)
+   * @param {string} eventId - ID do evento
+   * @returns {Promise<void>}
+   */
+  async deleteEvent(eventId) {
+    return apiClient.delete(`/admin/events/${eventId}`);
+  }
+}
+
+export const eventService = new EventService();
+```
+
+## 📄 src/shared/services/examService.js
+```javascript
+import { apiClient } from './apiClient';
+
+export const examService = {
+  // Subjects
+  getSubjects: async () => {
+    return apiClient.get('admin/exams/subjects');
+  },
+
+  createSubject: async (subjectData) => {
+    return apiClient.post('admin/exams/subjects', subjectData);
+  },
+
+  deleteSubject: async (subjectCode) => {
+    return apiClient.delete(`admin/exams/subjects/${subjectCode}`);
+  },
+
+  // Exams
+  getExamsBySubject: async (subjectCode) => {
+    return apiClient.get(`admin/exams/subject/${subjectCode}`);
+  },
+
+  createExam: async (examData) => {
+    return apiClient.post('admin/exams', examData);
+  },
+
+  updateExam: async (examId, examData) => {
+    return apiClient.put(`admin/exams/${examId}`, examData);
+  },
+
+  deleteExam: async (examId) => {
+    return apiClient.delete(`admin/exams/${examId}`);
+  }
+};
+```
+
 ## 📄 src/shared/services/imageUploadService.js
 ```javascript
 /**
@@ -20389,6 +23560,76 @@ class ImageUploadService {
 }
 
 export const imageUploadService = new ImageUploadService();
+```
+
+## 📄 src/shared/services/manualService.js
+```javascript
+import { apiClient } from './apiClient';
+
+export const manualService = {
+  // Categories
+  getCategories: async () => {
+    return apiClient.get('public/manual/categories');
+  },
+
+  createCategory: async (categoryData) => {
+    return apiClient.post('admin/manual/categories', categoryData);
+  },
+
+  updateCategory: async (id, categoryData) => {
+    return apiClient.put(`admin/manual/categories/${id}`, categoryData);
+  },
+
+  deleteCategory: async (id) => {
+    return apiClient.delete(`admin/manual/categories/${id}`);
+  },
+
+  reorderCategories: async (categoryIds) => {
+    return apiClient.put('admin/manual/categories/r/reorder', { categoryIds });
+  },
+
+  // Chapters
+  getChaptersByCategory: async (categoryId) => {
+    return apiClient.get(`public/manual/chapters/category/${categoryId}`);
+  },
+
+  createChapter: async (chapterData) => {
+    return apiClient.post('admin/manual/chapters', chapterData);
+  },
+
+  updateChapter: async (id, chapterData) => {
+    return apiClient.put(`admin/manual/chapters/${id}`, chapterData);
+  },
+
+  deleteChapter: async (id) => {
+    return apiClient.delete(`admin/manual/chapters/${id}`);
+  },
+
+  reorderChapters: async (categoryId, chapterIds) => {
+    return apiClient.put('admin/manual/chapters/r/reorder', { categoryId, chapterIds });
+  },
+
+  // Articles
+  getArticlesByChapter: async (chapterId) => {
+    return apiClient.get(`public/manual/articles/chapter/${chapterId}`);
+  },
+
+  createArticle: async (articleData) => {
+    return apiClient.post('admin/manual/articles', articleData);
+  },
+
+  updateArticle: async (id, articleData) => {
+    return apiClient.put(`admin/manual/articles/${id}`, articleData);
+  },
+
+  deleteArticle: async (id) => {
+    return apiClient.delete(`admin/manual/articles/${id}`);
+  },
+
+  reorderArticles: async (chapterId, articleIds) => {
+    return apiClient.put('admin/manual/articles/r/reorder', { chapterId, articleIds });
+  }
+};
 ```
 
 ## 📄 src/shared/services/storeService.js
@@ -21187,6 +24428,44 @@ export function throttle(func, limit) {
       setTimeout(() => inThrottle = false, limit);
     }
   };
+}
+
+/**
+ * Combina uma data e hora em uma única Date, usando valores padrão se hora estiver vazia
+ * @param {Date} date - A data base
+ * @param {string} time - A hora no formato HH:MM (pode ser vazia)
+ * @param {string} defaultTime - Hora padrão se time estiver vazio (ex: '00:00' ou '23:59')
+ * @returns {Date|null} A data combinada ou null se date for null/undefined
+ */
+export function combineDateAndTime(date, time, defaultTime = '00:00') {
+  if (!date) return null;
+  
+  const timeToUse = (time && time.trim()) ? time : defaultTime;
+  const [hours, minutes] = timeToUse.split(':').map(Number);
+  
+  const combined = new Date(date);
+  combined.setHours(hours, minutes, 0, 0);
+  
+  return combined;
+}
+
+/**
+ * Converte uma Date para string ISO local (sem conversão de timezone)
+ * @param {Date} date - A data a ser convertida
+ * @returns {string|null} String ISO local ou null se date for null/undefined
+ */
+export function toLocalISOString(date) {
+  if (!date) return null;
+  
+  const pad = (num) => num.toString().padStart(2, '0');
+  return (
+    date.getFullYear() +
+    '-' + pad(date.getMonth() + 1) +
+    '-' + pad(date.getDate()) +
+    'T' + pad(date.getHours()) +
+    ':' + pad(date.getMinutes()) +
+    ':' + pad(date.getSeconds())
+  );
 }
 ```
 

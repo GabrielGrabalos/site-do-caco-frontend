@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { apiClient } from '@/shared/services/apiClient';
+import { manualService } from '@/shared/services/manualService';
 import { ManualCategory } from './models/ManualCategory';
 import { ManualChapter } from './models/ManualChapter';
 import { ManualArticle } from './models/ManualArticle';
@@ -39,7 +39,7 @@ export function useAdminManualVM() {
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get('public/manual/categories');
+      const data = await manualService.getCategories();
       setCategories(ManualCategory.fromDTOArray(data));
     } catch (err) {
       console.error('Erro ao carregar categorias:', err);
@@ -51,7 +51,7 @@ export function useAdminManualVM() {
   const createCategory = async (categoryData) => {
     try {
       setCreating(true);
-      const newCategoryDTO = await apiClient.post('admin/manual/categories', categoryData);
+      const newCategoryDTO = await manualService.createCategory(categoryData);
       const newCategory = ManualCategory.fromDTO(newCategoryDTO);
       setCategories([...categories, newCategory]);
       return { success: true, data: newCategory };
@@ -64,7 +64,7 @@ export function useAdminManualVM() {
 
   const updateCategory = async (id, categoryData) => {
     try {
-      const updatedDTO = await apiClient.put(`admin/manual/categories/${id}`, categoryData);
+      const updatedDTO = await manualService.updateCategory(id, categoryData);
       const updatedCategory = ManualCategory.fromDTO(updatedDTO);
       setCategories(categories.map(c => c.id === id ? updatedCategory : c));
       
@@ -81,7 +81,7 @@ export function useAdminManualVM() {
 
   const deleteCategory = async (id) => {
     try {
-      await apiClient.delete(`admin/manual/categories/${id}`);
+      await manualService.deleteCategory(id);
       setCategories(categories.filter(c => c.id !== id));
       
       // Remove seleção se for a categoria deletada
@@ -99,7 +99,7 @@ export function useAdminManualVM() {
     try {
       setCategories(newOrder);
       const categoryIds = newOrder.map(c => c.id);
-      await apiClient.put('admin/manual/categories/r/reorder', { categoryIds });
+      await manualService.reorderCategories(categoryIds);
       return { success: true };
     } catch (err) {
       await loadCategories(); // Reverte em caso de erro
@@ -110,7 +110,7 @@ export function useAdminManualVM() {
   // === CAPÍTULOS ===
   const loadChapters = async (categoryId) => {
     try {
-      const data = await apiClient.get(`public/manual/chapters/category/${categoryId}`);
+      const data = await manualService.getChaptersByCategory(categoryId);
       setChapters(ManualChapter.fromDTOArray(data));
     } catch (err) {
       console.error('Erro ao carregar capítulos:', err);
@@ -120,7 +120,7 @@ export function useAdminManualVM() {
   const createChapter = async (chapterData) => {
     try {
       setCreating(true);
-      const newChapterDTO = await apiClient.post('admin/manual/chapters', chapterData);
+      const newChapterDTO = await manualService.createChapter(chapterData);
       const newChapter = ManualChapter.fromDTO(newChapterDTO);
       setChapters([...chapters, newChapter]);
       
@@ -141,7 +141,7 @@ export function useAdminManualVM() {
 
   const updateChapter = async (id, chapterData) => {
     try {
-      const updatedDTO = await apiClient.put(`admin/manual/chapters/${id}`, chapterData);
+      const updatedDTO = await manualService.updateChapter(id, chapterData);
       const updatedChapter = ManualChapter.fromDTO(updatedDTO);
       setChapters(chapters.map(ch => ch.id === id ? updatedChapter : ch));
       
@@ -159,7 +159,7 @@ export function useAdminManualVM() {
   const deleteChapter = async (id) => {
     try {
       const chapter = chapters.find(ch => ch.id === id);
-      await apiClient.delete(`admin/manual/chapters/${id}`);
+      await manualService.deleteChapter(id);
       setChapters(chapters.filter(ch => ch.id !== id));
       
       // Remove seleção se for o capítulo deletado
@@ -186,7 +186,7 @@ export function useAdminManualVM() {
     try {
       setChapters(newOrder);
       const chapterIds = newOrder.map(ch => ch.id);
-      await apiClient.put('admin/manual/chapters/r/reorder', { categoryId, chapterIds });
+      await manualService.reorderChapters(categoryId, chapterIds);
       return { success: true };
     } catch (err) {
       if (selectedCategory) {
@@ -199,7 +199,7 @@ export function useAdminManualVM() {
   // === ARTIGOS ===
   const loadArticles = async (chapterId) => {
     try {
-      const data = await apiClient.get(`public/manual/articles/chapter/${chapterId}`);
+      const data = await manualService.getArticlesByChapter(chapterId);
       setArticles(ManualArticle.fromDTOArray(data));
     } catch (err) {
       console.error('Erro ao carregar artigos:', err);
@@ -209,7 +209,7 @@ export function useAdminManualVM() {
   const createArticle = async (articleData) => {
     try {
       setCreating(true);
-      const newArticleDTO = await apiClient.post('admin/manual/articles', articleData);
+      const newArticleDTO = await manualService.createArticle(articleData);
       const newArticle = ManualArticle.fromDTO(newArticleDTO);
       setArticles([...articles, newArticle]);
       
@@ -230,7 +230,7 @@ export function useAdminManualVM() {
 
   const updateArticle = async (id, articleData) => {
     try {
-      const updatedDTO = await apiClient.put(`admin/manual/articles/${id}`, articleData);
+      const updatedDTO = await manualService.updateArticle(id, articleData);
       const updatedArticle = ManualArticle.fromDTO(updatedDTO);
       setArticles(articles.map(a => a.id === id ? updatedArticle : a));
       return { success: true, data: updatedArticle };
@@ -242,7 +242,7 @@ export function useAdminManualVM() {
   const deleteArticle = async (id) => {
     try {
       const article = articles.find(a => a.id === id);
-      await apiClient.delete(`admin/manual/articles/${id}`);
+      await manualService.deleteArticle(id);
       setArticles(articles.filter(a => a.id !== id));
       
       // Atualiza contador do capítulo
@@ -264,7 +264,7 @@ export function useAdminManualVM() {
     try {
       setArticles(newOrder);
       const articleIds = newOrder.map(a => a.id);
-      await apiClient.put('admin/manual/articles/r/reorder', { chapterId, articleIds });
+      await manualService.reorderArticles(chapterId, articleIds);
       return { success: true };
     } catch (err) {
       if (selectedChapter) {
