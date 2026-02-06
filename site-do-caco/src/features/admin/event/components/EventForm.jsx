@@ -112,7 +112,6 @@ export function EventForm({
     // CARREGAMENTO DE DADOS
     useEffect(() => {
         if (initialData) {
-            console.log("Carregando dados iniciais para edição:", initialData);
             setTitle(initialData.title || '');
             setSlug(initialData.slug || '');
             setDescription(initialData.description || '');
@@ -172,16 +171,23 @@ export function EventForm({
         }
     }, [initialData]);
 
-    // Salvar rascunho
+   // Salvar rascunho com DEBOUNCE (atraso)
     useEffect(() => {
         if (!initialData) {
-            if (title || description || startDate) {
-                const draft = {
-                    title, slug, description, location, locationUrl,
-                    type, importance, startDate, endDate, startTime, endTime, differentDay
-                };
-                localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-            }
+            // Cria um timer para salvar apenas após 2 segundos sem digitar
+            const timeoutId = setTimeout(() => {
+                if (title || description || startDate) {
+                    const draft = {
+                        title, slug, description, location, locationUrl,
+                        type, importance, startDate, endDate, startTime, endTime, differentDay
+                    };
+                    console.log("Salvando rascunho..."); // Opcional: para debug
+                    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+                }
+            }, 2000);
+
+            // Se o usuário digitar novamente antes de 2s, limpa o timer anterior
+            return () => clearTimeout(timeoutId);
         }
     }, [initialData, title, slug, description, location, locationUrl, type, importance, startDate, endDate, startTime, endTime, differentDay]);
 
