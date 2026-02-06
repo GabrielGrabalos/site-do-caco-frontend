@@ -7,6 +7,7 @@ export class Event {
     this.startDate = data.startDate;
     this.endDate = data.endDate;
     this.location = data.location;
+    this.locationUrl = data.locationUrl;
     this.coverImage = data.coverImage;
     this.type = data.type; // 'CACO', 'IC', 'FERIADO'
     this.importance = data.importance; // 'MAJOR', 'MINOR'
@@ -117,6 +118,7 @@ export class Event {
     formData.append('startDate', this.startDate || '');
     formData.append('endDate', this.endDate || '');
     formData.append('location', this.location || '');
+    formData.append('locationUrl', this.locationUrl || '');
     formData.append('type', this.type || 'CACO');
     formData.append('importance', this.importance || 'MINOR');
     formData.append('status', this.status || 'SCHEDULED');
