@@ -22,6 +22,7 @@ import { Label } from '@/components/ui/label';
 import { MDXEditor } from '@/shared/components/MDXEditor';
 import { Trash2 } from 'lucide-react';
 import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
+import { useFormDraft } from '@/shared/hooks/useFormDraft';
 
 const DRAFT_KEY = 'article-draft';
 
@@ -33,51 +34,39 @@ export function CreateArticleModal({
   loading,
   chapterId 
 }) {
-  const [title, setTitle] = useState('');
-  const [slug, setSlug] = useState('');
-  const [content, setContent] = useState('');
-  const [originalSlug, setOriginalSlug] = useState('');
+  const { draftValues, hasDraft, saveDraft, discardDraft } = useFormDraft(DRAFT_KEY, {}, !!editingArticle);
+
+  const [title, setTitle] = useState(editingArticle?.title || draftValues.title || '');
+  const [slug, setSlug] = useState(editingArticle?.slug || draftValues.slug || '');
+  const [content, setContent] = useState(editingArticle?.content || draftValues.content || '');
+  const [originalSlug, setOriginalSlug] = useState(editingArticle?.slug || '');
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
 
   // Carregar do localStorage ao abrir o modal (apenas se não estiver editando)
   useEffect(() => {
-    if (open && !editingArticle) {
-      const savedDraft = localStorage.getItem(DRAFT_KEY);
-      if (savedDraft) {
-        try {
-          const draft = JSON.parse(savedDraft);
-          setTitle(draft.title || '');
-          setSlug(draft.slug || '');
-          setContent(draft.content || '');
-        } catch (err) {
-          console.error('Erro ao carregar rascunho:', err);
-        }
-      }
+    if (open && !editingArticle && hasDraft) {
+         setTitle(draftValues.title || '');
+         setSlug(draftValues.slug || '');
+         setContent(draftValues.content || '');
     }
-  }, [open, editingArticle]);
+  }, [open, editingArticle, hasDraft, draftValues]);
 
+  // Limpar formulário ao fechar se não estiver salvando rascunho (opcional, mas comum em modais)
   useEffect(() => {
-    if (editingArticle) {
-      setTitle(editingArticle.title);
-      setSlug(editingArticle.slug);
-      setContent(editingArticle.content || '');
-      setOriginalSlug(editingArticle.slug);
-    } else if (!open) {
-      // Limpa apenas quando fecha o modal e não está editando
-      setTitle('');
-      setSlug('');
-      setContent('');
-      setOriginalSlug('');
-    }
-  }, [editingArticle, open]);
+     if (!open && !editingArticle) {
+         // Opcional: resetar estados locais visualmente, mas manter rascunho no hook, ou não.
+         // Neste caso específico, o código original limpava.
+         // Vamos manter a lógica original de limpar estados se fechar.
+         // setTitle(''); setSlug(''); setContent('');
+     }
+  }, [open, editingArticle]);
 
   // Salvar no localStorage sempre que houver mudanças (apenas se não estiver editando)
   useEffect(() => {
     if (!editingArticle && open && (title || slug || content)) {
-      const draft = { title, slug, content, chapterId };
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+       saveDraft({ title, slug, content, chapterId });
     }
-  }, [title, slug, content, chapterId, editingArticle, open]);
+  }, [title, slug, content, chapterId, editingArticle, open, saveDraft]);
 
   const generateSlug = (text) => {
     return text
@@ -106,7 +95,7 @@ export function CreateArticleModal({
   };
 
   const confirmDiscard = () => {
-    localStorage.removeItem(DRAFT_KEY);
+    discardDraft();
     setTitle('');
     setSlug('');
     setContent('');
@@ -116,7 +105,7 @@ export function CreateArticleModal({
   };
 
   const isValid = title.trim() && slug.trim() && content.trim();
-  const hasDraft = !editingArticle && (title || slug || content);
+  const showDiscardButton = !editingArticle && (title || slug || content);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -169,7 +158,7 @@ export function CreateArticleModal({
           </div>
 
           <DialogFooter>
-            {hasDraft && (
+            {showDiscardButton && (
               <Button
                 type="button"
                 variant="destructive"

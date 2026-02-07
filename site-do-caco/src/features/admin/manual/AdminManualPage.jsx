@@ -36,8 +36,8 @@ import { ArticleItem } from './components/ArticleItem';
 import { CreateCategoryModal } from './components/CreateCategoryModal';
 import { CreateChapterModal } from './components/CreateChapterModal';
 import { MDXEditor } from '@/shared/components/MDXEditor';
-import { apiClient } from '@/shared/services/apiClient';
 import { ConfirmDeleteDialog } from '../components/ConfirmDeleteDialog';
+import { useFormDraft } from '@/shared/hooks/useFormDraft';
 
 export function AdminManualPage() {
   const {
@@ -62,6 +62,7 @@ export function AdminManualPage() {
     updateArticle,
     deleteArticle,
     reorderArticles,
+    getArticleFeedbacks,
   } = useAdminManualVM();
 
   // Estados para categorias
@@ -85,7 +86,6 @@ export function AdminManualPage() {
   const [deleteArticleDialogOpen, setDeleteArticleDialogOpen] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState(null);
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
-  const [hasDraft, setHasDraft] = useState(false);
   const [isViewingDraft, setIsViewingDraft] = useState(false);
   const [selectedArticleForFeedback, setSelectedArticleForFeedback] = useState(null);
   const [articleFeedbacks, setArticleFeedbacks] = useState([]);
@@ -95,24 +95,16 @@ export function AdminManualPage() {
   const { toast } = useToast();
 
   const DRAFT_KEY = 'article-draft';
-
-  // Verificar se existe rascunho no localStorage
-  useEffect(() => {
-    const savedDraft = localStorage.getItem(DRAFT_KEY);
-    setHasDraft(!!savedDraft);
-  }, []);
-
-  // Atualizar estado de hasDraft quando houver mudanças
-  useEffect(() => {
-    const checkDraft = () => {
-      const savedDraft = localStorage.getItem(DRAFT_KEY);
-      setHasDraft(!!savedDraft);
-    };
-    
-    // Verificar periodicamente
-    const interval = setInterval(checkDraft, 500);
-    return () => clearInterval(interval);
-  }, []);
+  const { 
+    hasDraft, 
+    discardDraft, 
+    saveDraft,
+    draftValues
+  } = useFormDraft(DRAFT_KEY, { 
+    title: '', 
+    slug: '', 
+    content: '' 
+  }, !!editingArticle);
 
   // Quando selecionar um artigo para editar
   useEffect(() => {
@@ -129,12 +121,10 @@ export function AdminManualPage() {
   // Salvar no localStorage sempre que houver mudanças (apenas se não estiver editando)
   useEffect(() => {
     if (!editingArticle && selectedChapter && (articleTitle || articleSlug || articleContent)) {
-      const draft = { title: articleTitle, slug: articleSlug, content: articleContent };
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      saveDraft({ title: articleTitle, slug: articleSlug, content: articleContent });
       setIsViewingDraft(true);
-      setHasDraft(true);
     }
-  }, [articleTitle, articleSlug, articleContent, selectedChapter, editingArticle]);
+  }, [articleTitle, articleSlug, articleContent, selectedChapter, editingArticle, saveDraft]);
 
   // Limpar edição/visualização ao mudar de categoria ou capítulo
   useEffect(() => {
@@ -338,27 +328,22 @@ export function AdminManualPage() {
   };
 
   const handleViewDraft = () => {
-    const savedDraft = localStorage.getItem(DRAFT_KEY);
-    if (savedDraft) {
-      try {
-        const draft = JSON.parse(savedDraft);
-        setEditingArticle(null);
-        setSelectedArticleForFeedback(null);
-        setArticleFeedbacks([]);
-        setArticleTitle(draft.title || '');
-        setArticleSlug(draft.slug || '');
-        setArticleContent(draft.content || '');
-        setOriginalSlug('');
-        setIsViewingDraft(true);
-        setEditorResetKey(prev => prev + 1); // Força re-montagem do editor
-      } catch (err) {
-        console.error('Erro ao carregar rascunho:', err);
-        toast({
-          variant: 'destructive',
-          title: 'Erro ao carregar rascunho',
-          description: 'Não foi possível carregar o rascunho salvo.',
-        });
-      }
+    if (draftValues) {
+      setEditingArticle(null);
+      setSelectedArticleForFeedback(null);
+      setArticleFeedbacks([]);
+      setArticleTitle(draftValues.title || '');
+      setArticleSlug(draftValues.slug || '');
+      setArticleContent(draftValues.content || '');
+      setOriginalSlug('');
+      setIsViewingDraft(true);
+      setEditorResetKey(prev => prev + 1); // Força re-montagem do editor
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao carregar rascunho',
+        description: 'Dados do rascunho indisponíveis.',
+      });
     }
   };
 
@@ -379,11 +364,12 @@ export function AdminManualPage() {
     // Carregar feedbacks do artigo
     setLoadingFeedbacks(true);
     try {
-      const response = await apiClient.get(`admin/manual/articles/${article.id}/feedback?page=0&size=100`);
-      // Backend retorna Page<ArticleFeedbackDTO>, extrair o conteúdo
-      const feedbacks = response.content || response;
-      // Garantir que seja sempre um array
-      setArticleFeedbacks(Array.isArray(feedbacks) ? feedbacks : []);
+      const result = await getArticleFeedbacks(article.id);
+      if (result.success) {
+        setArticleFeedbacks(result.data);
+      } else {
+        throw new Error(result.error);
+      }
     } catch (err) {
       console.error('Erro ao carregar feedbacks:', err);
       toast({
@@ -415,10 +401,9 @@ export function AdminManualPage() {
   };
 
   const handleDiscardDraft = () => {
-    localStorage.removeItem(DRAFT_KEY);
+    discardDraft();
     clearArticleForm();
     setDiscardDialogOpen(false);
-    setHasDraft(false);
   };
 
   const handleSaveArticle = async () => {
@@ -445,8 +430,7 @@ export function AdminManualPage() {
     if (result.success) {
       // Limpar rascunho do localStorage após sucesso
       if (!editingArticle || isViewingDraft) {
-        localStorage.removeItem(DRAFT_KEY);
-        setHasDraft(false);
+        discardDraft();
       }
       clearArticleForm();
       toast({
@@ -689,15 +673,11 @@ export function AdminManualPage() {
                     >
                       <div className="space-y-2">
                         {/* Item de rascunho - aparece quando houver rascunho e um capítulo estiver selecionado */}
-                        {hasDraft && (() => {
-                          const savedDraft = localStorage.getItem(DRAFT_KEY);
-                          if (savedDraft) {
-                            try {
-                              const draft = JSON.parse(savedDraft);
-                              const draftArticle = {
-                                id: 'draft',
-                                title: draft.title || 'Rascunho',
-                                slug: draft.slug || 'Sem slug',
+                        {hasDraft && draftValues && (() => {
+                            const draftArticle = {
+                              id: 'draft',
+                              title: draftValues.title || 'Rascunho',
+                              slug: draftValues.slug || 'Sem slug',
                                 isDraft: true,
                                 totalFeedback: 0,
                                 helpfulCount: 0,
@@ -716,12 +696,6 @@ export function AdminManualPage() {
                                   isSelected={isViewingDraft}
                                 />
                               );
-                            } catch (err) {
-                              console.error('Erro ao renderizar rascunho:', err);
-                              return null;
-                            }
-                          }
-                          return null;
                         })()}
                         
                         {articles.map((article) => (

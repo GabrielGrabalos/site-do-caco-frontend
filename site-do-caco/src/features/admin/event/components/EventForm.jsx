@@ -19,6 +19,7 @@ import { DatePicker } from '../../components/DatePicker';
 import { TimeInput } from '../../components/TimeInput';
 import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
 import { useImageCropper } from '@/shared/hooks/useImageCropper';
+import { useFormDraft } from '@/shared/hooks/useFormDraft';
 import { extractUrlFromIframe } from '@/lib/utils';
 
 const DRAFT_KEY = 'event-draft';
@@ -67,24 +68,44 @@ export function EventForm({
 
     // --- ESTADOS DE IMAGEM ---
     const imageCropper = useImageCropper(initialData?.coverImage || null);
+
+    // --- RASCUNHO ---
+    const { draftValues, hasDraft, saveDraft, discardDraft } = useFormDraft(DRAFT_KEY, {}, !!initialData);
     
     // --- ESTADOS DO FORMULÁRIO ---
-    const [title, setTitle] = useState('');
-    const [slug, setSlug] = useState('');
-    const [slugEdited, setSlugEdited] = useState(false);
-    const [description, setDescription] = useState('');
+    const [title, setTitle] = useState(initialData?.title || draftValues.title || '');
+    const [slug, setSlug] = useState(initialData?.slug || draftValues.slug || '');
+    const [description, setDescription] = useState(initialData?.description || draftValues.description || '');
+    
+    // Key para re-renderizar editor se necessário
     const [editorKey, setEditorKey] = useState(0);
 
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
-    const [location, setLocation] = useState('');
-    const [locationUrl, setLocationUrl] = useState('');
-    const [type, setType] = useState('CACO');
-    const [importance, setImportance] = useState('MINOR');
-    const [status, setStatus] = useState('SCHEDULED');
-    const [differentDay, setDifferentDay] = useState(false);
+    const [startDate, setStartDate] = useState(
+        initialData?.startDate ? new Date(initialData.startDate) : 
+        draftValues.startDate ? new Date(draftValues.startDate) : null
+    );
+    const [endDate, setEndDate] = useState(
+        initialData?.endDate ? new Date(initialData.endDate) : 
+        draftValues.endDate ? new Date(draftValues.endDate) : null
+    );
+    const [startTime, setStartTime] = useState(
+         initialData?.startDate ? formatTime(new Date(initialData.startDate)) :
+         draftValues.startTime || ''
+    );
+    const [endTime, setEndTime] = useState(
+         initialData?.endDate ? formatTime(new Date(initialData.endDate)) :
+         draftValues.endTime || ''
+    );
+    
+    const [location, setLocation] = useState(initialData?.location || draftValues.location || '');
+    const [locationUrl, setLocationUrl] = useState(initialData?.locationUrl || draftValues.locationUrl || '');
+    const [type, setType] = useState(initialData?.type || draftValues.type || 'CACO');
+    const [importance, setImportance] = useState(initialData?.importance || draftValues.importance || 'MINOR');
+    const [status, setStatus] = useState(initialData?.status || 'SCHEDULED');
+    const [differentDay, setDifferentDay] = useState(
+        initialData?.startDate ? new Date(initialData.startDate).toDateString() !== new Date(initialData.endDate).toDateString() :
+        draftValues.differentDay || false
+    );
 
     const [errors, setErrors] = useState({});
 
@@ -93,87 +114,49 @@ export function EventForm({
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [discardDraftDialogOpen, setDiscardDraftDialogOpen] = useState(false);
 
-    // CARREGAMENTO DE DADOS
+    // CARREGAMENTO DE DADOS E RASCUNHO
     useEffect(() => {
-        if (initialData) {
-            setTitle(initialData.title || '');
-            setSlug(initialData.slug || '');
-            setDescription(initialData.description || '');
-            setEditorKey(prev => prev + 1);
-            setLocation(initialData.location || '');
-            setLocationUrl(initialData.locationUrl || '');
-            setType(initialData.type || 'CACO');
-            setImportance(initialData.importance || 'MINOR');
-            setStatus(initialData.status || 'SCHEDULED');
-
-            if (initialData.startDate) {
-                const start = new Date(initialData.startDate);
-                setStartDate(start);
-                setStartTime(formatTime(start));
-            }
-
-            if (initialData.endDate) {
-                const end = new Date(initialData.endDate);
-                setEndDate(end);
-                setEndTime(formatTime(end));
-                if (initialData.startDate) {
-                    const start = new Date(initialData.startDate);
-                    setDifferentDay(start.toDateString() !== end.toDateString());
-                }
-            }
-        } else {
-            const savedDraft = localStorage.getItem(DRAFT_KEY);
-            if (savedDraft) {
-                try {
-                    const draft = JSON.parse(savedDraft);
-                    if (draft.title) setTitle(draft.title);
-                    if (draft.slug) setSlug(draft.slug);
-                    if (draft.description) {
-                        setDescription(draft.description);
-                        setEditorKey(prev => prev + 1);
-                    }
-                    if (draft.location) setLocation(draft.location);
-                    if (draft.locationUrl) setLocationUrl(draft.locationUrl);
-                    if (draft.type) setType(draft.type);
-                    if (draft.importance) setImportance(draft.importance);
-                    if (draft.startTime) setStartTime(draft.startTime);
-                    if (draft.endTime) setEndTime(draft.endTime);
-                    if (draft.differentDay) setDifferentDay(draft.differentDay);
-                    if (draft.startDate) setStartDate(new Date(draft.startDate));
-                    if (draft.endDate) setEndDate(new Date(draft.endDate));
-
-                    // Nota: Imagens não são salvas no rascunho do localStorage por serem pesadas
-                } catch (e) {
-                    console.error("Erro ao ler rascunho", e);
-                }
-            }
-        }
-    }, [initialData]);
+         // Se tivermos initialData (edição), já foi setado no useState initial values.
+         // Se não tivermos (criação), verificamos se o draftValues mudou (carregou do storage)
+         if (!initialData && hasDraft) {
+             setTitle(draftValues.title || '');
+             setSlug(draftValues.slug || '');
+             setDescription((prev) => draftValues.description !== prev ? draftValues.description : prev);
+             if (draftValues.description) setEditorKey(p => p + 1);
+             
+             setLocation(draftValues.location || '');
+             setLocationUrl(draftValues.locationUrl || '');
+             setType(draftValues.type || 'CACO');
+             setImportance(draftValues.importance || 'MINOR');
+             
+             if (draftValues.startDate) setStartDate(new Date(draftValues.startDate));
+             if (draftValues.endDate) setEndDate(new Date(draftValues.endDate));
+             if (draftValues.startTime) setStartTime(draftValues.startTime);
+             if (draftValues.endTime) setEndTime(draftValues.endTime);
+             if (draftValues.differentDay !== undefined) setDifferentDay(draftValues.differentDay);
+         }
+    }, [initialData, hasDraft, draftValues]);
 
    // Salvar rascunho com DEBOUNCE (atraso)
     useEffect(() => {
         if (!initialData) {
-            // Cria um timer para salvar apenas após 2 segundos sem digitar
             const timeoutId = setTimeout(() => {
                 if (title || description || startDate) {
-                    const draft = {
+                    saveDraft({
                         title, slug, description, location, locationUrl,
                         type, importance, startDate, endDate, startTime, endTime, differentDay
-                    };
-                    console.log("Salvando rascunho..."); // Opcional: para debug
-                    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+                    });
                 }
             }, 2000);
-
-            // Se o usuário digitar novamente antes de 2s, limpa o timer anterior
             return () => clearTimeout(timeoutId);
         }
-    }, [initialData, title, slug, description, location, locationUrl, type, importance, startDate, endDate, startTime, endTime, differentDay]);
+    }, [initialData, title, slug, description, location, locationUrl, type, importance, startDate, endDate, startTime, endTime, differentDay, saveDraft]);
 
     const formatTime = (date) => date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
 
     const handleDiscardDraft = () => {
-        localStorage.removeItem(DRAFT_KEY);
+        discardDraft();
+        
         setTitle('');
         setSlug('');
         setDescription('');
@@ -303,7 +286,7 @@ export function EventForm({
         const result = await onSubmit(formData, initialData?.id);
 
         if (result?.success) {
-            localStorage.removeItem(DRAFT_KEY);
+            discardDraft();
         }
     };
 

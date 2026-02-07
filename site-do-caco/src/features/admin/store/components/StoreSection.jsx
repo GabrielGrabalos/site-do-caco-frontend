@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StoreCategoryTabs } from './StoreCategoryTabs';
 import { ProductList } from './ProductList';
 import { CreateProductModal } from './CreateProductModal';
@@ -109,43 +108,40 @@ export function StoreSection({
     : [];
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg md:text-xl">Loja</CardTitle>
-          <p className="text-xs md:text-sm text-muted-foreground">
-            Gerencie as categorias e adicione produtos por categoria.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <StoreCategoryTabs
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onSelectCategory={onSelectCategory}
-            onAddCategory={() => setCategoryModalOpen(true)}
-            onEditCategory={handleEditCategory}
-            onDeleteCategory={onDeleteCategory}
-            onReorderCategories={onReorderCategories}
-          />
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg md:text-xl font-semibold tracking-tight">Loja</h2>
+        <p className="text-sm text-muted-foreground">
+          Gerencie as categorias e adicione produtos por categoria.
+        </p>
+      </div>
 
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-            </div>
-          ) : (
-            <ProductList
-              products={filteredProducts}
-              loading={loadingProducts}
-              onAddProduct={() => setProductModalOpen(true)}
-              onDeleteProduct={onDeleteProduct}
-              onEditProduct={handleEditProduct}
-              onManageVariations={handleManageVariations}
-              onManageImages={handleManageImages}
-              selectedCategory={selectedCategory}
-            />
-          )}
-        </CardContent>
-      </Card>
+      <StoreCategoryTabs
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={onSelectCategory}
+        onAddCategory={() => setCategoryModalOpen(true)}
+        onEditCategory={handleEditCategory}
+        onDeleteCategory={onDeleteCategory}
+        onReorderCategories={onReorderCategories}
+      />
+
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+        </div>
+      ) : (
+        <ProductList
+          products={filteredProducts}
+          loading={loadingProducts}
+          onAddProduct={() => setProductModalOpen(true)}
+          onDeleteProduct={onDeleteProduct}
+          onEditProduct={handleEditProduct}
+          onManageVariations={handleManageVariations}
+          onManageImages={handleManageImages}
+          selectedCategory={selectedCategory}
+        />
+      )}
 
       <CreateCategoryModal
         open={categoryModalOpen}
@@ -185,6 +181,6 @@ export function StoreSection({
         onReorderImages={onReorderProductImages}
         loading={creating}
       />
-    </>
+    </div>
   );
 }
