@@ -274,6 +274,15 @@ export function useAdminManualVM() {
     }
   };
 
+  const getArticleFeedbacks = async (articleId) => {
+    try {
+      const response = await manualService.getArticleFeedbacks(articleId);
+      return { success: true, data: response.content || [] }; 
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  };
+
   return {
     // Estados
     categories,
@@ -299,11 +308,12 @@ export function useAdminManualVM() {
     updateChapter,
     deleteChapter,
     reorderChapters,
-    
+
     // Artigos
     createArticle,
     updateArticle,
     deleteArticle,
     reorderArticles,
+    getArticleFeedbacks,
   };
 }

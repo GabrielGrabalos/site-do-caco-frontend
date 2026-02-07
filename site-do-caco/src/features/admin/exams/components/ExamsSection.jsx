@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ExamList } from './ExamList';
 import { CreateExamModal } from './CreateExamModal';
 import { SubjectTabs } from './SubjectTabs';
@@ -57,33 +56,30 @@ export function ExamsSection({
   }
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg md:text-xl">Banco de Provas</CardTitle>
-          <p className="text-xs md:text-sm text-muted-foreground">
-            Gerencie as disciplinas e adicione provas por matéria.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <SubjectTabs
-            subjects={subjects}
-            selectedSubject={selectedSubject}
-            onSelectSubject={onSelectSubject}
-            onAddSubject={() => setSubjectModalOpen(true)}
-            onDeleteSubject={onDeleteSubject}
-          />
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg md:text-xl font-semibold tracking-tight">Banco de Provas</h2>
+        <p className="text-sm text-muted-foreground">
+          Gerencie as disciplinas e adicione provas por matéria.
+        </p>
+      </div>
 
-          <ExamList
-            exams={exams}
-            loading={loadingExams}
-            onAddExam={() => setExamModalOpen(true)}
-            onDeleteExam={handleDeleteExam}
-            onEditExam={handleEditExam}
-            selectedSubject={selectedSubject}
-          />
-        </CardContent>
-      </Card>
+      <SubjectTabs
+        subjects={subjects}
+        selectedSubject={selectedSubject}
+        onSelectSubject={onSelectSubject}
+        onAddSubject={() => setSubjectModalOpen(true)}
+        onDeleteSubject={onDeleteSubject}
+      />
+
+      <ExamList
+        exams={exams}
+        loading={loadingExams}
+        onAddExam={() => setExamModalOpen(true)}
+        onDeleteExam={handleDeleteExam}
+        onEditExam={handleEditExam}
+        selectedSubject={selectedSubject}
+      />
 
       <CreateSubjectModal
         open={subjectModalOpen}
@@ -109,6 +105,6 @@ export function ExamsSection({
         title="Confirmar exclusão"
         description="Tem certeza que deseja excluir esta prova? Esta ação não pode ser desfeita."
       />
-    </>
+    </div>
   );
 }

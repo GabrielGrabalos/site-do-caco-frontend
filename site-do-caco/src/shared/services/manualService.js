@@ -62,5 +62,9 @@ export const manualService = {
 
   reorderArticles: async (chapterId, articleIds) => {
     return apiClient.put('admin/manual/articles/r/reorder', { chapterId, articleIds });
+  },
+
+  getArticleFeedbacks: async (articleId, page = 0, size = 100) => {
+    return apiClient.get(`admin/manual/articles/${articleId}/feedback?page=${page}&size=${size}`);
   }
 };
