@@ -3,9 +3,10 @@ import { BannerCarousel } from './components/BannerCarousel';
 import { WarningAlert } from './components/WarningAlert';
 import { LatestNews } from './components/LatestNews';
 import { NavButtons } from './components/NavButtons';
+import { HomeEventsSection } from './components/HomeEventsSection';
 
 export function HomePage() {
-  const { data, loading, error, dismissWarning } = useHomeVM();
+  const { data, loading, error, dismissWarning, events } = useHomeVM();
 
   if (loading) {
     return (
@@ -55,6 +56,18 @@ export function HomePage() {
         {data?.latestNews && data.latestNews.length > 0 && (
           <LatestNews news={data.latestNews} />
         )}
+
+        {/* Eventos */}
+        <HomeEventsSection
+          upcomingPage={events.upcomingPage}
+          pastPage={events.pastPage}
+          loading={events.loading}
+          error={events.error}
+          onChangeUpcomingPage={events.changeUpcomingPage}
+          onChangePastPage={events.changePastPage}
+          onRetryUpcoming={events.reloadUpcoming}
+          onRetryPast={events.reloadPast}
+        />
 
         {/* Arte Decorativa */}
         <div className="flex items-center justify-center py-12">

@@ -7,17 +7,19 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MDXEditor } from '@/shared/components/MDXEditor';
 import { useToast } from '@/components/ui/use-toast';
 import {
     CalendarIcon, Upload, MapPin, Type, AlertCircle, Link as LinkIcon,
-    Save, Trash2, ArrowLeft, Image as ImageIcon, ExternalLink, Eraser, Crop, X
+    Save, Trash2, ArrowLeft, Image as ImageIcon, ExternalLink, Eraser, Crop, Images
 } from 'lucide-react';
 import Cropper from 'react-easy-crop';
 import { combineDateAndTime, toLocalISOString } from '@/shared/utils/helpers';
 import { DatePicker } from '../../components/DatePicker';
 import { TimeInput } from '../../components/TimeInput';
 import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
+import { EventGalleryTab } from './EventGalleryTab';
 import { useImageCropper } from '@/shared/hooks/useImageCropper';
 import { useFormDraft } from '@/shared/hooks/useFormDraft';
 import { extractUrlFromIframe } from '@/lib/utils';
@@ -66,6 +68,14 @@ export function EventForm({
 }) {
     const { toast } = useToast();
 
+    function formatTime(date) {
+        return date.toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+    }
+
     // --- ESTADOS DE IMAGEM ---
     const imageCropper = useImageCropper(initialData?.coverImage || null);
 
@@ -75,7 +85,9 @@ export function EventForm({
     // --- ESTADOS DO FORMULÁRIO ---
     const [title, setTitle] = useState(initialData?.title || draftValues.title || '');
     const [slug, setSlug] = useState(initialData?.slug || draftValues.slug || '');
+    const [slugEdited, setSlugEdited] = useState(Boolean(initialData?.slug || draftValues.slug));
     const [description, setDescription] = useState(initialData?.description || draftValues.description || '');
+    const [activeTab, setActiveTab] = useState('details');
     
     // Key para re-renderizar editor se necessário
     const [editorKey, setEditorKey] = useState(0);
@@ -152,8 +164,6 @@ export function EventForm({
         }
     }, [initialData, title, slug, description, location, locationUrl, type, importance, startDate, endDate, startTime, endTime, differentDay, saveDraft]);
 
-    const formatTime = (date) => date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
-
     const handleDiscardDraft = () => {
         discardDraft();
         
@@ -162,7 +172,7 @@ export function EventForm({
         setDescription('');
         setEditorKey(prev => prev + 1);
         setLocation('');
-        setLocationUrl('');
+        setLocationUrl(''); 
         setStartDate(null);
         setEndDate(null);
         setStartTime('');
@@ -290,6 +300,8 @@ export function EventForm({
         }
     };
 
+    const galleryItems = initialData?.galleryItems || initialData?.gallery || [];
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
 
@@ -318,7 +330,18 @@ export function EventForm({
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+                <TabsList className="w-full justify-start rounded-lg h-auto p-1">
+                    <TabsTrigger value="details" className="px-4 py-2">Dados do Evento</TabsTrigger>
+                    {initialData && (
+                        <TabsTrigger value="gallery" className="px-4 py-2">
+                            <Images className="w-4 h-4 mr-2" /> Galeria
+                        </TabsTrigger>
+                    )}
+                </TabsList>
+
+                    <TabsContent value="details" className="mt-0">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {/* COLUNA ESQUERDA: Conteúdo */}
                 <div className="lg:col-span-2 space-y-6">
@@ -541,7 +564,15 @@ export function EventForm({
                         </CardFooter>
                     </Card>
                 </div>
-            </div>
+                        </div>
+                    </TabsContent>
+
+                {initialData && (
+                    <TabsContent value="gallery" className="mt-0">
+                        <EventGalleryTab eventId={initialData.id} initialItems={galleryItems} />
+                    </TabsContent>
+                )}
+            </Tabs>
 
             {/* --- MODAL DE RECORTE (Mantido o layout solicitado) --- */}
             <Dialog open={imageCropper.isModalOpen} onOpenChange={imageCropper.setIsModalOpen}>
