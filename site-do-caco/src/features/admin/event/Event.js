@@ -12,13 +12,13 @@ export class Event {
     this.type = data.type; // 'CACO', 'IC', 'FERIADO'
     this.importance = data.importance; // 'MAJOR', 'MINOR'
     this.status = data.status; // 'SCHEDULED', 'HAPPENING', 'ENDED'
-    this.galleryItems = data.galleryItems || [];
+    this.galleryItems = data.galleryItems || data.gallery || [];
   }
 
   static fromDTO(dto) {
     return new Event({
       ...dto,
-      galleryItems: dto.galleryItems || []
+      galleryItems: dto.galleryItems || dto.gallery || []
     });
   }
 
