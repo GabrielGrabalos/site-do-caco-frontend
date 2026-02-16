@@ -146,6 +146,37 @@ class EventService {
   async deleteEvent(eventId) {
     return apiClient.delete(`/admin/events/${eventId}`);
   }
+
+  /**
+   * Cria item de galeria para um evento (admin)
+   * @param {string} eventId - ID do evento
+   * @param {FormData} formData - Dados do item (image|mediaUrl, type, caption)
+   * @returns {Promise<Object>} Item criado
+   */
+  async createGalleryItem(eventId, formData) {
+    return apiClient.postFormData(`/admin/events/${eventId}/gallery`, formData);
+  }
+
+  /**
+   * Atualiza apenas a legenda de um item da galeria (admin)
+   * @param {string} eventId - ID do evento
+   * @param {string} itemId - ID do item da galeria
+   * @param {{caption: string | null}} data - Novo conteúdo da legenda
+   * @returns {Promise<Object>} Item atualizado
+   */
+  async updateGalleryItemCaption(eventId, itemId, data) {
+    return apiClient.put(`/admin/events/${eventId}/gallery/${itemId}`, data);
+  }
+
+  /**
+   * Exclui item da galeria de um evento (admin)
+   * @param {string} eventId - ID do evento
+   * @param {string} itemId - ID do item da galeria
+   * @returns {Promise<void>}
+   */
+  async deleteGalleryItem(eventId, itemId) {
+    return apiClient.delete(`/admin/events/${eventId}/gallery/${itemId}`);
+  }
 }
 
 export const eventService = new EventService();

@@ -194,7 +194,7 @@ export function useAdminEventsVM() {
     try {
       setLoading(true);
       // Busca o DTO completo usando o ID do evento
-      const fullEventData = await apiClient.get(`public/events/${eventSummary.id}`);
+      const fullEventData = await eventService.getEventById(eventSummary.id);
 
       // Transforma o DTO completo em uma instância da classe Event
       const eventInstance = Event.fromDTO(fullEventData);
