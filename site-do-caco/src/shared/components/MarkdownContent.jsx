@@ -1,12 +1,19 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 
 export function MarkdownContent({ content }) {
+
+  const contentWithFixedNewlines = content
+    .split(/\r?\n/)
+    .map((line) => (line.trim() === '' ? '&nbsp;  ' : line))
+    .join('\n');
+
   return (
     <div className="prose prose-lg max-w-none">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkBreaks]}
         rehypePlugins={[rehypeRaw]}
         components={{
           h1: ({ node, ...props }) => (
@@ -62,7 +69,7 @@ export function MarkdownContent({ content }) {
           ),
         }}
       >
-        {content}
+        {contentWithFixedNewlines}
       </ReactMarkdown>
     </div>
   );
