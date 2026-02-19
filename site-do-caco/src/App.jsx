@@ -23,6 +23,7 @@ import { AdminManualPage } from '@/features/admin/manual/AdminManualPage';
 import { AdminExamBankPage } from '@/features/admin/exams/AdminExamBankPage';
 import { AdminStorePage } from '@/features/admin/store/AdminStorePage';
 import { AdminEventsPage } from '@/features/admin/event/AdminEventsPage';
+import { AdminStickersPage } from '@/features/admin/stickers/AdminStickersPage';
 import { StorePage } from '@/features/store/StorePage';
 import { ProductDetailPage } from '@/features/store/ProductDetailPage';
 
@@ -79,7 +80,7 @@ function App() {
           <Route path="eventos" element={<AdminEventsPage />} />
           <Route path="manual" element={<AdminManualPage />} />
           <Route path="provas" element={<AdminExamBankPage />} />
-          <Route path="figurinhas" element={<div>Gerenciar Figurinhas</div>} />
+          <Route path="figurinhas" element={<AdminStickersPage />} />
           <Route path="loja" element={<AdminStorePage />} />
         </Route>
       </Routes>

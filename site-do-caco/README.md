@@ -65,7 +65,7 @@ npm install
 cp .env.example .env
 
 # Editar .env com suas configurações
-# VITE_API_URL=http://localhost:3000/api
+# VITE_API_URL=http://localhost:8080
 
 # Executar em desenvolvimento
 npm run dev

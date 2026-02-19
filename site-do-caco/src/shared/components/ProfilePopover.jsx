@@ -61,16 +61,16 @@ export function ProfilePopover() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="rounded-full p-0 h-8 w-8">
+        <Button variant="ghost" size="sm" className="rounded-full p-0 h-10 w-10">
           {user?.avatarUrl ? (
             <img
               src={user.avatarUrl}
               alt={user.name}
-              className="h-8 w-8 rounded-full object-cover border-2 border-primary"
+              className="h-10 w-10 rounded-full object-cover border-2 border-primary"
             />
           ) : (
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <User className="h-4 w-4" />
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <User className="h-5 w-5" />
             </div>
           )}
         </Button>
