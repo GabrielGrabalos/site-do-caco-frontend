@@ -44,21 +44,25 @@ async function generateQRCodeImage(code) {
 }
 
 /**
+ * Yield para permitir que o navegador atualize a UI
+ */
+function yieldToMain() {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}
+
+/**
  * Gera PDF com QR Codes organizados em grade
  * @param {string[]} codes - Array de códigos
  * @param {string} stickerName - Nome do sticker (para o nome do arquivo)
+ * @param {Function} onProgress - Callback de progresso (opcional)
  * @returns {Promise<void>}
  */
-export async function generateQRCodesPDF(codes, stickerName = 'sticker') {
+export async function generateQRCodesPDF(codes, stickerName = 'sticker', onProgress = null) {
   if (!codes || codes.length === 0) {
     throw new Error('Nenhum código fornecido para gerar PDF');
   }
 
   try {
-    // Gera todos os QR Codes em paralelo
-    const qrPromises = codes.map(code => generateQRCodeImage(code));
-    const qrImages = await Promise.all(qrPromises);
-
     // Cria documento PDF (A4)
     const doc = new jsPDF({
       orientation: 'portrait',
@@ -83,44 +87,67 @@ export async function generateQRCodesPDF(codes, stickerName = 'sticker') {
     let currentPage = 0;
     let itemsInCurrentPage = 0;
 
-    // Processa cada código
-    codes.forEach((code, index) => {
-      // Verifica se precisa de nova página
-      if (itemsInCurrentPage >= PDF_CONFIG.cols * PDF_CONFIG.rows) {
-        doc.addPage();
-        currentPage++;
-        itemsInCurrentPage = 0;
+    // Processa códigos em chunks para não bloquear a UI
+    const CHUNK_SIZE = 5; // Processa 5 QR codes por vez
+    
+    for (let i = 0; i < codes.length; i += CHUNK_SIZE) {
+      const chunk = codes.slice(i, Math.min(i + CHUNK_SIZE, codes.length));
+      
+      // Gera QR codes do chunk
+      const qrPromises = chunk.map(code => generateQRCodeImage(code));
+      const qrImages = await Promise.all(qrPromises);
+      
+      // Adiciona cada QR code ao PDF
+      for (let j = 0; j < chunk.length; j++) {
+        const globalIndex = i + j;
+        const code = chunk[j];
+        
+        // Verifica se precisa de nova página
+        if (itemsInCurrentPage >= PDF_CONFIG.cols * PDF_CONFIG.rows) {
+          doc.addPage();
+          currentPage++;
+          itemsInCurrentPage = 0;
+        }
+
+        // Calcula posição na grade
+        const col = itemsInCurrentPage % PDF_CONFIG.cols;
+        const row = Math.floor(itemsInCurrentPage / PDF_CONFIG.cols);
+
+        // Calcula coordenadas
+        const x = PDF_CONFIG.margin + (col * cellWidth) + qrOffset;
+        const y = PDF_CONFIG.margin + (row * cellHeight) + qrOffset;
+
+        // Adiciona QR Code
+        doc.addImage(
+          qrImages[j],
+          'PNG',
+          x,
+          y,
+          PDF_CONFIG.qrSize,
+          PDF_CONFIG.qrSize
+        );
+
+        // Adiciona texto do código abaixo do QR
+        doc.setFontSize(PDF_CONFIG.fontSize);
+        doc.setFont('helvetica', 'normal');
+        
+        const textY = y + PDF_CONFIG.qrSize + PDF_CONFIG.textMargin + 3;
+        const textX = PDF_CONFIG.margin + (col * cellWidth) + (cellWidth / 2);
+        
+        doc.text(code, textX, textY, { align: 'center' });
+
+        itemsInCurrentPage++;
+        
+        // Atualiza progresso
+        if (onProgress) {
+          const progress = Math.round(((globalIndex + 1) / codes.length) * 100);
+          onProgress(progress);
+        }
       }
-
-      // Calcula posição na grade
-      const col = itemsInCurrentPage % PDF_CONFIG.cols;
-      const row = Math.floor(itemsInCurrentPage / PDF_CONFIG.cols);
-
-      // Calcula coordenadas
-      const x = PDF_CONFIG.margin + (col * cellWidth) + qrOffset;
-      const y = PDF_CONFIG.margin + (row * cellHeight) + qrOffset;
-
-      // Adiciona QR Code
-      doc.addImage(
-        qrImages[index],
-        'PNG',
-        x,
-        y,
-        PDF_CONFIG.qrSize,
-        PDF_CONFIG.qrSize
-      );
-
-      // Adiciona texto do código abaixo do QR
-      doc.setFontSize(PDF_CONFIG.fontSize);
-      doc.setFont('helvetica', 'normal');
       
-      const textY = y + PDF_CONFIG.qrSize + PDF_CONFIG.textMargin + 3;
-      const textX = PDF_CONFIG.margin + (col * cellWidth) + (cellWidth / 2);
-      
-      doc.text(code, textX, textY, { align: 'center' });
-
-      itemsInCurrentPage++;
-    });
+      // Yield para permitir UI atualizar
+      await yieldToMain();
+    }
 
     // Gera nome do arquivo
     const timestamp = new Date().toISOString().split('T')[0];
@@ -140,11 +167,12 @@ export async function generateQRCodesPDF(codes, stickerName = 'sticker') {
  * @param {string[]} codes - Array de códigos
  * @param {string} stickerName - Nome do sticker
  * @param {number} chunkSize - Tamanho do bloco (padrão: 100)
+ * @param {Function} onProgress - Callback de progresso (opcional)
  * @returns {Promise<void>}
  */
-export async function generateQRCodesPDFChunked(codes, stickerName = 'sticker', chunkSize = 100) {
+export async function generateQRCodesPDFChunked(codes, stickerName = 'sticker', chunkSize = 100, onProgress = null) {
   if (codes.length <= chunkSize) {
-    return generateQRCodesPDF(codes, stickerName);
+    return generateQRCodesPDF(codes, stickerName, onProgress);
   }
 
   // Divide em chunks
@@ -156,11 +184,18 @@ export async function generateQRCodesPDFChunked(codes, stickerName = 'sticker', 
   // Processa cada chunk
   for (let i = 0; i < chunks.length; i++) {
     const chunkName = `${stickerName}_parte_${i + 1}_de_${chunks.length}`;
-    await generateQRCodesPDF(chunks[i], chunkName);
     
-    // Pequeno delay entre chunks para não travar o browser
+    // Callback de progresso do chunk
+    const chunkProgress = onProgress ? (progress) => {
+      const totalProgress = Math.round(((i * chunkSize + (progress / 100 * chunks[i].length)) / codes.length) * 100);
+      onProgress(totalProgress);
+    } : null;
+    
+    await generateQRCodesPDF(chunks[i], chunkName, chunkProgress);
+    
+    // Yield entre chunks
     if (i < chunks.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await yieldToMain();
     }
   }
 }
