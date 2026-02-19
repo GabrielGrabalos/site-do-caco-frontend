@@ -66,16 +66,16 @@ export function useAdminStickersVM() {
 
   /**
    * Carrega lista de stickers do backend
-   * GET /api/public/stickers retorna { allStickers: [], myStickers: [] }
+   * GET /api/public/stickers retorna Page<StickerPublicDTO>
    */
   const loadStickers = async () => {
     try {
       setLoading(true);
-      const data = await stickerService.getAllStickers();
+      const pageData = await stickerService.getAllStickers(0, 1000);
       
-      // O endpoint retorna { allStickers: [...], myStickers: [...] }
-      const allStickers = data.allStickers || [];
-      setStickers(allStickers.map(dto => Sticker.fromDTO(dto)));
+      // O endpoint retorna um Pageable: { content: [...], totalPages, totalElements, ... }
+      const stickersData = pageData.content || [];
+      setStickers(stickersData.map(dto => Sticker.fromDTO(dto)));
     } catch (err) {
       console.error('Erro ao carregar stickers:', err);
       toast({
@@ -113,6 +113,38 @@ export function useAdminStickersVM() {
       toast({
         variant: "destructive",
         title: "Erro ao criar",
+        description: getErrorMessage(err),
+      });
+      return { success: false, error: err.message };
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  /**
+   * Atualiza sticker existente
+   */
+  const updateSticker = async (stickerId, formData, imageFile) => {
+    try {
+      setIsSubmitting(true);
+      const updatedStickerDTO = await stickerService.updateSticker(stickerId, formData, imageFile);
+      const stickerInstance = Sticker.fromDTO(updatedStickerDTO);
+
+      setStickers(prev => prev.map(s => s.id === stickerId ? stickerInstance : s));
+      setViewMode('LIST');
+      setSelectedSticker(null);
+
+      toast({
+        title: "Sticker atualizado!",
+        description: `O sticker "${stickerInstance.name}" foi atualizado com sucesso.`,
+      });
+
+      return { success: true };
+    } catch (err) {
+      console.error(err);
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar",
         description: getErrorMessage(err),
       });
       return { success: false, error: err.message };
@@ -174,6 +206,14 @@ export function useAdminStickersVM() {
   };
 
   /**
+   * Abre formulário para editar sticker
+   */
+  const handleEditClick = (sticker) => {
+    setSelectedSticker(sticker);
+    setViewMode('FORM');
+  };
+
+  /**
    * Volta para visualização de lista
    */
   const handleCancelForm = () => {
@@ -227,8 +267,10 @@ export function useAdminStickersVM() {
     // Ações
     loadStickers,
     createSticker,
+    updateSticker,
     generateRedemptionCodes,
     handleCreateClick,
+    handleEditClick,
     handleCancelForm,
     handleGenerateCodesClick,
     closeCodes,

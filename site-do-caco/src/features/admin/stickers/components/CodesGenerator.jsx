@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Copy,
   Check,
@@ -20,8 +22,13 @@ import {
   Gift,
   Lock,
   Calendar as CalendarIcon,
+  CheckCircle2,
+  XCircle,
+  User,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { stickerService } from '@/shared/services/stickerService';
+import { DatePicker } from '@/features/admin/components/DatePicker';
 
 const ErrorMessage = ({ message }) => {
   if (!message) return null;
@@ -38,16 +45,46 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
   // === FORM STATE ===
   const [quantity, setQuantity] = useState(10);
   const [oneTimeUse, setOneTimeUse] = useState(true);
-  const [expiresAt, setExpiresAt] = useState('');
+  const [expiresAt, setExpiresAt] = useState(null);
   const [errors, setErrors] = useState({});
 
   // === COPY STATE ===
   const [copiedCode, setCopiedCode] = useState(null);
 
+  // === EXISTING CODES STATE ===
+  const [existingCodes, setExistingCodes] = useState([]);
+  const [loadingCodes, setLoadingCodes] = useState(false);
+  const [activeTab, setActiveTab] = useState('generate');
+
+  // Carrega códigos existentes quando o dialog abre
+  useEffect(() => {
+    if (open && sticker?.id) {
+      loadExistingCodes();
+    }
+  }, [open, sticker?.id]);
+
+  const loadExistingCodes = async () => {
+    try {
+      setLoadingCodes(true);
+      const codes = await stickerService.getStickerCodes(sticker.id);
+      setExistingCodes(codes);
+      
+      // Se houver códigos, começa na aba de visualização
+      if (codes.length > 0) {
+        setActiveTab('view');
+      }
+    } catch (err) {
+      console.error('Erro ao carregar códigos:', err);
+      setExistingCodes([]);
+    } finally {
+      setLoadingCodes(false);
+    }
+  };
+
   const resetForm = () => {
     setQuantity(10);
     setOneTimeUse(true);
-    setExpiresAt('');
+    setExpiresAt(null);
     setErrors({});
   };
 
@@ -72,9 +109,8 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
     }
 
     if (expiresAt) {
-      const expDate = new Date(expiresAt);
       const now = new Date();
-      if (expDate <= now) {
+      if (expiresAt <= now) {
         newErrors.expiresAt = 'Data de expiração deve ser no futuro';
       }
     }
@@ -96,13 +132,15 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
     const dto = {
       quantity: parseInt(quantity, 10),
       oneTimeUse,
-      expiresAt: expiresAt || null,
+      expiresAt: expiresAt ? expiresAt.toISOString() : null,
     };
 
     const result = await onGenerate(dto);
 
     if (result.success) {
       resetForm();
+      // Recarrega códigos existentes após gerar novos
+      await loadExistingCodes();
       // Diálogo permanece aberto para mostrar resultado
     }
   };
@@ -151,11 +189,11 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Gift className="h-5 w-5" />
-            Gerar Códigos de Resgate
+            Códigos de Resgate
           </DialogTitle>
           <DialogDescription>
             {sticker ? `Sticker: ${sticker.name}` : 'Selecione um sticker'}
@@ -167,18 +205,167 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
             Nenhum sticker selecionado
           </div>
         ) : (
-          <div className="space-y-6">
-            {/* Alert de Segurança */}
-            <Alert className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-200">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Importante</AlertTitle>
-              <AlertDescription className="text-xs mt-1">
-                Os códigos serão exibidos apenas uma vez. Certifique-se de copiar ou exportar os códigos antes de fechar este diálogo. Não há como recuperá-los depois.
-              </AlertDescription>
-            </Alert>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="view" className="gap-2">
+                <CheckCircle2 className="h-4 w-4" />
+                Códigos Existentes
+                {existingCodes.length > 0 && (
+                  <Badge variant="secondary" className="ml-1">
+                    {existingCodes.length}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="generate" className="gap-2">
+                <Gift className="h-4 w-4" />
+                Gerar Novos
+              </TabsTrigger>
+            </TabsList>
 
-            {/* Formulário ou Resultados */}
-            {!sticker.generatedCodes ? (
+            {/* Tab: Visualizar Códigos Existentes */}
+            <TabsContent value="view" className="space-y-4 mt-4">
+              {loadingCodes ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                </div>
+              ) : existingCodes.length === 0 ? (
+                <div className="text-center py-12">
+                  <Gift className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+                  <p className="text-muted-foreground mb-2">Nenhum código gerado ainda</p>
+                  <p className="text-sm text-muted-foreground">
+                    Clique em "Gerar Novos" para criar códigos de resgate
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Estatísticas */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <Card>
+                      <CardContent className="pt-6 text-center">
+                        <p className="text-2xl font-bold">{existingCodes.length}</p>
+                        <p className="text-xs text-muted-foreground">Total</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="pt-6 text-center">
+                        <p className="text-2xl font-bold text-green-600">
+                          {existingCodes.filter(c => c.redeemed).length}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Resgatados</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="pt-6 text-center">
+                        <p className="text-2xl font-bold text-blue-600">
+                          {existingCodes.filter(c => !c.redeemed).length}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Disponíveis</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Lista de Códigos */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Lista de Códigos</CardTitle>
+                      <CardDescription>
+                        {existingCodes.length} código(s) gerado(s)
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 max-h-96 overflow-y-auto">
+                        {existingCodes.map((codeData) => (
+                          <div
+                            key={codeData.id}
+                            className={`flex items-center justify-between gap-3 p-3 rounded-lg border transition-colors ${
+                              codeData.redeemed
+                                ? 'bg-muted/50 border-muted'
+                                : 'bg-card hover:bg-muted/30'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              {codeData.redeemed ? (
+                                <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                              ) : (
+                                <XCircle className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <code className="text-sm font-mono font-semibold">
+                                    {codeData.code}
+                                  </code>
+                                  <Badge
+                                    variant={codeData.redeemed ? 'default' : 'outline'}
+                                    className="text-xs"
+                                  >
+                                    {codeData.redeemed ? 'Resgatado' : 'Disponível'}
+                                  </Badge>
+                                </div>
+                                {codeData.redeemed && codeData.redeemedAt && (
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    Resgatado em {new Date(codeData.redeemedAt).toLocaleString('pt-BR')}
+                                    {codeData.redeemedByUserId && (
+                                      <span className="ml-1">
+                                        • User ID: {codeData.redeemedByUserId.substring(0, 8)}...
+                                      </span>
+                                    )}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            {!codeData.redeemed && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => copyCode(codeData.code)}
+                                className="flex-shrink-0"
+                              >
+                                {copiedCode === codeData.code ? (
+                                  <Check className="h-4 w-4 text-green-600" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Botões de Ação */}
+                  <div className="flex gap-2 justify-end">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const availableCodes = existingCodes
+                          .filter(c => !c.redeemed)
+                          .map(c => c.code);
+                        if (availableCodes.length > 0) {
+                          exportCodes(availableCodes);
+                        } else {
+                          toast({
+                            variant: 'destructive',
+                            title: 'Nenhum código disponível',
+                            description: 'Todos os códigos já foram resgatados.',
+                          });
+                        }
+                      }}
+                      disabled={existingCodes.filter(c => !c.redeemed).length === 0}
+                    >
+                      📥 Exportar Disponíveis
+                    </Button>
+                    <Button onClick={() => handleOpenChange(false)}>
+                      Fechar
+                    </Button>
+                  </div>
+                </>
+              )}
+            </TabsContent>
+
+            {/* Tab: Gerar Novos Códigos */}
+            <TabsContent value="generate" className="space-y-4 mt-4">
+              {!sticker.generatedCodes ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Quantity */}
                 <div className="space-y-2">
@@ -223,24 +410,16 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
 
                 {/* Expiration Date */}
                 <div className="space-y-2">
-                  <Label htmlFor="expiresAt" className="text-sm font-medium">
-                    Data de Expiração (Opcional)
-                  </Label>
-                  <div className="relative">
-                    <CalendarIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input
-                      id="expiresAt"
-                      type="datetime-local"
-                      value={expiresAt}
-                      onChange={(e) => setExpiresAt(e.target.value)}
-                      disabled={isSubmitting}
-                      className={`pl-9 ${errors.expiresAt ? 'border-destructive' : ''}`}
-                    />
-                  </div>
+                  <DatePicker
+                    value={expiresAt}
+                    onChange={setExpiresAt}
+                    error={errors.expiresAt}
+                    label="Data de Expiração (Opcional)"
+                    placeholder="Selecione uma data"
+                  />
                   <p className="text-xs text-muted-foreground">
                     Deixe em branco para códigos sem expiração
                   </p>
-                  <ErrorMessage message={errors.expiresAt} />
                 </div>
 
                 {/* Buttons */}
@@ -352,7 +531,8 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                 </div>
               </div>
             )}
-          </div>
+            </TabsContent>
+          </Tabs>
         )}
       </DialogContent>
     </Dialog>

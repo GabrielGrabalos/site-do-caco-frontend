@@ -70,6 +70,7 @@ const EventCard = ({ event, isSelected, onSelect, isLoading }) => {
 
 export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
   const { toast } = useToast();
+  const isEditMode = !!initialData?.id;
 
   // === ESTADO DE FORM ===
   const [formData, setFormData] = useState({
@@ -79,7 +80,7 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
   });
 
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState(initialData?.imageUrl || null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -126,9 +127,16 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
 
     if (!formData.name || !formData.name.trim()) {
       newErrors.name = 'Nome é obrigatório';
+    } else if (formData.name.length > 120) {
+      newErrors.name = 'Nome deve ter no máximo 120 caracteres';
     }
 
-    if (!imageFile) {
+    if (formData.description && formData.description.length > 600) {
+      newErrors.description = 'Descrição deve ter no máximo 600 caracteres';
+    }
+
+    // Imagem é obrigatória apenas na criação
+    if (!isEditMode && !imageFile) {
       newErrors.image = 'Imagem é obrigatória';
     }
 
@@ -238,9 +246,11 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Novo Sticker</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            {isEditMode ? 'Editar Sticker' : 'Novo Sticker'}
+          </h1>
           <p className="text-muted-foreground">
-            Crie um novo sticker para o álbum
+            {isEditMode ? 'Atualize as informações do sticker' : 'Crie um novo sticker para o álbum'}
           </p>
         </div>
       </div>
@@ -257,11 +267,13 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
+              <div className="flex flex-col gap-6 lg:gap-10">
                 {/* Left: Image Upload - Fixed Size */}
                 <div className="flex flex-col flex-shrink-0 mx-auto lg:mx-0">
-                  <Label className="text-sm font-semibold mb-4 text-foreground">Imagem do Sticker *</Label>
-                  {!imageFile ? (
+                  <Label className="text-sm font-semibold mb-4 text-foreground">
+                    Imagem do Sticker {!isEditMode && '*'}
+                  </Label>
+                  {!imageFile && !imagePreview ? (
                     <label
                       htmlFor="image-upload"
                       className={`flex flex-col items-center justify-center w-80 h-80 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200
@@ -293,7 +305,7 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
                       {/* Image Preview - Fixed 320x320 */}
                       <div className="relative w-80 h-80 rounded-xl overflow-hidden bg-muted border-2 border-border shadow-sm hover:shadow-md transition-shadow">
                         <img
-                          src={imagePreview}
+                          src={imageFile ? imagePreview : (initialData?.imageUrl || imagePreview)}
                           alt="Preview"
                           className="w-full h-full object-cover"
                         />
@@ -311,19 +323,21 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
                       </div>
 
                       {/* File Info */}
-                      <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-3.5 space-y-2.5 border border-primary/20">
-                        <div className="flex items-start gap-3">
-                          <div className="p-2 rounded-lg bg-primary/20">
-                            <ImageIcon className="h-4 w-4 text-primary flex-shrink-0" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-sm text-foreground truncate">{imageFile.name}</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {(imageFile.size / 1024).toFixed(2)} KB
-                            </p>
+                      {imageFile && (
+                        <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-3.5 space-y-2.5 border border-primary/20">
+                          <div className="flex items-start gap-3">
+                            <div className="p-2 rounded-lg bg-primary/20">
+                              <ImageIcon className="h-4 w-4 text-primary flex-shrink-0" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-sm text-foreground truncate">{imageFile.name}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {(imageFile.size / 1024).toFixed(2)} KB
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   )}
                   <ErrorMessage message={errors.image} />
@@ -343,8 +357,12 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
                       value={formData.name}
                       onChange={handleChange}
                       disabled={isSubmitting}
+                      maxLength={120}
                       className={`text-base transition-colors ${errors.name ? 'border-destructive' : ''}`}
                     />
+                    <p className="text-xs text-muted-foreground font-medium">
+                      {(formData.name || '').length}/120 caracteres
+                    </p>
                     <ErrorMessage message={errors.name} />
                   </div>
 
@@ -356,17 +374,18 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
                     <Textarea
                       id="description"
                       name="description"
-                      placeholder="Descrição opcional do sticker (máx 500 caracteres)"
+                      placeholder="Descrição opcional do sticker (máx 600 caracteres)"
                       value={formData.description}
                       onChange={handleChange}
                       disabled={isSubmitting}
                       rows={4}
-                      maxLength={500}
-                      className="resize-none text-base transition-colors"
+                      maxLength={600}
+                      className={`resize-none text-base transition-colors ${errors.description ? 'border-destructive' : ''}`}
                     />
                     <p className="text-xs text-muted-foreground font-medium">
-                      {(formData.description || '').length}/500 caracteres
+                      {(formData.description || '').length}/600 caracteres
                     </p>
+                    <ErrorMessage message={errors.description} />
                   </div>
 
                   {/* Dica */}
@@ -492,12 +511,12 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
-                Criando...
+                {isEditMode ? 'Salvando...' : 'Criando...'}
               </>
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                Criar Sticker
+                {isEditMode ? 'Salvar Alterações' : 'Criar Sticker'}
               </>
             )}
           </Button>
