@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
 import {
   Copy,
   Check,
@@ -26,6 +27,7 @@ import {
   XCircle,
   User,
   Loader2,
+  FileDown,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { stickerService } from '@/shared/services/stickerService';
@@ -57,7 +59,8 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
   const [existingCodes, setExistingCodes] = useState([]);
   const [loadingCodes, setLoadingCodes] = useState(false);
   const [activeTab, setActiveTab] = useState('generate');
-  const [isExporting, setIsExporting] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
 
   // Carrega códigos existentes quando o dialog abre
   useEffect(() => {
@@ -174,23 +177,24 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
    */
   const exportCodes = async (codes) => {
     try {
-      setIsExporting(true);
-      toast({
-        title: "Gerando PDF...",
-        description: `Processando ${codes.length} código(s). Aguarde...`,
-      });
+      setShowExportDialog(true);
+      setExportProgress(0);
+
+      // Callback de progresso
+      const onProgress = (progress) => {
+        setExportProgress(progress);
+      };
 
       // Se houver muitos códigos, usa processamento em chunks
       if (codes.length > 500) {
-        await generateQRCodesPDFChunked(codes, sticker?.name || 'sticker', 100);
+        await generateQRCodesPDFChunked(codes, sticker?.name || 'sticker', 100, onProgress);
       } else {
-        await generateQRCodesPDF(codes, sticker?.name || 'sticker');
+        await generateQRCodesPDF(codes, sticker?.name || 'sticker', onProgress);
       }
 
-      toast({
-        title: "PDF gerado!",
-        description: "Códigos exportados com QR Codes.",
-      });
+      // Aguarda um momento para mostrar 100% antes de fechar
+      await new Promise(resolve => setTimeout(resolve, 800));
+
     } catch (err) {
       console.error('Erro ao exportar PDF:', err);
       toast({
@@ -199,11 +203,13 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
         description: "Não foi possível exportar os códigos.",
       });
     } finally {
-      setIsExporting(false);
+      setShowExportDialog(false);
+      setExportProgress(0);
     }
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -367,19 +373,10 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                           });
                         }
                       }}
-                      disabled={existingCodes.filter(c => !c.redeemed).length === 0 || isExporting}
+                      disabled={existingCodes.filter(c => !c.redeemed).length === 0 || showExportDialog}
                       className="gap-2"
                     >
-                      {isExporting ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Gerando PDF...
-                        </>
-                      ) : (
-                        <>
-                          📄 Exportar PDF
-                        </>
-                      )}
+                      📄 Exportar PDF
                     </Button>
                     <Button onClick={() => handleOpenChange(false)}>
                       Fechar
@@ -547,21 +544,12 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                   <Button
                     variant="outline"
                     onClick={() => exportCodes(sticker.generatedCodes.codes)}
-                    disabled={isExporting}
+                    disabled={showExportDialog}
                     className="gap-2"
                   >
-                    {isExporting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Gerando PDF...
-                      </>
-                    ) : (
-                      <>
-                        📄 Exportar PDF
-                      </>
-                    )}
+                    📄 Exportar PDF
                   </Button>
-                  <Button onClick={() => handleOpenChange(false)} disabled={isExporting}>
+                  <Button onClick={() => handleOpenChange(false)} disabled={showExportDialog}>
                     Fechar
                   </Button>
                 </div>
@@ -572,5 +560,66 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
         )}
       </DialogContent>
     </Dialog>
+
+    {/* Dialog de Progresso de Exportação */}
+    <Dialog open={showExportDialog} onOpenChange={() => {}}>
+      <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-3">
+            <div className="relative">
+              <FileDown className="h-6 w-6 text-primary" />
+              <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-primary rounded-full animate-pulse" />
+            </div>
+            Gerando PDF
+          </DialogTitle>
+          <DialogDescription>
+            Criando arquivo com QR Codes. Por favor, aguarde...
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-6 py-6">
+          {/* Barra de Progresso */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground font-medium">Progresso</span>
+              <span className="text-primary font-bold text-lg">
+                {exportProgress}%
+              </span>
+            </div>
+            <Progress value={exportProgress} className="h-3" />
+          </div>
+
+          {/* Status Visual */}
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            <span>
+              {exportProgress < 30 && 'Preparando documentos...'}
+              {exportProgress >= 30 && exportProgress < 70 && 'Gerando QR Codes...'}
+              {exportProgress >= 70 && exportProgress < 100 && 'Finalizando PDF...'}
+              {exportProgress === 100 && 'Concluído!'}
+            </span>
+          </div>
+
+          {/* Design decorativo */}
+          <div className="relative h-32 rounded-lg bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 overflow-hidden">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="grid grid-cols-3 gap-4 opacity-20">
+                {[...Array(9)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-12 h-12 border-2 border-primary rounded-lg animate-pulse"
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <FileDown className="h-16 w-16 text-primary/40" />
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
