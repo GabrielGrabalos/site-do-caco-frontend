@@ -25,10 +25,12 @@ import {
   CheckCircle2,
   XCircle,
   User,
+  Loader2,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { stickerService } from '@/shared/services/stickerService';
 import { DatePicker } from '@/features/admin/components/DatePicker';
+import { generateQRCodesPDF, generateQRCodesPDFChunked } from '@/shared/utils/qrCodePdfGenerator';
 
 const ErrorMessage = ({ message }) => {
   if (!message) return null;
@@ -55,6 +57,7 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
   const [existingCodes, setExistingCodes] = useState([]);
   const [loadingCodes, setLoadingCodes] = useState(false);
   const [activeTab, setActiveTab] = useState('generate');
+  const [isExporting, setIsExporting] = useState(false);
 
   // Carrega códigos existentes quando o dialog abre
   useEffect(() => {
@@ -167,24 +170,37 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
   };
 
   /**
-   * Exporta todos os códigos como texto
+   * Exporta códigos como PDF com QR Codes
    */
-  const exportCodes = (codes) => {
-    const text = codes.join('\n');
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `sticker-${sticker?.id}-codes.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const exportCodes = async (codes) => {
+    try {
+      setIsExporting(true);
+      toast({
+        title: "Gerando PDF...",
+        description: `Processando ${codes.length} código(s). Aguarde...`,
+      });
 
-    toast({
-      title: "Exportado!",
-      description: "Códigos exportados como arquivo de texto.",
-    });
+      // Se houver muitos códigos, usa processamento em chunks
+      if (codes.length > 500) {
+        await generateQRCodesPDFChunked(codes, sticker?.name || 'sticker', 100);
+      } else {
+        await generateQRCodesPDF(codes, sticker?.name || 'sticker');
+      }
+
+      toast({
+        title: "PDF gerado!",
+        description: "Códigos exportados com QR Codes.",
+      });
+    } catch (err) {
+      console.error('Erro ao exportar PDF:', err);
+      toast({
+        variant: "destructive",
+        title: "Erro ao gerar PDF",
+        description: "Não foi possível exportar os códigos.",
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -337,12 +353,12 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                   <div className="flex gap-2 justify-end">
                     <Button
                       variant="outline"
-                      onClick={() => {
+                      onClick={async () => {
                         const availableCodes = existingCodes
                           .filter(c => !c.redeemed)
                           .map(c => c.code);
                         if (availableCodes.length > 0) {
-                          exportCodes(availableCodes);
+                          await exportCodes(availableCodes);
                         } else {
                           toast({
                             variant: 'destructive',
@@ -351,9 +367,19 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                           });
                         }
                       }}
-                      disabled={existingCodes.filter(c => !c.redeemed).length === 0}
+                      disabled={existingCodes.filter(c => !c.redeemed).length === 0 || isExporting}
+                      className="gap-2"
                     >
-                      📥 Exportar Disponíveis
+                      {isExporting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Gerando PDF...
+                        </>
+                      ) : (
+                        <>
+                          📄 Exportar PDF
+                        </>
+                      )}
                     </Button>
                     <Button onClick={() => handleOpenChange(false)}>
                       Fechar
@@ -521,11 +547,21 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                   <Button
                     variant="outline"
                     onClick={() => exportCodes(sticker.generatedCodes.codes)}
+                    disabled={isExporting}
                     className="gap-2"
                   >
-                    📥 Exportar TXT
+                    {isExporting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Gerando PDF...
+                      </>
+                    ) : (
+                      <>
+                        📄 Exportar PDF
+                      </>
+                    )}
                   </Button>
-                  <Button onClick={() => handleOpenChange(false)}>
+                  <Button onClick={() => handleOpenChange(false)} disabled={isExporting}>
                     Fechar
                   </Button>
                 </div>
