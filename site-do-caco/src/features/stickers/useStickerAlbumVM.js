@@ -16,9 +16,16 @@ export function useStickerAlbumVM() {
   const loadStickers = async () => {
     try {
       setLoading(true);
-      const data = await stickerService.getUserStickers();
-      setMyStickers(data.myStickers || []);
-      setAllStickers(data.allStickers || []);
+      // Busca stickers do usuário (retorna Page)
+      const userStickersPage = await stickerService.getUserStickers(0, 1000);
+      const myStickersData = userStickersPage.content || [];
+      
+      // Busca todos os stickers disponíveis (retorna Page)
+      const allStickersPage = await stickerService.getAllStickers(0, 1000);
+      const allStickersData = allStickersPage.content || [];
+      
+      setMyStickers(myStickersData);
+      setAllStickers(allStickersData);
     } catch (err) {
       setError(err.message);
     } finally {

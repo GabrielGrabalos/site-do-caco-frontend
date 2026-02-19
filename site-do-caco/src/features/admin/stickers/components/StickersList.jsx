@@ -6,12 +6,14 @@ import {
   Eye,
   Calendar,
   Zap,
+  Pencil,
 } from 'lucide-react';
 
 export function StickersList({
   stickers,
   loading,
   onGenerateCodes,
+  onEdit,
 }) {
 
   if (loading) {
@@ -50,7 +52,7 @@ export function StickersList({
                 <img
                   src={sticker.imageUrl}
                   alt={sticker.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover"
                   onError={(e) => {
                     e.target.src = '/placeholder-sticker.png';
                   }}
@@ -90,23 +92,72 @@ export function StickersList({
                 {sticker.formattedCreatedAt}
               </div>
 
-              {/* Origin Event Badge */}
-              {sticker.originEventId && (
-                <Badge variant="outline" className="text-xs">
-                  Evento #{sticker.originEventId}
-                </Badge>
+              {/* Origin Event Info */}
+              {sticker.originEvent ? (
+                <div className="space-y-2 p-2 rounded-md bg-muted/50 border border-border/50">
+                  <div className="flex items-start gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium line-clamp-1">
+                        {sticker.originEvent.title}
+                      </p>
+                      {sticker.originEvent.location && (
+                        <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                          📍 {sticker.originEvent.location}
+                        </p>
+                      )}
+                      {sticker.originEvent.startDate && (
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          📅 {new Date(sticker.originEvent.startDate).toLocaleDateString('pt-BR')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    {sticker.originEvent.importance && (
+                      <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                        {sticker.originEvent.importance === 'HIGHLIGHT' && '⭐ Destaque'}
+                        {sticker.originEvent.importance === 'IMPORTANT' && '🔔 Importante'}
+                        {sticker.originEvent.importance === 'NORMAL' && '📌 Normal'}
+                      </Badge>
+                    )}
+                    {sticker.originEvent.type && (
+                      <Badge variant="outline" className="text-xs px-1.5 py-0">
+                        {sticker.originEvent.type === 'ACADEMIC' && '🎓 Acadêmico'}
+                        {sticker.originEvent.type === 'SOCIAL' && '🎉 Social'}
+                        {sticker.originEvent.type === 'SPORTS' && '⚽ Esportivo'}
+                        {sticker.originEvent.type === 'CULTURAL' && '🎭 Cultural'}
+                        {sticker.originEvent.type === 'OTHER' && '📋 Outro'}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-xs text-muted-foreground italic p-2 rounded-md bg-muted/30">
+                  Sem evento associado
+                </div>
               )}
 
-              {/* Action Button */}
-              <Button
-                size="sm"
-                variant="outline"
-                className="w-full gap-2 text-xs"
-                onClick={() => onGenerateCodes(sticker)}
-              >
-                <Gift className="h-3.5 w-3.5" />
-                Gerar Códigos
-              </Button>
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 gap-2 text-xs"
+                  onClick={() => onEdit(sticker)}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                  Editar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 gap-2 text-xs"
+                  onClick={() => onGenerateCodes(sticker)}
+                >
+                  <Gift className="h-3.5 w-3.5" />
+                  Códigos
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}

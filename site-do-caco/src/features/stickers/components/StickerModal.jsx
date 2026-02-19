@@ -5,14 +5,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { formatDate } from '@/shared/utils/helpers';
-import { Star, Calendar, MapPin } from 'lucide-react';
-
-const rarityLabels = {
-  COMMON: 'Comum',
-  RARE: 'Rara',
-  EPIC: 'Épica',
-  LEGENDARY: 'Lendária',
-};
+import { Calendar, MapPin, ImageIcon } from 'lucide-react';
 
 export function StickerModal({ sticker, open, onClose }) {
   if (!sticker) return null;
@@ -25,7 +18,7 @@ export function StickerModal({ sticker, open, onClose }) {
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="aspect-[3/4] w-full rounded-lg overflow-hidden">
+          <div className="aspect-[3/4] w-full rounded-lg overflow-hidden bg-muted">
             <img
               src={sticker.imageUrl}
               alt={sticker.name}
@@ -34,32 +27,46 @@ export function StickerModal({ sticker, open, onClose }) {
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-primary" />
-              <span className="font-medium">Raridade:</span>
-              <span className="text-muted-foreground">
-                {rarityLabels[sticker.rarity]}
-              </span>
-            </div>
-
-            {sticker.acquiredAt && (
+            {sticker.createdAt && (
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-primary" />
-                <span className="font-medium">Conquistada em:</span>
+                <span className="font-medium">Criado em:</span>
                 <span className="text-muted-foreground">
-                  {formatDate(sticker.acquiredAt)}
+                  {formatDate(sticker.createdAt)}
                 </span>
               </div>
             )}
 
-            {sticker.eventName && (
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-primary" />
-                <span className="font-medium">Evento:</span>
-                <span className="text-muted-foreground">
-                  {sticker.eventName}
-                </span>
-              </div>
+            {sticker.originEvent && (
+              <>
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Evento:</span>
+                  <span className="text-muted-foreground">
+                    {sticker.originEvent.title}
+                  </span>
+                </div>
+
+                {sticker.originEvent.location && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    <span className="font-medium">Local:</span>
+                    <span className="text-muted-foreground">
+                      {sticker.originEvent.location}
+                    </span>
+                  </div>
+                )}
+
+                {sticker.originEvent.startDate && (
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-primary" />
+                    <span className="font-medium">Data do evento:</span>
+                    <span className="text-muted-foreground">
+                      {formatDate(sticker.originEvent.startDate)}
+                    </span>
+                  </div>
+                )}
+              </>
             )}
 
             {sticker.description && (

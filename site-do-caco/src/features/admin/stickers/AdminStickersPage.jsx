@@ -17,9 +17,15 @@ export function AdminStickersPage() {
   if (vm.viewMode === 'FORM') {
     return (
       <StickerForm
-        key="new-sticker"
-        initialData={null}
-        onSubmit={(formData) => vm.createSticker(formData)}
+        key={vm.selectedSticker?.id || 'new-sticker'}
+        initialData={vm.selectedSticker}
+        onSubmit={(formData, imageFile) => {
+          if (vm.selectedSticker?.id) {
+            return vm.updateSticker(vm.selectedSticker.id, formData, imageFile);
+          } else {
+            return vm.createSticker(formData, imageFile);
+          }
+        }}
         onCancel={vm.handleCancelForm}
         loading={vm.isSubmitting}
       />
@@ -117,6 +123,7 @@ export function AdminStickersPage() {
           vm.handleGenerateCodesClick(sticker);
           setShowCodesDialog(true);
         }}
+        onEdit={vm.handleEditClick}
       />
 
       {/* Diálogo de Geração de Códigos */}

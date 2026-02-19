@@ -9,14 +9,15 @@ export class Sticker {
     this.name = data.name;
     this.description = data.description;
     this.imageUrl = data.imageUrl;
-    this.originEventId = data.originEventId;
+    this.originEvent = data.originEvent; // EventSummaryDTO ou null
     this.createdAt = data.createdAt;
     this.updatedAt = data.updatedAt;
-    this.version = data.version;
   }
 
   /**
    * Converte DTO backend para instância Sticker
+   * @param {StickerPublicDTO|StickerAdminDTO} dto - DTO do backend
+   * @returns {Sticker}
    */
   static fromDTO(dto) {
     return new Sticker({
@@ -24,10 +25,9 @@ export class Sticker {
       name: dto.name,
       description: dto.description || null,
       imageUrl: dto.imageUrl,
-      originEventId: dto.originEventId || null,
+      originEvent: dto.originEvent || null, // EventSummaryDTO
       createdAt: dto.createdAt,
       updatedAt: dto.updatedAt || null,
-      version: dto.version,
     });
   }
 
@@ -40,14 +40,13 @@ export class Sticker {
 
   /**
    * Retorna objeto para envio via API
-   * Exclude campos de sistema (id, createdAt, updatedAt, version)
+   * Exclude campos de sistema (id, createdAt)
    */
   toDTO() {
     return {
       name: this.name,
       description: this.description,
-      imageUrl: this.imageUrl,
-      originEventId: this.originEventId,
+      originEventId: this.originEvent?.id || null,
     };
   }
 
@@ -60,7 +59,7 @@ export class Sticker {
   }
 
   /**
-   * Retorna data formatada ou null
+   * Formata data de atualização em formato legível
    */
   get formattedUpdatedAt() {
     if (!this.updatedAt) return null;
@@ -68,11 +67,26 @@ export class Sticker {
   }
 
   /**
-   * Verifica se sticker foi recentemente modificado
+   * Verifica se sticker foi recentemente criado ou atualizado (últimas 24h)
    */
   get isRecent() {
-    if (!this.updatedAt) return false;
-    const diff = Date.now() - new Date(this.updatedAt).getTime();
+    const dateToCheck = this.updatedAt || this.createdAt;
+    if (!dateToCheck) return false;
+    const diff = Date.now() - new Date(dateToCheck).getTime();
     return diff < 24 * 60 * 60 * 1000; // 24 horas
+  }
+
+  /**
+   * Retorna ID do evento de origem ou null
+   */
+  get originEventId() {
+    return this.originEvent?.id || null;
+  }
+
+  /**
+   * Retorna título do evento de origem ou null
+   */
+  get originEventTitle() {
+    return this.originEvent?.title || null;
   }
 }
