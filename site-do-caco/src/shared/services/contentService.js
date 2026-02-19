@@ -1,86 +1,84 @@
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000') + '/api';
+import { apiClient } from './apiClient';
 
 class ContentService {
   async getDashboard() {
-    const response = await fetch(`${API_BASE_URL}/public/home`);
-    if (!response.ok) throw new Error('Falha ao carregar dashboard');
-    return response.json();
+    return apiClient.get('public/home');
   }
 
   async getNewsList(page = 1, limit = 10) {
-    const response = await fetch(`${API_BASE_URL}/news?page=${page}&limit=${limit}`);
-    if (!response.ok) throw new Error('Falha ao carregar notícias');
-    return response.json();
+    return apiClient.get(`public/news?page=${page}&limit=${limit}`);
   }
 
   async getNewsBySlug(slug) {
-    const response = await fetch(`${API_BASE_URL}/public/news/${slug}`);
-    if (!response.ok) throw new Error('Falha ao carregar notícia');
-    return response.json();
+    return apiClient.get(`public/news/${slug}`);
   }
 
   async getManualTree() {
-    const response = await fetch(`${API_BASE_URL}/manual/tree`);
-    if (!response.ok) throw new Error('Falha ao carregar árvore do manual');
-    return response.json();
+    return apiClient.get('public/manual/tree');
   }
 
   async getManualArticle(id) {
-    const response = await fetch(`${API_BASE_URL}/manual/articles/${id}`);
-    if (!response.ok) throw new Error('Falha ao carregar artigo');
-    return response.json();
+    return apiClient.get(`public/manual/articles/${id}`);
   }
 
   async submitFeedback(articleId, helpful, comment = '') {
-    const response = await fetch(`${API_BASE_URL}/article-feedback/articles/${articleId}/feedback`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ isHelpful: helpful, comment }),
+    return apiClient.post(`article-feedback/articles/${articleId}/feedback`, {
+      isHelpful: helpful,
+      comment,
     });
-    if (!response.ok) throw new Error('Falha ao enviar feedback');
-    return response.json();
   }
 
   async getCalendarEvents(year, month) {
-    const response = await fetch(`${API_BASE_URL}/events/calendar?year=${year}&month=${month}`);
-    if (!response.ok) throw new Error('Falha ao carregar eventos');
-    return response.json();
+    return apiClient.get(`public/events/calendar?year=${year}&month=${month}`);
   }
 
   async getEvent(id) {
-    const response = await fetch(`${API_BASE_URL}/events/${id}`);
-    if (!response.ok) throw new Error('Falha ao carregar evento');
-    return response.json();
+    return apiClient.get(`public/events/${id}`);
   }
 
   async getExams() {
-    const response = await fetch(`${API_BASE_URL}/exams`);
-    if (!response.ok) throw new Error('Falha ao carregar provas');
-    return response.json();
+    return apiClient.get('public/exams');
   }
 
-  async getStickers(token) {
-    const response = await fetch(`${API_BASE_URL}/stickers`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!response.ok) throw new Error('Falha ao carregar figurinhas');
-    return response.json();
+  // ==================== SEARCH ====================
+
+  /**
+   * Busca notícias com filtros
+   * @param {Object} params - { search, limit }
+   * @returns {Promise<Object>} { data: [], total: 0 }
+   */
+  async getNews(params = {}) {
+    const queryParams = new URLSearchParams();
+    if (params.search) queryParams.append('search', params.search);
+    if (params.limit) queryParams.append('limit', params.limit);
+    
+    return apiClient.get(`public/news/search?${queryParams.toString()}`);
   }
 
-  async redeemSticker(code, token) {
-    const response = await fetch(`${API_BASE_URL}/stickers/redeem`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ code }),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Falha ao resgatar código');
-    }
-    return response.json();
+  /**
+   * Busca páginas do manual com filtros
+   * @param {Object} params - { search, limit }
+   * @returns {Promise<Object>} { data: [], total: 0 }
+   */
+  async getManualPages(params = {}) {
+    const queryParams = new URLSearchParams();
+    if (params.search) queryParams.append('search', params.search);
+    if (params.limit) queryParams.append('limit', params.limit);
+    
+    return apiClient.get(`public/manual/search?${queryParams.toString()}`);
+  }
+
+  /**
+   * Busca eventos com filtros
+   * @param {Object} params - { search, limit }
+   * @returns {Promise<Object>} { data: [], total: 0 }
+   */
+  async getEvents(params = {}) {
+    const queryParams = new URLSearchParams();
+    if (params.search) queryParams.append('search', params.search);
+    if (params.limit) queryParams.append('limit', params.limit);
+    
+    return apiClient.get(`public/events/search?${queryParams.toString()}`);
   }
 }
 

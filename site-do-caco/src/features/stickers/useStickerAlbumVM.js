@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { contentService } from '@/shared/services/contentService';
+import { stickerService } from '@/shared/services/stickerService';
 import { authService } from '@/shared/services/authService';
 
 export function useStickerAlbumVM() {
@@ -16,8 +16,7 @@ export function useStickerAlbumVM() {
   const loadStickers = async () => {
     try {
       setLoading(true);
-      const token = authService.getToken();
-      const data = await contentService.getStickers(token);
+      const data = await stickerService.getUserStickers();
       setMyStickers(data.myStickers || []);
       setAllStickers(data.allStickers || []);
     } catch (err) {
@@ -28,8 +27,7 @@ export function useStickerAlbumVM() {
   };
 
   const handleRedeem = async (code) => {
-    const token = authService.getToken();
-    const result = await contentService.redeemSticker(code, token);
+    const result = await stickerService.redeemSticker(code);
     
     // Adicionar novo sticker
     setMyStickers(prev => [...prev, result.userSticker]);
