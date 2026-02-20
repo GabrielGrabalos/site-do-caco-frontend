@@ -40,7 +40,7 @@ export function StickersList({
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {stickers.map(sticker => (
           <Card
             key={sticker.id}
@@ -73,10 +73,10 @@ export function StickersList({
             </div>
 
             {/* Content Section */}
-            <CardContent className="p-4 space-y-3">
+            <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
               {/* Title & Description */}
               <div>
-                <h3 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-colors">
+                <h3 className="font-semibold text-xs sm:text-sm line-clamp-2 group-hover:text-primary transition-colors">
                   {sticker.name}
                 </h3>
                 {sticker.description && (
@@ -138,23 +138,23 @@ export function StickersList({
               )}
 
               {/* Action Buttons */}
-              <div className="flex gap-2">
+              <div className="flex gap-1.5 sm:gap-2">
                 <Button
                   size="sm"
                   variant="outline"
-                  className="flex-1 gap-2 text-xs"
+                  className="flex-1 gap-1 sm:gap-2 text-xs px-2 sm:px-3"
                   onClick={() => onEdit(sticker)}
                 >
-                  <Pencil className="h-3.5 w-3.5" />
+                  <Pencil className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                   Editar
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="flex-1 gap-2 text-xs"
+                  className="flex-1 gap-1 sm:gap-2 text-xs px-2 sm:px-3"
                   onClick={() => onGenerateCodes(sticker)}
                 >
-                  <Gift className="h-3.5 w-3.5" />
+                  <Gift className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                   Códigos
                 </Button>
               </div>

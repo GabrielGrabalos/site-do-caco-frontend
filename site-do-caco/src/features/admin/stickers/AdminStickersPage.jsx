@@ -34,20 +34,20 @@ export function AdminStickersPage() {
 
   // Vista principal de lista
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500 px-2 sm:px-0">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gerenciar Stickers</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Gerenciar Stickers</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             {vm.allStickers.length === 0
               ? 'Nenhum sticker cadastrado ainda'
               : `${vm.allStickers.length} sticker(s) cadastrado(s)`}
           </p>
         </div>
-        <Button onClick={vm.handleCreateClick} className="gap-2">
+        <Button onClick={vm.handleCreateClick} className="gap-2 w-full sm:w-auto">
           <Plus className="w-4 h-4" />
-          Novo Sticker
+          <span className="sm:inline">Novo Sticker</span>
         </Button>
       </div>
 
@@ -55,22 +55,22 @@ export function AdminStickersPage() {
       {vm.hasDraft && (
         <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-950/20 text-orange-800 dark:text-orange-200">
           <PenTool className="h-4 w-4" />
-          <AlertTitle>Rascunho encontrado!</AlertTitle>
-          <AlertDescription className="flex items-center justify-between mt-2">
-            <span>Você tem um sticker não finalizado salvo.</span>
-            <div className="flex gap-2">
+          <AlertTitle className="text-sm sm:text-base">Rascunho encontrado!</AlertTitle>
+          <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-2">
+            <span className="text-xs sm:text-sm">Você tem um sticker não finalizado salvo.</span>
+            <div className="flex gap-2 w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-transparent border-orange-300 hover:bg-orange-100"
+                className="bg-transparent border-orange-300 hover:bg-orange-100 flex-1 sm:flex-initial text-xs sm:text-sm"
                 onClick={vm.discardDraft}
               >
-                <Trash2 className="w-3 h-3 mr-1" />
-                Descartar
+                <Trash2 className="w-3 h-3 sm:mr-1" />
+                <span className="hidden sm:inline">Descartar</span>
               </Button>
               <Button
                 size="sm"
-                className="bg-orange-600 hover:bg-orange-700 text-white"
+                className="bg-orange-600 hover:bg-orange-700 text-white flex-1 sm:flex-initial text-xs sm:text-sm"
                 onClick={vm.handleCreateClick}
               >
                 Continuar Editando
@@ -81,12 +81,12 @@ export function AdminStickersPage() {
       )}
 
       {/* Busca e Filtros */}
-      <div className="space-y-4">
-        <div className="relative max-w-md">
+      <div className="space-y-3 sm:space-y-4">
+        <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por nome ou descrição..."
-            className="pl-8"
+            placeholder="Buscar..."
+            className="pl-8 text-sm sm:text-base"
             value={vm.searchTerm}
             onChange={(e) => vm.setSearchTerm(e.target.value)}
           />
@@ -103,11 +103,11 @@ export function AdminStickersPage() {
         {/* Stats */}
         {vm.allStickers.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline">
+            <Badge variant="outline" className="text-xs sm:text-sm">
               Total: {vm.allStickers.length}
             </Badge>
             {vm.searchTerm && (
-              <Badge variant="secondary">
+              <Badge variant="secondary" className="text-xs sm:text-sm">
                 Encontrados: {vm.stickers.length}
               </Badge>
             )}

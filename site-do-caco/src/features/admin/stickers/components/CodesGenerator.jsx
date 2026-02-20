@@ -211,13 +211,13 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
   return (
     <>
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Gift className="h-5 w-5" />
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Gift className="h-4 w-4 sm:h-5 sm:w-5" />
             Códigos de Resgate
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm">
             {sticker ? `Sticker: ${sticker.name}` : 'Selecione um sticker'}
           </DialogDescription>
         </DialogHeader>
@@ -228,19 +228,19 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="view" className="gap-2">
-                <CheckCircle2 className="h-4 w-4" />
-                Códigos Existentes
+            <TabsList className="grid w-full grid-cols-2 h-auto">
+              <TabsTrigger value="view" className="gap-1 sm:gap-2 text-[10px] sm:text-sm py-2 px-1 sm:px-3">
+                <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span className="truncate">Existentes</span>
                 {existingCodes.length > 0 && (
-                  <Badge variant="secondary" className="ml-1">
+                  <Badge variant="secondary" className="ml-0.5 sm:ml-1 text-[9px] sm:text-xs px-1">
                     {existingCodes.length}
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="generate" className="gap-2">
-                <Gift className="h-4 w-4" />
-                Gerar Novos
+              <TabsTrigger value="generate" className="gap-1 sm:gap-2 text-[10px] sm:text-sm py-2 px-1 sm:px-3">
+                <Gift className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span className="truncate">Gerar</span>
               </TabsTrigger>
             </TabsList>
 
@@ -261,27 +261,27 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
               ) : (
                 <>
                   {/* Estatísticas */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     <Card>
-                      <CardContent className="pt-6 text-center">
-                        <p className="text-2xl font-bold">{existingCodes.length}</p>
-                        <p className="text-xs text-muted-foreground">Total</p>
+                      <CardContent className="pt-4 sm:pt-6 text-center">
+                        <p className="text-xl sm:text-2xl font-bold">{existingCodes.length}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Total</p>
                       </CardContent>
                     </Card>
                     <Card>
-                      <CardContent className="pt-6 text-center">
-                        <p className="text-2xl font-bold text-green-600">
+                      <CardContent className="pt-4 sm:pt-6 text-center">
+                        <p className="text-xl sm:text-2xl font-bold text-green-600">
                           {existingCodes.filter(c => c.redeemed).length}
                         </p>
-                        <p className="text-xs text-muted-foreground">Resgatados</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Resgatados</p>
                       </CardContent>
                     </Card>
                     <Card>
-                      <CardContent className="pt-6 text-center">
-                        <p className="text-2xl font-bold text-blue-600">
+                      <CardContent className="pt-4 sm:pt-6 text-center">
+                        <p className="text-xl sm:text-xl sm:text-2xl font-bold text-blue-600">
                           {existingCodes.filter(c => !c.redeemed).length}
                         </p>
-                        <p className="text-xs text-muted-foreground">Disponíveis</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Disponíveis</p>
                       </CardContent>
                     </Card>
                   </div>
@@ -289,8 +289,8 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                   {/* Lista de Códigos */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-base">Lista de Códigos</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-sm sm:text-base">Lista de Códigos</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">
                         {existingCodes.length} código(s) gerado(s)
                       </CardDescription>
                     </CardHeader>
@@ -299,21 +299,21 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                         {existingCodes.map((codeData) => (
                           <div
                             key={codeData.id}
-                            className={`flex items-center justify-between gap-3 p-3 rounded-lg border transition-colors ${
+                            className={`flex items-center justify-between gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-colors ${
                               codeData.redeemed
                                 ? 'bg-muted/50 border-muted'
                                 : 'bg-card hover:bg-muted/30'
                             }`}
                           >
-                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                               {codeData.redeemed ? (
-                                <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                                <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
                               ) : (
-                                <XCircle className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                                <XCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 flex-shrink-0" />
                               )}
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                  <code className="text-sm font-mono font-semibold">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <code className="text-xs sm:text-sm font-mono font-semibold truncate">
                                     {codeData.code}
                                   </code>
                                   <Badge
@@ -356,7 +356,7 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                   </Card>
 
                   {/* Botões de Ação */}
-                  <div className="flex gap-2 justify-end">
+                  <div className="flex flex-col sm:flex-row gap-2 justify-end">
                     <Button
                       variant="outline"
                       onClick={async () => {
@@ -374,11 +374,11 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                         }
                       }}
                       disabled={existingCodes.filter(c => !c.redeemed).length === 0 || showExportDialog}
-                      className="gap-2"
+                      className="gap-2 w-full sm:w-auto text-sm"
                     >
                       📄 Exportar PDF
                     </Button>
-                    <Button onClick={() => handleOpenChange(false)}>
+                    <Button onClick={() => handleOpenChange(false)} className="w-full sm:w-auto text-sm">
                       Fechar
                     </Button>
                   </div>
@@ -492,7 +492,7 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
                       {sticker.generatedCodes.codes.map((code, idx) => (
                         <div
                           key={idx}
@@ -540,16 +540,16 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
                 </Card>
 
                 {/* Export & Close Buttons */}
-                <div className="flex gap-2 justify-end">
+                <div className="flex flex-col sm:flex-row gap-2 justify-end">
                   <Button
                     variant="outline"
                     onClick={() => exportCodes(sticker.generatedCodes.codes)}
                     disabled={showExportDialog}
-                    className="gap-2"
+                    className="gap-2 w-full sm:w-auto text-sm"
                   >
                     📄 Exportar PDF
                   </Button>
-                  <Button onClick={() => handleOpenChange(false)} disabled={showExportDialog}>
+                  <Button onClick={() => handleOpenChange(false)} disabled={showExportDialog} className="w-full sm:w-auto text-sm">
                     Fechar
                   </Button>
                 </div>
