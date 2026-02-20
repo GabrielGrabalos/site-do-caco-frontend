@@ -14,6 +14,7 @@ import { CalendarPage } from '@/features/calendar/CalendarPage';
 import { EventPage } from '@/features/events/EventPage';
 import { ExamBankPage } from '@/features/exams/ExamBankPage';
 import { StickerAlbumPage } from '@/features/stickers/StickerAlbumPage';
+import { StickerClaimPage } from '@/features/stickers/StickerClaimPage';
 import { ProfilePage } from '@/features/profile/ProfilePage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { CallbackPage } from '@/features/auth/CallbackPage';
@@ -44,6 +45,8 @@ function App() {
           <Route path="/provas" element={<ExamBankPage />} />
           <Route path="/loja" element={<StorePage />} />
           <Route path="/loja/produto/:slug" element={<ProductDetailPage />} />
+          <Route path="/figurinhas/resgatar" element={<StickerClaimPage />} />
+          <Route path="/figurinhas/resgatar/:code" element={<StickerClaimPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/callback" element={<CallbackPage />} />
           

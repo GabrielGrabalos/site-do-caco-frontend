@@ -3,7 +3,7 @@ import { StickerSlot } from './StickerSlot';
 
 export function AlbumGrid({ allStickers, myStickers, onStickerClick }) {
   const hasSticker = (stickerId) => {
-    return myStickers.find((s) => s.stickerId === stickerId);
+    return myStickers.find((s) => (s.stickerId || s.sticker?.id || s.id) === stickerId);
   };
 
   const getRarityColor = (rarity) => {
@@ -20,7 +20,7 @@ export function AlbumGrid({ allStickers, myStickers, onStickerClick }) {
   };
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
       {allStickers.map((sticker) => {
         const userSticker = hasSticker(sticker.id);
         const borderColor = getRarityColor(sticker.rarity);
@@ -28,7 +28,7 @@ export function AlbumGrid({ allStickers, myStickers, onStickerClick }) {
         return (
           <div
             key={sticker.id}
-            className={`relative aspect-[3/4] rounded-lg border-2 ${borderColor} transition-all hover:shadow-lg`}
+            className={`relative aspect-square rounded-lg border-2 ${borderColor} transition-all hover:shadow-lg`}
           >
             {userSticker ? (
               <button

@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast.jsx';
 import { User, Camera, Save } from 'lucide-react';
 import { AlbumGrid } from '@/features/stickers/components/AlbumGrid';
-import { RedeemInput } from '@/features/stickers/components/RedeemInput';
+import { StickerModal } from '@/features/stickers/components/StickerModal';
+import { Link } from 'react-router-dom';
 import { EditAvatarModal } from './components/EditAvatarModal';
 
 export function ProfilePage() {
@@ -205,48 +206,17 @@ export function ProfilePage() {
 
       {/* Seção de Figurinhas */}
       <Card>
-        <CardHeader>
-          <CardTitle>Meu Álbum de Figurinhas</CardTitle>
+        <CardHeader className="pb-4">
+          <div className="flex flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+            <CardTitle className="w-full text-xl sm:text-2xl">Meu Álbum de Figurinhas</CardTitle>
+            <Button asChild className="w-full sm:w-auto">
+              <Link to="/figurinhas/resgatar">
+                Adicionar figurinha
+              </Link>
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Input de Resgate */}
-          <RedeemInput
-            onRedeem={stickerVM.redeemCode}
-            loading={stickerVM.redeeming}
-          />
-
-          {/* Progresso */}
-          {stickerVM.album && (
-            <div className="text-center space-y-2">
-              <div className="flex items-center justify-center gap-4">
-                <div>
-                  <p className="text-3xl font-bold text-primary">
-                    {stickerVM.album.collectedCount}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Coletadas</p>
-                </div>
-                <div className="text-2xl text-muted-foreground">/</div>
-                <div>
-                  <p className="text-3xl font-bold">
-                    {stickerVM.album.totalCount}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Total</p>
-                </div>
-              </div>
-              
-              <div className="w-full max-w-md mx-auto bg-muted rounded-full h-3 overflow-hidden">
-                <div
-                  className="bg-primary h-full transition-all duration-500"
-                  style={{ width: `${(stickerVM.album.collectedCount / stickerVM.album.totalCount) * 100}%` }}
-                />
-              </div>
-              
-              <p className="text-sm text-muted-foreground">
-                {Math.round((stickerVM.album.collectedCount / stickerVM.album.totalCount) * 100)}% completo
-              </p>
-            </div>
-          )}
-
+        <CardContent className="space-y-4 p-4 sm:space-y-6 sm:p-6">
           {/* Grid de Figurinhas */}
           {stickerVM.loading ? (
             <div className="flex items-center justify-center py-12">
@@ -258,12 +228,19 @@ export function ProfilePage() {
             </div>
           ) : (
             <AlbumGrid
-              stickers={stickerVM.album?.stickers || []}
-              onStickerClick={stickerVM.selectSticker}
+              allStickers={stickerVM.allStickers}
+              myStickers={stickerVM.myStickers}
+              onStickerClick={stickerVM.openStickerModal}
             />
           )}
         </CardContent>
       </Card>
+
+      <StickerModal
+        sticker={stickerVM.selectedSticker}
+        open={!!stickerVM.selectedSticker}
+        onClose={stickerVM.closeStickerModal}
+      />
 
       {/* Modal de Edição de Avatar */}
       <EditAvatarModal

@@ -45,25 +45,6 @@ export function StickerAlbumPage() {
         </p>
       </div>
 
-      {/* Progress */}
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold">Progresso da Coleção</h3>
-          <span className="text-2xl font-bold text-primary">
-            {progress.percentage}%
-          </span>
-        </div>
-        <div className="w-full bg-muted rounded-full h-4 overflow-hidden">
-          <div
-            className="bg-primary h-full transition-all duration-500 rounded-full"
-            style={{ width: `${progress.percentage}%` }}
-          />
-        </div>
-        <p className="text-sm text-muted-foreground mt-2">
-          {progress.collected} de {progress.total} figurinhas
-        </p>
-      </Card>
-
       {/* Redeem Input */}
       <RedeemInput onRedeem={handleRedeem} />
 
