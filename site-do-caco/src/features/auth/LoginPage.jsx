@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import loginImage from '@/assets/loginImage.png';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { authService } from '@/shared/services/authService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -92,12 +93,11 @@ export function LoginPage() {
       <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center max-w-6xl mx-auto">
         {/* Área de Arte */}
         <div className="flex items-center justify-center order-2 md:order-1">
-          <div className="w-full aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border-2 border-dashed border-primary/30">
-            <div className="text-center text-muted-foreground">
-              <p className="text-lg font-medium">Arte decorativa</p>
-              <p className="text-sm mt-2">Espaço reservado para ilustração</p>
-            </div>
-          </div>
+          <img
+            src={loginImage}
+            alt="Ilustração de login"
+            className="w-full h-auto rounded-2xl object-contain"
+          />
         </div>
 
         {/* Card de Login */}
