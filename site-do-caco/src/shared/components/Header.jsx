@@ -1,12 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { authService } from '@/shared/services/authService';
-import { HeaderSearchBar } from './HeaderSearchBar';
 import { ProfilePopover } from './ProfilePopover';
 import { NavigationMenu } from './NavigationMenu';
 import { ThemeToggle } from './ThemeToggle';
 import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
+import logo from '@/assets/logo.svg';
 
 export function Header() {
   const navigate = useNavigate();
@@ -25,15 +24,14 @@ export function Header() {
           <NavigationMenu />
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl shrink-0">
-            <Home className="h-6 w-6 text-primary" />
-            <span className="hidden sm:inline">CACo</span>
+          <Link to="/" className="flex items-center gap-2 shrink-0">
+            <img src={logo} alt="CACo" className="h-8 w-auto" />
+            <span className="font-bold text-lg sm:hidden">CACo</span>
+            <span className="font-bold text-lg hidden sm:inline">Site do CACo</span>
           </Link>
 
-          {/* Search Bar */}
-          <div className="flex-1 max-w-2xl">
-            <HeaderSearchBar />
-          </div>
+          {/* Spacer */}
+          <div className="flex-1" />
 
           {/* Auth Section */}
           <div className="flex items-center gap-2 shrink-0 ml-auto">
