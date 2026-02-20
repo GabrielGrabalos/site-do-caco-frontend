@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { MainLayout } from '@/shared/components/MainLayout';
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute';
 import { SessionExpiryWarning } from '@/shared/components/SessionExpiryWarning';
@@ -18,6 +19,7 @@ import { StickerClaimPage } from '@/features/stickers/StickerClaimPage';
 import { ProfilePage } from '@/features/profile/ProfilePage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { CallbackPage } from '@/features/auth/CallbackPage';
+import { ProfileFormPage } from '@/features/profile-form/ProfileFormPage';
 import { AdminLayout } from '@/features/admin/AdminLayout';
 import { AdminDashboard } from '@/features/admin/dashboard/AdminDashboard';
 import { AdminManualPage } from '@/features/admin/manual/AdminManualPage';
@@ -29,10 +31,35 @@ import { SuperAdminPage } from '@/features/admin/super-admin/SuperAdminPage';
 import { StorePage } from '@/features/store/StorePage';
 import { ProductDetailPage } from '@/features/store/ProductDetailPage';
 
+/**
+ * Componente interno que escuta o evento global 'caco:form-required' emitido pelo
+ * apiClient sempre que o backend retorna 403 com error="form_required".
+ * Precisa ficar dentro de BrowserRouter para ter acesso ao useNavigate.
+ */
+function FormRequiredRedirect() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handler = () => {
+      const currentPath = window.location.pathname + window.location.search;
+      if (!currentPath.startsWith('/formulario-perfil')) {
+        sessionStorage.setItem('caco_form_redirect', currentPath);
+        navigate('/formulario-perfil', { replace: true });
+      }
+    };
+
+    window.addEventListener('caco:form-required', handler);
+    return () => window.removeEventListener('caco:form-required', handler);
+  }, [navigate]);
+
+  return null;
+}
+
 function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
+        <FormRequiredRedirect />
         <SessionExpiryWarning />
         <Routes>
         <Route element={<MainLayout />}>
@@ -69,6 +96,9 @@ function App() {
             }
           />
         </Route>
+
+        {/* Formulário de perfil — fora do MainLayout para tela dedicada */}
+        <Route path="/formulario-perfil" element={<ProfileFormPage />} />
 
         {/* Admin Routes */}
         <Route
