@@ -27,7 +27,7 @@ const EventCard = ({ event, isSelected, onSelect, isLoading }) => {
       type="button"
       onClick={() => onSelect(event.id)}
       disabled={isLoading}
-      className={`relative overflow-hidden rounded-lg border-2 transition-all flex flex-col gap-2
+      className={`relative overflow-hidden rounded-lg border-2 transition-all flex flex-col gap-1 sm:gap-2
         ${isSelected 
           ? 'border-primary bg-primary/10 ring-2 ring-primary/50' 
           : 'border-border hover:border-primary/50'
@@ -35,7 +35,7 @@ const EventCard = ({ event, isSelected, onSelect, isLoading }) => {
       `}
     >
       {/* Imagem */}
-      <div className="w-full h-24 bg-muted flex items-center justify-center overflow-hidden">
+      <div className="w-full h-20 sm:h-24 bg-muted flex items-center justify-center overflow-hidden">
         {event.coverImage ? (
           <img
             src={event.coverImage}
@@ -48,9 +48,9 @@ const EventCard = ({ event, isSelected, onSelect, isLoading }) => {
       </div>
 
       {/* Info */}
-      <div className="flex-1 px-3 pb-3 text-left">
-        <p className="font-medium text-sm line-clamp-2">{event.title}</p>
-        <p className="text-xs text-muted-foreground">
+      <div className="flex-1 px-2 sm:px-3 pb-2 sm:pb-3 text-left">
+        <p className="font-medium text-xs sm:text-sm line-clamp-2">{event.title}</p>
+        <p className="text-[10px] sm:text-xs text-muted-foreground">
           {new Date(event.startDate).toLocaleDateString('pt-BR')}
         </p>
         {event.location && (
@@ -236,20 +236,20 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500 px-2 sm:px-0">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
         <button
           onClick={onCancel}
-          className="p-2 hover:bg-muted rounded-lg transition-colors"
+          className="p-1.5 sm:p-2 hover:bg-muted rounded-lg transition-colors"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
         </button>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
             {isEditMode ? 'Editar Sticker' : 'Novo Sticker'}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
             {isEditMode ? 'Atualize as informações do sticker' : 'Crie um novo sticker para o álbum'}
           </p>
         </div>
@@ -257,37 +257,37 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
 
       {/* Form */}
       <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Informações Básicas + Upload de Imagem */}
           <Card>
             <CardHeader>
-              <CardTitle>Informações Básicas</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-base sm:text-lg">Informações Básicas</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
                 Preencha os dados essenciais do sticker
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col gap-6 lg:gap-10">
+              <div className="flex flex-col gap-4 sm:gap-6 lg:gap-10">
                 {/* Left: Image Upload - Fixed Size */}
                 <div className="flex flex-col flex-shrink-0 mx-auto lg:mx-0">
-                  <Label className="text-sm font-semibold mb-4 text-foreground">
+                  <Label className="text-xs sm:text-sm font-semibold mb-3 sm:mb-4 text-foreground">
                     Imagem do Sticker {!isEditMode && '*'}
                   </Label>
                   {!imageFile && !imagePreview ? (
                     <label
                       htmlFor="image-upload"
-                      className={`flex flex-col items-center justify-center w-80 h-80 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200
+                      className={`flex flex-col items-center justify-center w-64 h-64 sm:w-80 sm:h-80 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200
                         ${errors.image ? 'border-destructive bg-destructive/5' : 'border-primary/30 hover:border-primary/50 hover:bg-primary/5'}
                       `}
                     >
                       <div className="flex flex-col items-center justify-center gap-2">
-                        <div className="p-3 rounded-lg bg-primary/10">
-                          <Upload className="w-10 h-10 text-primary" />
+                        <div className="p-2 sm:p-3 rounded-lg bg-primary/10">
+                          <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                         </div>
-                        <p className="text-sm text-foreground font-semibold">
+                        <p className="text-xs sm:text-sm text-foreground font-semibold">
                           Clique ou arraste
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">
                           PNG, JPG ou WEBP
                         </p>
                       </div>
