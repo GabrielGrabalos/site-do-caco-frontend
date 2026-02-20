@@ -122,7 +122,7 @@ export function ProfilePopover() {
               </Link>
             </Button>
 
-            {user?.role === 'ADMIN' && (
+            {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
               <Button
                 variant="ghost"
                 className="w-full justify-start"
