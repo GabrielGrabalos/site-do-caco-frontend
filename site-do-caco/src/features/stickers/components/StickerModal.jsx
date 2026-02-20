@@ -12,33 +12,41 @@ export function StickerModal({ sticker, open, onClose }) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{sticker.name}</DialogTitle>
+      <DialogContent className="w-[92vw] max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogHeader className="space-y-1">
+          <DialogTitle className="text-xl sm:text-2xl">
+            {sticker.name}
+          </DialogTitle>
+          {sticker.obtainedAt && (
+            <p className="text-sm text-muted-foreground">
+              Obtido em {formatDate(sticker.obtainedAt)}
+            </p>
+          )}
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="aspect-[3/4] w-full rounded-lg overflow-hidden bg-muted">
-            <img
-              src={sticker.imageUrl}
-              alt={sticker.name}
-              className="w-full h-full object-cover"
-            />
+        <div className="space-y-5">
+          <div className="relative">
+            <div className="aspect-square w-full rounded-xl overflow-hidden bg-muted ring-1 ring-border">
+              <img
+                src={sticker.imageUrl}
+                alt={sticker.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
           </div>
 
-          <div className="space-y-3">
-            {sticker.createdAt && (
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-primary" />
-                <span className="font-medium">Criado em:</span>
-                <span className="text-muted-foreground">
-                  {formatDate(sticker.createdAt)}
-                </span>
-              </div>
-            )}
+          {sticker.description && (
+            <div className="rounded-lg border bg-muted/40 p-4">
+              <p className="text-base sm:text-lg font-medium leading-relaxed">
+                {sticker.description}
+              </p>
+            </div>
+          )}
 
+          <div className="space-y-3">
             {sticker.originEvent && (
-              <>
+              <div className="rounded-lg border p-3 space-y-2">
                 <div className="flex items-center gap-2">
                   <ImageIcon className="h-4 w-4 text-primary" />
                   <span className="font-medium">Evento:</span>
@@ -66,14 +74,6 @@ export function StickerModal({ sticker, open, onClose }) {
                     </span>
                   </div>
                 )}
-              </>
-            )}
-
-            {sticker.description && (
-              <div className="pt-2 border-t">
-                <p className="text-sm text-muted-foreground">
-                  {sticker.description}
-                </p>
               </div>
             )}
           </div>

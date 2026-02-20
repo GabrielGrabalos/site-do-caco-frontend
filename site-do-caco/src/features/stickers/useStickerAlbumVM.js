@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { stickerService } from '@/shared/services/stickerService';
-import { authService } from '@/shared/services/authService';
+import { userStickerService } from '@/shared/services/userStickerService';
 
 export function useStickerAlbumVM() {
   const [myStickers, setMyStickers] = useState([]);
@@ -17,8 +17,11 @@ export function useStickerAlbumVM() {
     try {
       setLoading(true);
       // Busca stickers do usuário (retorna Page)
-      const userStickersPage = await stickerService.getUserStickers(0, 1000);
-      const myStickersData = userStickersPage.content || [];
+      const userStickersPage = await userStickerService.getMyStickers(0, 1000);
+      const myStickersData = (userStickersPage?.content || []).map((item) => ({
+        ...item,
+        stickerId: item?.sticker?.id,
+      }));
       
       // Busca todos os stickers disponíveis (retorna Page)
       const allStickersPage = await stickerService.getAllStickers(0, 1000);
@@ -53,7 +56,7 @@ export function useStickerAlbumVM() {
   };
 
   const openStickerModal = (sticker, userSticker) => {
-    setSelectedSticker({ ...sticker, ...userSticker });
+    setSelectedSticker({ ...sticker, obtainedAt: userSticker?.obtainedAt });
   };
 
   const closeStickerModal = () => {
