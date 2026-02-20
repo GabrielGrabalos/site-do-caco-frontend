@@ -107,7 +107,12 @@ class AuthService {
 
   isAdmin() {
     const user = this.getUser();
-    return user?.role === 'ADMIN';
+    return user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
+  }
+
+  isSuperAdmin() {
+    const user = this.getUser();
+    return user?.role === 'SUPER_ADMIN';
   }
 
   // Avisa o usuário quando a sessão está prestes a expirar

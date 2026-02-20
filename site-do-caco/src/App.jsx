@@ -25,6 +25,7 @@ import { AdminExamBankPage } from '@/features/admin/exams/AdminExamBankPage';
 import { AdminStorePage } from '@/features/admin/store/AdminStorePage';
 import { AdminEventsPage } from '@/features/admin/event/AdminEventsPage';
 import { AdminStickersPage } from '@/features/admin/stickers/AdminStickersPage';
+import { SuperAdminPage } from '@/features/admin/super-admin/SuperAdminPage';
 import { StorePage } from '@/features/store/StorePage';
 import { ProductDetailPage } from '@/features/store/ProductDetailPage';
 
@@ -85,6 +86,7 @@ function App() {
           <Route path="provas" element={<AdminExamBankPage />} />
           <Route path="figurinhas" element={<AdminStickersPage />} />
           <Route path="loja" element={<AdminStorePage />} />
+          <Route path="super-admin" element={<SuperAdminPage />} />
         </Route>
       </Routes>
       

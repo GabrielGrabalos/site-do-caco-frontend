@@ -189,9 +189,9 @@ export function ProfilePage() {
               <div className="text-center">
                 <h2 className="text-2xl font-bold">{user?.name}</h2>
                 <p className="text-muted-foreground">{user?.email}</p>
-                {user?.role === 'ADMIN' && (
+                {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
                   <span className="inline-block mt-2 px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full">
-                    Admin
+                    {user.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Admin'}
                   </span>
                 )}
               </div>

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, Calendar, BookOpen, Image, Menu, X, GraduationCap, Store } from 'lucide-react';
+import { LayoutDashboard, FileText, Calendar, BookOpen, Image, Menu, X, GraduationCap, Store, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { authService } from '@/shared/services/authService';
 
-const navItems = [
+const baseNavItems = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/admin/noticias', label: 'Notícias', icon: FileText },
   { to: '/admin/eventos', label: 'Eventos', icon: Calendar },
@@ -13,9 +14,18 @@ const navItems = [
   { to: '/admin/loja', label: 'Loja', icon: Store },
 ];
 
+const superAdminNavItem = {
+  to: '/admin/super-admin',
+  label: 'Gerenciar Usuários',
+  icon: ShieldAlert,
+};
+
 export function AdminLayout() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isSuperAdmin = authService.isSuperAdmin();
+  const navItems = isSuperAdmin ? [...baseNavItems, superAdminNavItem] : baseNavItems;
 
   return (
     <div className="flex min-h-screen bg-muted/20">
@@ -28,21 +38,28 @@ export function AdminLayout() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.to;
-            
+            const isSuperAdminItem = item.to === '/admin/super-admin';
+
             return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-muted'
+              <div key={item.to}>
+                {isSuperAdminItem && (
+                  <div className="my-2 border-t border-dashed border-border/60" />
                 )}
-              >
-                <Icon className="h-4 w-4" />
-                {item.label}
-              </Link>
+                <Link
+                  to={item.to}
+                  className={cn(
+                    'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : isSuperAdminItem
+                      ? 'text-destructive hover:bg-destructive/10'
+                      : 'hover:bg-muted'
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </Link>
+              </div>
             );
           })}
         </nav>
@@ -76,22 +93,29 @@ export function AdminLayout() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.to;
-            
+            const isSuperAdminItem = item.to === '/admin/super-admin';
+
             return (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setMobileMenuOpen(false)}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-muted'
+              <div key={item.to}>
+                {isSuperAdminItem && (
+                  <div className="my-2 border-t border-dashed border-border/60" />
                 )}
-              >
-                <Icon className="h-4 w-4" />
-                {item.label}
-              </Link>
+                <Link
+                  to={item.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : isSuperAdminItem
+                      ? 'text-destructive hover:bg-destructive/10'
+                      : 'hover:bg-muted'
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </Link>
+              </div>
             );
           })}
         </nav>
