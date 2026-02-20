@@ -54,6 +54,15 @@ class ApiClient {
         throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
       }
 
+      // Formulário de perfil obrigatório não preenchido
+      if (response.status === 403 && errorData.error === 'form_required') {
+        const error = new Error(errorData.message || 'Formulário de perfil obrigatório.');
+        error.code = 'form_required';
+        // Dispara evento global para que o componente de roteamento redirecione
+        window.dispatchEvent(new CustomEvent('caco:form-required'));
+        throw error;
+      }
+
       // Se seguir o padrão ErrorResponseDTO
       if (errorData.message) {
         throw new Error(errorData.message);

@@ -45,6 +45,17 @@ export function CallbackPage() {
         navigate(redirectTo, { replace: true });
       } catch (error) {
         console.error('Erro no callback OAuth:', error);
+
+        // Se o backend exige o preenchimento do formulário de perfil,
+        // armazena o destino e redireciona para o formulário
+        if (error.code === 'form_required') {
+          const redirectTo = sessionStorage.getItem('caco_login_redirect') || location.state?.from || '/';
+          sessionStorage.removeItem('caco_login_redirect');
+          sessionStorage.setItem('caco_form_redirect', redirectTo);
+          navigate('/formulario-perfil', { replace: true });
+          return;
+        }
+
         toast({
           variant: 'destructive',
           title: 'Erro na autenticação',

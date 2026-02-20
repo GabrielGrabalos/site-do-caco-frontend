@@ -27,6 +27,10 @@ class AuthService {
       
       return { token, user };
     } catch (error) {
+      // Repropaga erros com código especial sem perder o código (ex.: form_required)
+      if (error.code) {
+        throw error;
+      }
       throw new Error('Falha ao processar autenticação: ' + error.message);
     }
   }
