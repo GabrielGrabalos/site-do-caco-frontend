@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import loginImage from '@/assets/loginImage.png';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { authService } from '@/shared/services/authService';
@@ -8,6 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, X } from 'lucide-react';
 
 export function LoginPage() {
+  usePageTitle('Entrar');
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const [errorMessage, setErrorMessage] = useState(null);

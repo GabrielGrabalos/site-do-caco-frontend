@@ -42,33 +42,57 @@ function EventRow({
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
 
-        {hasMultiplePages && (
-          <div className="flex items-center gap-2 self-end sm:self-auto">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => onChangePage((pageData?.number || 0) - 1)}
-              disabled={loading || currentPage <= 1}
-              aria-label={`Página anterior de ${title}`}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+          {hasMultiplePages && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => onChangePage((pageData?.number || 0) - 1)}
+                disabled={loading || currentPage <= 1}
+                aria-label={`Página anterior de ${title}`}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
 
-            <span className="min-w-24 text-center text-sm text-muted-foreground">
-              Página {currentPage} de {totalPages}
-            </span>
+              <span className="min-w-24 text-center text-sm text-muted-foreground">
+                Página {currentPage} de {totalPages}
+              </span>
 
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => onChangePage((pageData?.number || 0) + 1)}
-              disabled={loading || currentPage >= totalPages}
-              aria-label={`Próxima página de ${title}`}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => onChangePage((pageData?.number || 0) + 1)}
+                disabled={loading || currentPage >= totalPages}
+                aria-label={`Próxima página de ${title}`}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          {events.length > 1 && (
+            <div className="flex items-center gap-2 self-end sm:self-auto">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => scrollCarousel('prev')}
+                aria-label={`Rolar carrossel para a esquerda em ${title}`}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => scrollCarousel('next')}
+                aria-label={`Rolar carrossel para a direita em ${title}`}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
       {loading && (
@@ -118,28 +142,6 @@ function EventRow({
               </div>
             ))}
           </div>
-
-          {events.length > 1 && (
-            <div className="flex items-center justify-end gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => scrollCarousel('prev')}
-                aria-label={`Rolar carrossel para a esquerda em ${title}`}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => scrollCarousel('next')}
-                aria-label={`Rolar carrossel para a direita em ${title}`}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
         </div>
       )}
     </div>

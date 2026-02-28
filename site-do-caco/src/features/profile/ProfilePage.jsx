@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useProfileVM } from './useProfileVM';
+import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import { useStickerAlbumVM } from '@/features/stickers/useStickerAlbumVM';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { EditAvatarModal } from './components/EditAvatarModal';
 
 export function ProfilePage() {
+  usePageTitle('Meu Perfil');
   const { user, loading, updating, uploadProgress, updateProfile } = useProfileVM();
   const stickerVM = useStickerAlbumVM();
   const { toast } = useToast();

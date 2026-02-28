@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { MainLayout } from '@/shared/components/MainLayout';
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute';
 import { SessionExpiryWarning } from '@/shared/components/SessionExpiryWarning';
+import { UnderConstructionPage } from '@/shared/components/UnderConstructionPage';
 import { Toaster } from '@/components/ui/use-toast.jsx';
 import { ThemeProvider } from '@/shared/contexts/ThemeContext';
 
@@ -64,15 +65,18 @@ function App() {
         <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/noticias" element={<NewsListPage />} />
-          <Route path="/noticias/:slug" element={<NewsDetailPage />} />
-          <Route path="/manual" element={<ManualPage />} />
+          <Route path="/noticias" element={<UnderConstructionPage />} />
+          <Route path="/noticias/:slug" element={<UnderConstructionPage />} />
+          <Route path="/manual" element={<UnderConstructionPage />} />
           <Route path="/manual/:slug" element={<ManualPage />} />
           <Route path="/calendario" element={<CalendarPage />} />
           <Route path="/eventos/:slug" element={<EventPage />} />
           <Route path="/provas" element={<ExamBankPage />} />
-          <Route path="/loja" element={<StorePage />} />
-          <Route path="/loja/produto/:slug" element={<ProductDetailPage />} />
+          <Route path="/loja" element={<UnderConstructionPage />} />
+          <Route path="/loja/produto/:slug" element={<UnderConstructionPage />} />
+          <Route path="/gaveta" element={<UnderConstructionPage />} />
+          <Route path="/espaco-de-fala" element={<UnderConstructionPage />} />
+          <Route path="/carrinho" element={<UnderConstructionPage />} />
           <Route path="/figurinhas/resgatar" element={<StickerClaimPage />} />
           <Route path="/figurinhas/resgatar/:code" element={<StickerClaimPage />} />
           <Route path="/login" element={<LoginPage />} />

@@ -1,10 +1,12 @@
 import { useStickerAlbumVM } from './useStickerAlbumVM';
+import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import { RedeemInput } from './components/RedeemInput';
 import { AlbumGrid } from './components/AlbumGrid';
 import { StickerModal } from './components/StickerModal';
 import { Card } from '@/components/ui/card';
 
 export function StickerAlbumPage() {
+  usePageTitle('Álbum de Figurinhas');
   const {
     myStickers,
     allStickers,

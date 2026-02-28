@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Gift, Keyboard, QrCode, Check, ArrowRight, Calendar, MapPin } from 'lucide-react';
@@ -8,6 +9,7 @@ import { QRCodeScanner } from './components/QRCodeScanner';
 import { Link } from 'react-router-dom';
 
 export function StickerClaimPage() {
+  usePageTitle('Resgatar Figurinha');
   const vm = useStickerClaimVM();
 
   // Se já resgatou o sticker, mostra tela de sucesso

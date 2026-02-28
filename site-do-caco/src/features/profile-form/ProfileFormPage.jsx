@@ -1,4 +1,5 @@
 import { Navigate } from 'react-router-dom';
+import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import { authService } from '@/shared/services/authService';
 import { useProfileFormVM } from './useProfileFormVM';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +18,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, GraduationCap, Loader2 } from 'lucide-react';
 
 export function ProfileFormPage() {
+  usePageTitle('Completar Perfil');
   const isAuthenticated = authService.isAuthenticated();
 
   if (!isAuthenticated) {

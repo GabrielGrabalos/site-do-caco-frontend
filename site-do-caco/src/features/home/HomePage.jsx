@@ -1,4 +1,5 @@
 import { useHomeVM } from './useHomeVM';
+import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import { BannerCarousel } from './components/BannerCarousel';
 import { WarningAlert } from './components/WarningAlert';
 import { LatestNews } from './components/LatestNews';
@@ -7,6 +8,7 @@ import { HomeEventsSection } from './components/HomeEventsSection';
 
 export function HomePage() {
   const { data, loading, error, dismissWarning, events } = useHomeVM();
+  usePageTitle('Início');
 
   if (loading) {
     return (

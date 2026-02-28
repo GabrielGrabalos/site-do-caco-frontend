@@ -1,9 +1,11 @@
 import { useExamBankVM } from './useExamBankVM';
+import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import { ExamFilters } from './components/ExamFilters';
 import { ExamCard } from './components/ExamCard';
 import { FileQuestion, Plus } from 'lucide-react';
 
 export function ExamBankPage() {
+  usePageTitle('Banco de Provas');
   const {
     subjects,
     exams,

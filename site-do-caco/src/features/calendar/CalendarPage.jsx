@@ -1,10 +1,12 @@
 import { useCalendarVM } from './useCalendarVM';
+import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import { CalendarHeader } from './components/CalendarHeader';
 import { MonthGrid } from './components/MonthGrid';
 import { MobileCalendarView } from './components/MobileCalendarView';
 import { EventPreviewModal } from './components/EventPreviewModal';
 
 export function CalendarPage() {
+  usePageTitle('Calendário');
   const {
     currentDate,
     events,
