@@ -1,20 +1,11 @@
 import React from 'react';
-import { Users, FileText, Calendar, Image } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast.jsx';
 import { useAdminBannersVM } from './banner/useAdminBannersVM';
 import { useAdminWarningsVM } from './warning/useAdminWarningsVM';
-import { StatsCards } from '../components/StatsCards';
 import { BannersSection } from './banner/components/BannersSection';
 import { WarningsSection } from './warning/components/WarningsSection';
 
 export function AdminDashboard() {
-  const stats = [
-    { title: 'Usuários', value: '1,234', icon: Users, color: 'text-blue-600' },
-    { title: 'Notícias', value: '45', icon: FileText, color: 'text-green-600' },
-    { title: 'Eventos', value: '12', icon: Calendar, color: 'text-purple-600' },
-    { title: 'Figurinhas', value: '28', icon: Image, color: 'text-orange-600' },
-  ];
-
   const { toast } = useToast();
 
   // ViewModels para cada seção
@@ -113,8 +104,6 @@ export function AdminDashboard() {
   return (
     <div className="space-y-4 md:space-y-6">
       <h1 className="text-2xl md:text-3xl font-bold">Dashboard Admin</h1>
-
-      <StatsCards stats={stats} />
 
       <BannersSection
         activeBanners={bannersVM.activeBanners}
