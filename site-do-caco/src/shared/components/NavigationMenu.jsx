@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 
 const navigationItems = [
   { to: '/', label: 'Início', icon: Home, color: 'hover:bg-gray-100 dark:hover:bg-gray-800' },
-  { to: '/noticias', label: 'Notícias', icon: Newspaper, color: 'hover:bg-red-100 hover:text-red-900 dark:hover:bg-red-900 dark:hover:text-red-100', underConstruction: true },
+  { to: '/noticias', label: 'Notícias', icon: Newspaper, color: 'hover:bg-red-100 hover:text-red-900 dark:hover:bg-red-900 dark:hover:text-red-100' },
   { to: '/manual', label: 'Manual do Calouro', icon: BookOpen, color: 'hover:bg-yellow-100 hover:text-yellow-900 dark:hover:bg-yellow-900 dark:hover:text-yellow-100', underConstruction: true },
   { to: '/calendario', label: 'Calendário', icon: Calendar, color: 'hover:bg-green-100 hover:text-green-900 dark:hover:bg-green-900 dark:hover:text-green-100' },
   { to: '/provas', label: 'Banco de Provas', icon: GraduationCap, color: 'hover:bg-blue-100 hover:text-blue-900 dark:hover:bg-blue-900 dark:hover:text-blue-100' },

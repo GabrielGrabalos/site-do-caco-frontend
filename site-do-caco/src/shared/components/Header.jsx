@@ -26,8 +26,7 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 shrink-0">
             <img src={logo} alt="CACo" className="h-8 w-auto" />
-            <span className="font-bold text-lg sm:hidden">CACo</span>
-            <span className="font-bold text-lg hidden sm:inline">Site do CACo</span>
+            <span className="font-bold text-lg">Site do CACo</span>
           </Link>
 
           {/* Spacer */}

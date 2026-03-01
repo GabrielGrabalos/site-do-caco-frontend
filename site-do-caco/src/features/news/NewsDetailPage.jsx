@@ -1,8 +1,6 @@
-import { ArrowLeft, Calendar, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Calendar } from 'lucide-react';
 import { useNewsDetailVM } from './useNewsDetailVM';
 import { MarkdownContent } from '@/shared/components/MarkdownContent';
-import { Button } from '@/components/ui/button';
 import { formatDate } from '@/shared/utils/helpers';
 import { Separator } from '@/components/ui/separator';
 
@@ -22,60 +20,46 @@ export function NewsDetailPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600 mb-2">Erro</h2>
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground">
             {error || 'Notícia não encontrada'}
           </p>
-          <Button asChild>
-            <Link to="/noticias">Voltar para notícias</Link>
-          </Button>
         </div>
       </div>
     );
   }
 
+  const publishDate = article.publishDate;
+
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl">
-      <Button variant="ghost" asChild className="mb-8 -ml-3">
-        <Link to="/noticias">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Voltar para notícias
-        </Link>
-      </Button>
-
-      {article.imageUrl && (
-        <div className="aspect-video w-full rounded-lg overflow-hidden mb-8 bg-muted">
-          <img
-            src={article.imageUrl}
-            alt={article.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-
-      <header className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+      <header className="mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold mb-6">
           {article.title}
         </h1>
-        <Separator className="mb-4" />
-        <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>{formatDate(article.publishedAt)}</span>
-          </div>
-          {article.authorName && (
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              <span>{article.authorName}</span>
-            </div>
-          )}
+
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+          <Calendar className="h-4 w-4" />
+          <span>{formatDate(publishDate)}</span>
         </div>
+
+        <Separator className="mb-6" />
       </header>
 
       {article.summary && (
-        <div className="bg-muted/50 border-l-4 border-primary p-4 mb-8 rounded-r-lg">
-          <p className="text-base text-muted-foreground italic">
+        <div className="bg-muted/50 border-l-4 border-primary p-4 mb-6 rounded-r-lg">
+          <p className="text-base text-muted-foreground italic leading-relaxed">
             {article.summary}
           </p>
+        </div>
+      )}
+
+      {article.coverImage && (
+        <div className="w-full rounded-lg overflow-hidden my-16 bg-muted max-w-lg mx-auto">
+          <img
+            src={article.coverImage}
+            alt={article.title}
+            className="w-full h-auto object-cover"
+          />
         </div>
       )}
 

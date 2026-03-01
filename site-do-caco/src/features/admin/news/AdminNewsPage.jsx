@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { FileText, Plus, Edit, Trash2, ChevronLeft, ChevronRight, Calendar, User } from 'lucide-react';
+import { FileText, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast.jsx';
-import { formatDate } from '@/shared/utils/helpers';
 import { useAdminNewsVM } from './useAdminNewsVM';
 import { NewsFormSection } from './components/NewsFormSection';
+import { AdminNewsCard } from './components/AdminNewsCard';
 import { ConfirmDeleteDialog } from '../components/ConfirmDeleteDialog';
 
 export function AdminNewsPage() {
@@ -185,80 +185,16 @@ export function AdminNewsPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {filteredNews.map((article) => {
-                const coverImage = article.coverImage || article.imageUrl;
-                const publishDate = article.publishDate || article.publishedAt;
-                const summary = (article.summary || '').trim();
-
-                return (
-                  <div
-                    key={article.id}
-                    className="rounded-xl border bg-card text-card-foreground overflow-hidden hover:border-primary/40 hover:shadow-md transition-all"
-                  >
-                    <div className="flex flex-col sm:flex-row">
-                      <div className="sm:w-44 w-full shrink-0 bg-muted">
-                        <div className="aspect-[3/2] sm:h-full">
-                          {coverImage ? (
-                            <img
-                              src={coverImage}
-                              alt={article.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
-                              Sem capa
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex-1 p-4 flex flex-col gap-3">
-
-                        <div>
-                          <h3 className="font-semibold text-base line-clamp-2">{article.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {summary || 'Sem resumo disponível.'}
-                          </p>
-                        </div>
-
-                        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3.5 w-3.5" />
-                            <span>{formatDate(publishDate) || 'Sem data'}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <User className="h-3.5 w-3.5" />
-                            <span>{article.authorName || '-'}</span>
-                          </div>
-                          <span className="truncate max-w-[220px]">/{article.slug}</span>
-                        </div>
-
-                        <div className="flex justify-end gap-2 pt-1">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(article)}
-                            disabled={saving || deleting}
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            Editar
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDeleteClick(article)}
-                            disabled={deleting || saving}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Excluir
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filteredNews.map((article) => (
+                <AdminNewsCard
+                  key={article.id}
+                  article={article}
+                  onEdit={handleEdit}
+                  onDelete={handleDeleteClick}
+                  disabled={saving || deleting}
+                />
+              ))}
             </div>
           )}
         </CardContent>

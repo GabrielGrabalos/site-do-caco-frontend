@@ -9,7 +9,6 @@ export function NavButtons() {
       label: 'Notícias',
       icon: Newspaper,
       color: 'bg-red-300 hover:bg-red-400 text-red-900',
-      underConstruction: true,
     },
     {
       to: '/manual',
