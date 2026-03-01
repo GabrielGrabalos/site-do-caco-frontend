@@ -23,6 +23,7 @@ import { CallbackPage } from '@/features/auth/CallbackPage';
 import { ProfileFormPage } from '@/features/profile-form/ProfileFormPage';
 import { AdminLayout } from '@/features/admin/AdminLayout';
 import { AdminDashboard } from '@/features/admin/dashboard/AdminDashboard';
+import { AdminNewsPage } from '@/features/admin/news/AdminNewsPage';
 import { AdminManualPage } from '@/features/admin/manual/AdminManualPage';
 import { AdminExamBankPage } from '@/features/admin/exams/AdminExamBankPage';
 import { AdminStorePage } from '@/features/admin/store/AdminStorePage';
@@ -65,8 +66,8 @@ function App() {
         <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/noticias" element={<UnderConstructionPage />} />
-          <Route path="/noticias/:slug" element={<UnderConstructionPage />} />
+          <Route path="/noticias" element={<NewsListPage />} />
+          <Route path="/noticias/:slug" element={<NewsDetailPage />} />
           <Route path="/manual" element={<UnderConstructionPage />} />
           <Route path="/manual/:slug" element={<ManualPage />} />
           <Route path="/calendario" element={<CalendarPage />} />
@@ -114,7 +115,7 @@ function App() {
           }
         >
           <Route index element={<AdminDashboard />} />
-          <Route path="noticias" element={<div>Gerenciar Notícias</div>} />
+          <Route path="noticias" element={<AdminNewsPage />} />
           <Route path="eventos" element={<AdminEventsPage />} />
           <Route path="manual" element={<AdminManualPage />} />
           <Route path="provas" element={<AdminExamBankPage />} />

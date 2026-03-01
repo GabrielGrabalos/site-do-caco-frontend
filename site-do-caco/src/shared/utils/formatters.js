@@ -23,6 +23,12 @@ export function formatDate(date) {
   if (!date) return '';
   
   const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  // Valida se a data é válida
+  if (isNaN(dateObj.getTime())) {
+    return '';
+  }
+  
   return new Intl.DateFormat('pt-BR').format(dateObj);
 }
 
@@ -35,6 +41,12 @@ export function formatDateTime(date) {
   if (!date) return '';
   
   const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  // Valida se a data é válida
+  if (isNaN(dateObj.getTime())) {
+    return '';
+  }
+  
   return new Intl.DateFormat('pt-BR', {
     dateStyle: 'short',
     timeStyle: 'short',

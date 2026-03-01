@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { contentService } from '@/shared/services/contentService';
+import { newsService } from '@/shared/services/newsService';
 
 export function useNewsDetailVM() {
   const { slug } = useParams();
@@ -15,10 +15,11 @@ export function useNewsDetailVM() {
   const loadArticle = async () => {
     try {
       setLoading(true);
-      const data = await contentService.getNewsBySlug(slug);
+      const data = await newsService.getNewsBySlug(slug);
       setArticle(data);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Erro ao carregar notícia');
+      console.error('Erro ao carregar notícia:', err);
     } finally {
       setLoading(false);
     }
@@ -30,3 +31,4 @@ export function useNewsDetailVM() {
     error,
   };
 }
+

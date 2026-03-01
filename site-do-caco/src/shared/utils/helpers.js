@@ -1,5 +1,13 @@
 export function formatDate(dateString) {
+  if (!dateString) return '';
+  
   const date = new Date(dateString);
+  
+  // Valida se a data é válida
+  if (isNaN(date.getTime())) {
+    return '';
+  }
+  
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: 'long',
@@ -8,7 +16,15 @@ export function formatDate(dateString) {
 }
 
 export function formatShortDate(dateString) {
+  if (!dateString) return '';
+  
   const date = new Date(dateString);
+  
+  // Valida se a data é válida
+  if (isNaN(date.getTime())) {
+    return '';
+  }
+  
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
@@ -17,7 +33,15 @@ export function formatShortDate(dateString) {
 }
 
 export function formatTime(dateString) {
+  if (!dateString) return '';
+  
   const date = new Date(dateString);
+  
+  // Valida se a data é válida
+  if (isNaN(date.getTime())) {
+    return '';
+  }
+  
   return new Intl.DateTimeFormat('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { contentService } from '@/shared/services/contentService';
+import { newsService } from '@/shared/services/newsService';
 
 export function useNewsListVM() {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
@@ -15,17 +15,22 @@ export function useNewsListVM() {
   const loadNews = async () => {
     try {
       setLoading(true);
-      const data = await contentService.getNewsList(page, 10);
+      const response = await newsService.getNewsList(page, 10);
       
-      if (page === 1) {
-        setNews(data.items);
+      // Spring Pageable response structure
+      const items = response.content || response.items || response.data || [];
+      
+      if (page === 0) {
+        setNews(items);
       } else {
-        setNews(prev => [...prev, ...data.items]);
+        setNews(prev => [...prev, ...items]);
       }
       
-      setHasMore(data.hasMore);
+      // Check if there are more pages
+      setHasMore(!response.last);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Erro ao carregar notícias');
+      console.error('Erro ao carregar notícias:', err);
     } finally {
       setLoading(false);
     }
@@ -45,3 +50,4 @@ export function useNewsListVM() {
     loadMore,
   };
 }
+
