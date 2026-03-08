@@ -4,11 +4,18 @@ import { setCookie, getCookie, deleteCookie, setCookieWithTimestamp } from '@/sh
 const AUTH_TOKEN_KEY = 'caco_auth_token';
 const AUTH_USER_KEY = 'caco_auth_user';
 const AUTH_EXPIRY_KEY = 'caco_auth_expiry';
+const AUTH_CHANGED_EVENT = 'caco:auth-changed';
 
 // Tempo de expiração padrão: 24 horas
 const DEFAULT_TOKEN_EXPIRY_MILLISECONDS = 24 * 60 * 60 * 1000;
 
 class AuthService {
+  emitAuthChanged() {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+    }
+  }
+
   // Login com token já recebido do OAuth callback
   async loginWithToken(token, expiresInMilliseconds) {
     try {
@@ -45,20 +52,30 @@ class AuthService {
     deleteCookie(AUTH_TOKEN_KEY);
     deleteCookie(AUTH_USER_KEY);
     deleteCookie(AUTH_EXPIRY_KEY);
+    this.emitAuthChanged();
   }
 
   setToken(token, expiryTimestamp) {
     setCookieWithTimestamp(AUTH_TOKEN_KEY, token, expiryTimestamp);
     setCookie(AUTH_EXPIRY_KEY, expiryTimestamp.toString(), 365); // 1 ano para o timestamp
+    this.emitAuthChanged();
   }
 
   getToken() {
+    const token = getCookie(AUTH_TOKEN_KEY);
+
+    // Sem token não há sessão ativa (evita disparar logout em loop)
+    if (!token) {
+      return null;
+    }
+
     // Verifica se o token expirou antes de retornar
     if (this.isTokenExpired()) {
       this.logout();
       return null;
     }
-    return getCookie(AUTH_TOKEN_KEY);
+
+    return token;
   }
 
   getTokenExpiry() {
@@ -92,16 +109,33 @@ class AuthService {
 
   setUser(user) {
     setCookie(AUTH_USER_KEY, JSON.stringify(user), 365); // 1 ano
+    this.emitAuthChanged();
   }
 
   getUser() {
+    const token = getCookie(AUTH_TOKEN_KEY);
+
+    // Sem token, considera deslogado sem acionar logout
+    if (!token) {
+      return null;
+    }
+
     // Verifica expiração antes de retornar usuário
     if (this.isTokenExpired()) {
       this.logout();
       return null;
     }
+
     const user = getCookie(AUTH_USER_KEY);
-    return user ? JSON.parse(user) : null;
+    if (!user) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(user);
+    } catch {
+      return null;
+    }
   }
 
   isAuthenticated() {

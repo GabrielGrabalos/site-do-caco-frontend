@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { eventService } from '@/shared/services/eventService';
-import { authService } from '@/shared/services/authService';
+import { useAuth } from '@/shared/contexts/AuthContext';
 import { analyticsService } from '@/shared/services/analyticsService';
 
 export function useEventVM() {
@@ -12,11 +12,11 @@ export function useEventVM() {
   const [isParticipating, setIsParticipating] = useState(false);
   const [participationLoading, setParticipationLoading] = useState(false);
 
-  const isAuthenticated = authService.isAuthenticated();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     loadEvent();
-  }, [slug]);
+  }, [slug, isAuthenticated]);
 
   const loadEvent = async () => {
     try {

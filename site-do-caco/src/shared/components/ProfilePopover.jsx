@@ -7,18 +7,18 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { authService } from '@/shared/services/authService';
+import { useAuth } from '@/shared/contexts/AuthContext';
 import { useTheme } from '@/shared/contexts/ThemeContext';
 
 export function ProfilePopover() {
   const navigate = useNavigate();
-  const user = authService.getUser();
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   const handleLogout = () => {
     setOpen(false);
-    authService.logout();
+    logout();
     navigate('/');
   };
 

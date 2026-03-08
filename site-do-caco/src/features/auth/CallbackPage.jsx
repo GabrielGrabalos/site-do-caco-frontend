@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { authService } from '@/shared/services/authService';
+import { useAuth } from '@/shared/contexts/AuthContext';
 import { useToast } from '@/components/ui/use-toast.jsx';
 
 export function CallbackPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   const { toast } = useToast();
   const [processing, setProcessing] = useState(true);
 
@@ -32,7 +34,10 @@ export function CallbackPage() {
         }
 
         // Processa o login com o token recebido
-        await authService.loginWithToken(token, expiresInMs);
+        const { user } = await authService.loginWithToken(token, expiresInMs);
+
+        // Atualiza o contexto de autenticação
+        login(user);
 
         toast({
           title: 'Login realizado com sucesso!',
@@ -70,7 +75,7 @@ export function CallbackPage() {
     };
 
     processCallback();
-  }, [searchParams, navigate, toast]);
+  }, [searchParams, navigate, toast, login]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

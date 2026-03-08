@@ -1,24 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '@/shared/services/authService';
+import { useAuth } from '@/shared/contexts/AuthContext';
 import { useToast } from '@/components/ui/use-toast.jsx';
 
 export function SessionExpiryWarning() {
   const [hasWarned, setHasWarned] = useState(false);
   const [hasShownExpiryAlert, setHasShownExpiryAlert] = useState(false);
-  const [wasAuthenticated, setWasAuthenticated] = useState(authService.isAuthenticated());
+  const { isAuthenticated } = useAuth();
+  const [wasAuthenticated, setWasAuthenticated] = useState(isAuthenticated);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     // Atualiza o estado inicial de autenticação
-    setWasAuthenticated(authService.isAuthenticated());
-  }, []);
+    setWasAuthenticated(isAuthenticated);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     // Verifica a cada minuto se a sessão está próxima de expirar
     const interval = setInterval(() => {
-      const isCurrentlyAuthenticated = authService.isAuthenticated();
+      const isCurrentlyAuthenticated = isAuthenticated;
       
       // Se estava autenticado e agora não está mais, a sessão expirou
       if (wasAuthenticated && !isCurrentlyAuthenticated && !hasShownExpiryAlert) {
@@ -54,7 +56,7 @@ export function SessionExpiryWarning() {
     }, 60000); // Verifica a cada 1 minuto
 
     return () => clearInterval(interval);
-  }, [hasWarned, wasAuthenticated, hasShownExpiryAlert, navigate, toast]);
+  }, [hasWarned, wasAuthenticated, hasShownExpiryAlert, isAuthenticated, navigate, toast]);
 
   return null; // Componente invisível
 }

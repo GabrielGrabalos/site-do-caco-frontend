@@ -7,6 +7,7 @@ import { ScrollToTop } from '@/shared/components/ScrollToTop';
 import { UnderConstructionPage } from '@/shared/components/UnderConstructionPage';
 import { Toaster } from '@/components/ui/use-toast.jsx';
 import { ThemeProvider } from '@/shared/contexts/ThemeContext';
+import { AuthProvider } from '@/shared/contexts/AuthContext';
 
 // Pages
 import { HomePage } from '@/features/home/HomePage';
@@ -63,11 +64,12 @@ function FormRequiredRedirect() {
 function App() {
   return (
     <ThemeProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <FormRequiredRedirect />
-        <SessionExpiryWarning />
-        <Routes>
+      <AuthProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <FormRequiredRedirect />
+          <SessionExpiryWarning />
+          <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/noticias" element={<NewsListPage />} />
@@ -142,7 +144,8 @@ function App() {
       </Routes>
       
       <Toaster />
-    </BrowserRouter>
+        </BrowserRouter>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

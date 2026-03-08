@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { eventService } from '@/shared/services/eventService';
-import { authService } from '@/shared/services/authService';
+import { useAuth } from '@/shared/contexts/AuthContext';
 
 export function useCalendarVM() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -10,14 +10,14 @@ export function useCalendarVM() {
   const [error, setError] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const isAuthenticated = authService.isAuthenticated();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     loadEvents();
     if (isAuthenticated) {
       loadMyParticipations();
     }
-  }, [currentDate]); // Recarrega quando o mês muda
+  }, [currentDate, isAuthenticated]); // Recarrega quando o mês muda ou autenticação muda
 
   const loadEvents = async () => {
     try {

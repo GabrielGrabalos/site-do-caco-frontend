@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { authService } from '@/shared/services/authService';
+import { useAuth } from '@/shared/contexts/AuthContext';
 import { ProfilePopover } from './ProfilePopover';
 import { NavigationMenu } from './NavigationMenu';
 import { ThemeToggle } from './ThemeToggle';
@@ -8,7 +8,7 @@ import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
 import logo from '@/assets/logo.svg';
 
 export function Header() {
-  const isAuthenticated = authService.isAuthenticated();
+  const { isAuthenticated } = useAuth();
   const isVisible = useScrollDirection();
 
   return (

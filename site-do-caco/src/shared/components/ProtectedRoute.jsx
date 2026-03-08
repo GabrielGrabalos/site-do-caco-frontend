@@ -1,10 +1,9 @@
 import { Navigate } from 'react-router-dom';
-import { authService } from '@/shared/services/authService';
+import { useAuth } from '@/shared/contexts/AuthContext';
 
 export function ProtectedRoute({ children, requireAdmin = false, requireEditor = false }) {
-  const isAuthenticated = authService.isAuthenticated();
-  const isAdmin = authService.isAdmin();
-  const user = authService.getUser();
+  const { isAuthenticated, user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
   const isEditor = user?.role === 'EDITOR' || user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
 
   if (!isAuthenticated) {
