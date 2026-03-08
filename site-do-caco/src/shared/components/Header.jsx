@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { authService } from '@/shared/services/authService';
 import { ProfilePopover } from './ProfilePopover';
@@ -8,7 +8,6 @@ import { useScrollDirection } from '@/shared/hooks/useScrollDirection';
 import logo from '@/assets/logo.svg';
 
 export function Header() {
-  const navigate = useNavigate();
   const isAuthenticated = authService.isAuthenticated();
   const isVisible = useScrollDirection();
 
@@ -35,7 +34,9 @@ export function Header() {
           {/* Auth Section */}
           <div className="flex items-center gap-2 shrink-0 ml-auto">
             {isAuthenticated ? (
-              <ProfilePopover />
+              <>
+                <ProfilePopover />
+              </>
             ) : (
               <>
                 <ThemeToggle />

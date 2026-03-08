@@ -27,10 +27,16 @@ class NewsService {
 
   /**
    * Criar notícia (Editor, Admin, SuperAdmin)
-   * @param {Object} data - Formulário com titulo, slug, summary, content, coverImage (File)
+   * @param {Object|FormData} data - Formulário com titulo, slug, summary, content, coverImage (File)
    * @returns {Promise<Object>} NewsDetailDTO
    */
   async createNews(data) {
+    // Se já é um FormData, envia diretamente
+    if (data instanceof FormData) {
+      return apiClient.postFormData('editor/news', data);
+    }
+    
+    // Caso contrário, constrói um novo FormData
     const formData = new FormData();
     formData.append('title', data.title);
     formData.append('slug', data.slug);
@@ -46,10 +52,16 @@ class NewsService {
   /**
    * Editar notícia (somente autor ou admin)
    * @param {number} id - ID da notícia
-   * @param {Object} data - Formulário com titulo, slug, summary, content, coverImage (File), removeCoverImage
+   * @param {Object|FormData} data - Formulário com titulo, slug, summary, content, coverImage (File), removeCoverImage
    * @returns {Promise<Object>} NewsDetailDTO
    */
   async updateNews(id, data) {
+    // Se já é um FormData, envia diretamente
+    if (data instanceof FormData) {
+      return apiClient.putFormData(`editor/news/${id}`, data);
+    }
+    
+    // Caso contrário, constrói um novo FormData
     const formData = new FormData();
     formData.append('title', data.title);
     formData.append('slug', data.slug);
@@ -155,6 +167,96 @@ class NewsService {
    */
   async getNewsById(id) {
     return apiClient.get(`admin/news/${id}`);
+  }
+
+  /**
+   * Obter notícia pelo slug para edição (editor/próprio)
+   * @param {string} slug - Slug da notícia
+   * @returns {Promise<Object>} NewsDetailDTO
+   */
+  async getNewsDetailBySlug(slug) {
+    return apiClient.get(`editor/news/${slug}`);
+  }
+
+  /**
+   * Obter notícia pelo ID para edição (editor/próprio)
+   * @param {string} slug - Slug da notícia
+   * @returns {Promise<Object>} NewsDetailDTO
+   */
+  async getNewsDetailById(slug) {
+    return apiClient.get(`editor/news/${slug}`);
+  }
+
+  /**
+   * Listar notícias do editor autenticado
+   * @param {number} page - Número da página (começa em 0)
+   * @param {number} size - Tamanho da página
+   * @param {string} sort - Ordenação (ex: "publishedAt,desc")
+   * @returns {Promise<Object>} Response com paginação Spring
+   */
+  async getEditorNews(page = 0, size = 10, sort = 'publishedAt,desc') {
+    return apiClient.get(`editor/news?page=${page}&size=${size}&sort=${sort}`);
+  }
+
+  /**
+   * Criar notícia (Editor)
+   * @param {Object|FormData} data - Formulário com titulo, slug, summary, content, coverImage (File)
+   * @returns {Promise<Object>} NewsDetailDTO
+   */
+  async createEditorNews(data) {
+    // Se já é um FormData, envia diretamente
+    if (data instanceof FormData) {
+      return apiClient.postFormData('editor/news', data);
+    }
+    
+    // Caso contrário, constrói um novo FormData
+    const formData = new FormData();
+    formData.append('title', data.title);
+    formData.append('slug', data.slug);
+    formData.append('summary', data.summary);
+    formData.append('content', data.content);
+    if (data.coverImage) {
+      formData.append('coverImage', data.coverImage);
+    }
+
+    return apiClient.postFormData('editor/news', formData);
+  }
+
+  /**
+   * Editar notícia do editor
+   * @param {number} id - ID da notícia
+   * @param {Object|FormData} data - Formulário com titulo, slug, summary, content, coverImage (File), removeCoverImage
+   * @returns {Promise<Object>} NewsDetailDTO
+   */
+  async updateEditorNews(id, data) {
+    // Se já é um FormData, envia diretamente
+    if (data instanceof FormData) {
+      return apiClient.putFormData(`editor/news/${id}`, data);
+    }
+    
+    // Caso contrário, constrói um novo FormData
+    const formData = new FormData();
+    formData.append('title', data.title);
+    formData.append('slug', data.slug);
+    formData.append('summary', data.summary);
+    formData.append('content', data.content);
+    
+    if (data.removeCoverImage) {
+      formData.append('removeCoverImage', 'true');
+    } else if (data.coverImage) {
+      formData.append('coverImage', data.coverImage);
+    }
+
+    return apiClient.putFormData(`editor/news/${id}`, formData);
+  }
+
+  /**
+   * Deletar notícia do editor
+   * @param {number} id - ID da notícia
+   * @returns {Promise<void>}
+   */
+  async deleteEditorNews(id) {
+    return apiClient.delete(`editor/news/${id}`);
   }
 
   /**

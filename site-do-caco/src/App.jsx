@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { MainLayout } from '@/shared/components/MainLayout';
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute';
 import { SessionExpiryWarning } from '@/shared/components/SessionExpiryWarning';
+import { ScrollToTop } from '@/shared/components/ScrollToTop';
 import { UnderConstructionPage } from '@/shared/components/UnderConstructionPage';
 import { Toaster } from '@/components/ui/use-toast.jsx';
 import { ThemeProvider } from '@/shared/contexts/ThemeContext';
@@ -32,6 +33,8 @@ import { AdminStickersPage } from '@/features/admin/stickers/AdminStickersPage';
 import { SuperAdminPage } from '@/features/admin/super-admin/SuperAdminPage';
 import { StorePage } from '@/features/store/StorePage';
 import { ProductDetailPage } from '@/features/store/ProductDetailPage';
+import { EditorLayout } from '@/features/editor/EditorLayout';
+import { EditorNewsPage } from '@/features/editor/news/EditorNewsPage';
 
 /**
  * Componente interno que escuta o evento global 'caco:form-required' emitido pelo
@@ -61,6 +64,7 @@ function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <FormRequiredRedirect />
         <SessionExpiryWarning />
         <Routes>
@@ -122,6 +126,18 @@ function App() {
           <Route path="figurinhas" element={<AdminStickersPage />} />
           <Route path="loja" element={<AdminStorePage />} />
           <Route path="super-admin" element={<SuperAdminPage />} />
+        </Route>
+
+        {/* Editor Routes */}
+        <Route
+          path="/editor"
+          element={
+            <ProtectedRoute requireEditor>
+              <EditorLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<EditorNewsPage />} />
         </Route>
       </Routes>
       

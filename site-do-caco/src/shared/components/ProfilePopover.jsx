@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, LogOut, Shield, Sun, Moon, Monitor, ShoppingCart } from 'lucide-react';
+import { User, LogOut, Shield, Sun, Moon, Monitor, ShoppingCart, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -121,6 +121,20 @@ export function ProfilePopover() {
                 Minhas comprinhas
               </Link>
             </Button>
+
+            {user?.role === 'EDITOR' && (
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                size="sm"
+                asChild
+              >
+                <Link to="/editor" onClick={handleNavigate}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Painel de Editor
+                </Link>
+              </Button>
+            )}
 
             {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
               <Button
