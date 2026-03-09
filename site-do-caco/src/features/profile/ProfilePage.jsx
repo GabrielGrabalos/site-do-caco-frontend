@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast.jsx';
-import { User, Camera, Save } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { User, Camera, Save, MessageCircle, Info } from 'lucide-react';
 import { StickerItem } from '@/features/stickers/components/StickerItem';
 import { StickerModal } from '@/features/stickers/components/StickerModal';
 import { Link } from 'react-router-dom';
@@ -216,6 +217,35 @@ export function ProfilePage() {
           )}
         </CardContent>
       </Card>
+
+      {user?.whatsappGroupLink && (
+        <Card className="border-green-200 bg-green-50 dark:border-green-900/30 dark:bg-green-950/20">
+          <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg bg-green-100 dark:bg-green-900/40 p-2 mt-0.5">
+                <MessageCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">Grupo de avisos da sua sala</p>
+                <p className="text-xs text-muted-foreground mt-1">Fique por dentro dos principais comunicados da sua turma</p>
+              </div>
+            </div>
+
+            <Button asChild className="sm:w-auto bg-green-600 hover:bg-green-700 text-white gap-2 h-auto py-2 px-4">
+              <a
+                href={user.whatsappGroupLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Entrar no grupo de avisos da sua sala</span>
+                <span className="sm:hidden">Entrar no grupo</span>
+              </a>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Seção de Figurinhas */}
       <Card>

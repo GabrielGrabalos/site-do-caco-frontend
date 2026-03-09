@@ -29,6 +29,7 @@ import { AdminDashboard } from '@/features/admin/dashboard/AdminDashboard';
 import { AdminNewsPage } from '@/features/admin/news/AdminNewsPage';
 import { AdminManualPage } from '@/features/admin/manual/AdminManualPage';
 import { AdminExamBankPage } from '@/features/admin/exams/AdminExamBankPage';
+import { AdminWhatsAppGroupsPage } from '@/features/admin/whatsapp-groups/AdminWhatsAppGroupsPage';
 import { AdminStorePage } from '@/features/admin/store/AdminStorePage';
 import { AdminEventsPage } from '@/features/admin/event/AdminEventsPage';
 import { AdminStickersPage } from '@/features/admin/stickers/AdminStickersPage';
@@ -129,6 +130,7 @@ function App() {
           <Route path="eventos" element={<AdminEventsPage />} />
           <Route path="manual" element={<AdminManualPage />} />
           <Route path="provas" element={<AdminExamBankPage />} />
+          <Route path="grupos-whatsapp" element={<AdminWhatsAppGroupsPage />} />
           <Route path="figurinhas" element={<AdminStickersPage />} />
           <Route path="loja" element={<AdminStorePage />} />
           <Route path="super-admin" element={<SuperAdminPage />} />

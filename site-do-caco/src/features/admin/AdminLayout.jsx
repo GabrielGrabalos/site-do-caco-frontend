@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, Calendar, BookOpen, Image, Menu, X, GraduationCap, Store, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, FileText, Calendar, BookOpen, Image, Menu, X, GraduationCap, Store, ShieldAlert, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { authService } from '@/shared/services/authService';
 
@@ -10,6 +10,7 @@ const baseNavItems = [
   { to: '/admin/eventos', label: 'Eventos', icon: Calendar },
   { to: '/admin/manual', label: 'Manual', icon: BookOpen },
   { to: '/admin/provas', label: 'Banco de Provas', icon: GraduationCap },
+  { to: '/admin/grupos-whatsapp', label: 'Grupos de WhatsApp', icon: MessageCircle },
   { to: '/admin/figurinhas', label: 'Figurinhas', icon: Image },
   { to: '/admin/loja', label: 'Loja', icon: Store },
 ];
