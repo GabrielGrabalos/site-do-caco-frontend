@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast.jsx';
 import { User, Camera, Save } from 'lucide-react';
-import { AlbumGrid } from '@/features/stickers/components/AlbumGrid';
+import { StickerItem } from '@/features/stickers/components/StickerItem';
 import { StickerModal } from '@/features/stickers/components/StickerModal';
 import { Link } from 'react-router-dom';
 import { EditAvatarModal } from './components/EditAvatarModal';
@@ -25,6 +25,17 @@ export function ProfilePage() {
   const [formData, setFormData] = useState({
     name: '',
   });
+
+  const ownedStickers = stickerVM.myStickers
+    .map((userSticker) => {
+      const sticker = userSticker?.sticker
+        || stickerVM.allStickers.find((s) => s.id === (userSticker?.stickerId || userSticker?.id));
+
+      if (!sticker) return null;
+
+      return { sticker, userSticker };
+    })
+    .filter(Boolean);
 
   const handleEdit = () => {
     setFormData({
@@ -228,12 +239,26 @@ export function ProfilePage() {
             <div className="text-center py-12 text-red-600">
               {stickerVM.error}
             </div>
+          ) : ownedStickers.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              Você ainda não tem figurinhas. Participe dos eventos para conseguir suas primeiras!
+            </div>
           ) : (
-            <AlbumGrid
-              allStickers={stickerVM.allStickers}
-              myStickers={stickerVM.myStickers}
-              onStickerClick={stickerVM.openStickerModal}
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+              {ownedStickers.map(({ sticker, userSticker }) => (
+                <div
+                  key={userSticker.id || `${sticker.id}-${userSticker.obtainedAt || ''}`}
+                  className="relative aspect-square rounded-lg border-2 border-primary/30 transition-all hover:shadow-lg"
+                >
+                  <button
+                    onClick={() => stickerVM.openStickerModal(sticker, userSticker)}
+                    className="w-full h-full focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <StickerItem sticker={sticker} />
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
         </CardContent>
       </Card>

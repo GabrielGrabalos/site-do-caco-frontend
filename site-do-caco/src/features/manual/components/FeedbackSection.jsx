@@ -37,7 +37,7 @@ export function FeedbackSection({ onSubmit, submitted, pendingFeedback }) {
       await onSubmit(helpful, comment);
       toast({
         title: 'Feedback enviado!',
-        description: 'Obrigado por ajudar a melhorar o manual.',
+        description: 'Obrigade por ajudar a melhorar o manual.',
       });
     } catch (err) {
       toast({
@@ -59,7 +59,7 @@ export function FeedbackSection({ onSubmit, submitted, pendingFeedback }) {
         <div>
           <p className="font-medium text-green-900">Feedback enviado!</p>
           <p className="text-sm text-green-700">
-            Obrigado por ajudar a melhorar o manual.
+            Obrigade por ajudar a melhorar o manual.
           </p>
         </div>
       </div>

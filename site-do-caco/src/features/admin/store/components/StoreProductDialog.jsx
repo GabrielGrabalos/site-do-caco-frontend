@@ -181,7 +181,7 @@ export function StoreProductDialog({
                   id="name"
                   value={formData.name}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  placeholder="Ex: Camiseta CACO"
+                  placeholder="Ex: Camiseta CACo"
                   className={errors.name ? 'border-destructive' : ''}
                 />
                 {errors.name && (

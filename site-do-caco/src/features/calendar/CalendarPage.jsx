@@ -45,7 +45,7 @@ export function CalendarPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Calendário</h1>
         <p className="text-muted-foreground">
-          Confira as datas importantes e atividades do CACO
+          Confira as datas importantes e atividades do CACo
         </p>
       </div>
         

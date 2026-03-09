@@ -27,7 +27,7 @@ import { extractUrlFromIframe } from '@/lib/utils';
 const DRAFT_KEY = 'event-draft';
 
 const EVENT_TYPES = [
-    { value: 'CACO', label: 'Evento CACo' },
+    { value: 'CACO', label: 'Evento do CACo' },
     { value: 'IC', label: 'IC' },
     { value: 'FERIADO', label: 'Feriado' },
 ];
@@ -356,7 +356,7 @@ export function EventForm({
                                 <Input
                                     value={title}
                                     onChange={handleTitleChange}
-                                    placeholder="Ex: Recepção de Calouros"
+                                    placeholder="Ex: Recepção de Caloures"
                                     className={errors.title ? "border-destructive" : ""}
                                     data-error={!!errors.title}
                                 />
@@ -368,7 +368,7 @@ export function EventForm({
                                 <Input
                                     value={slug}
                                     onChange={handleSlugChange}
-                                    placeholder="Ex: recepcao-de-calouros"
+                                    placeholder="Ex: recepcao-de-caloures"
                                     className={`font-mono text-sm ${errors.slug ? "border-destructive" : ""}`}
                                     data-error={!!errors.slug}
                                 />

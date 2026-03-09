@@ -57,7 +57,7 @@ function yieldToMain() {
  * @param {Function} onProgress - Callback de progresso (opcional)
  * @returns {Promise<void>}
  */
-export async function generateQRCodesPDF(codes, stickerName = 'sticker', onProgress = null) {
+export async function generateQRCodesPDF(codes, stickerName = 'figurinha', onProgress = null) {
   if (!codes || codes.length === 0) {
     throw new Error('Nenhum código fornecido para gerar PDF');
   }
@@ -170,7 +170,7 @@ export async function generateQRCodesPDF(codes, stickerName = 'sticker', onProgr
  * @param {Function} onProgress - Callback de progresso (opcional)
  * @returns {Promise<void>}
  */
-export async function generateQRCodesPDFChunked(codes, stickerName = 'sticker', chunkSize = 100, onProgress = null) {
+export async function generateQRCodesPDFChunked(codes, stickerName = 'figurinha', chunkSize = 100, onProgress = null) {
   if (codes.length <= chunkSize) {
     return generateQRCodesPDF(codes, stickerName, onProgress);
   }

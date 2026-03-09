@@ -187,9 +187,9 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
 
       // Se houver muitos códigos, usa processamento em chunks
       if (codes.length > 500) {
-        await generateQRCodesPDFChunked(codes, sticker?.name || 'sticker', 100, onProgress);
+        await generateQRCodesPDFChunked(codes, sticker?.name || 'figurinha', 100, onProgress);
       } else {
-        await generateQRCodesPDF(codes, sticker?.name || 'sticker', onProgress);
+        await generateQRCodesPDF(codes, sticker?.name || 'figurinha', onProgress);
       }
 
       // Aguarda um momento para mostrar 100% antes de fechar
@@ -218,13 +218,13 @@ export function CodesGenerator({ sticker, open, onOpenChange, onGenerate, isSubm
             Códigos de Resgate
           </DialogTitle>
           <DialogDescription className="text-sm">
-            {sticker ? `Sticker: ${sticker.name}` : 'Selecione um sticker'}
+            {sticker ? `Figurinha: ${sticker.name}` : 'Selecione uma figurinha'}
           </DialogDescription>
         </DialogHeader>
 
         {!sticker ? (
           <div className="py-8 text-center text-muted-foreground">
-            Nenhum sticker selecionado
+            Nenhuma figurinha selecionada
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

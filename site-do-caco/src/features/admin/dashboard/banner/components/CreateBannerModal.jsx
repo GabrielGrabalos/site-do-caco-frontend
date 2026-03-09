@@ -370,7 +370,7 @@ export function CreateBannerModal({ open, onClose, onCreate, loading, preservedD
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ex: Bem-vindo ao CACo"
+                  placeholder="Ex: Bem-vinde ao CACo"
                   required
                 />
               </div>

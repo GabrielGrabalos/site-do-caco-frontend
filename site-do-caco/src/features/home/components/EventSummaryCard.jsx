@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 const TYPE_LABEL = {
-  CACO: 'CACO',
+  CACO: 'Evento do CACo',
   IC: 'IC',
   FERIADO: 'Feriado',
 };

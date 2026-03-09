@@ -113,8 +113,8 @@ export function SuperAdminPage() {
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             {vm.totalElements > 0
-              ? `${vm.totalElements} usuário(s) cadastrado(s) no total`
-              : 'Nenhum usuário encontrado'}
+              ? `${vm.totalElements} usuárie(s) cadastrado(s) no total`
+              : 'Nenhume usuárie encontrade'}
           </p>
         </div>
 

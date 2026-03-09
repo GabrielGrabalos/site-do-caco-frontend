@@ -29,10 +29,10 @@ export function StickersList({
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <Gift size={64} className="text-muted-foreground/30 mb-4" />
         <h3 className="text-xl font-semibold text-muted-foreground mb-2">
-          Nenhum sticker cadastrado
+          Nenhuma figurinha cadastrada
         </h3>
         <p className="text-muted-foreground">
-          Comece criando seu primeiro sticker para o álbum
+          Comece criando sua primeira figurinha para o álbum
         </p>
       </div>
     );

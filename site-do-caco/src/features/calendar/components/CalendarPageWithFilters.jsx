@@ -73,7 +73,7 @@ export function CalendarPageWithFilters() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Calendário de Eventos</h1>
         <p className="text-muted-foreground">
-          Acompanhe todos os eventos do CACO
+          Acompanhe todos os eventos do CACo
         </p>
       </div>
 

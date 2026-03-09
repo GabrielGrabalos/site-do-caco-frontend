@@ -141,7 +141,7 @@ export function ProductInfo({
 
   const handleShare = async () => {
     const url = window.location.href;
-    const text = `Confira ${product.name} na Loja do CACO!`;
+    const text = `Confira ${product.name} na Loja do CACo!`;
     
     try {
       // Verificar se o navegador suporta compartilhamento nativo

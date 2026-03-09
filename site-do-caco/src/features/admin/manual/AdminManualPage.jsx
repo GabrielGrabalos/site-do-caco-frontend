@@ -512,7 +512,7 @@ export function AdminManualPage() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
             <BookOpen className="h-7 w-7" />
-            Manual do Calouro
+            Manual dê Ingressante
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Gerencie categorias, capítulos e artigos do manual

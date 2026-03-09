@@ -4,8 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 
 const links = [
   {
-    title: 'Manual do Calouro',
-    description: 'Guia completo para novos alunos',
+    title: 'Manual dê Ingressante',
+    description: 'Guia completo para noves alunes',
     icon: BookOpen,
     href: '/manual',
     color: 'text-blue-600',

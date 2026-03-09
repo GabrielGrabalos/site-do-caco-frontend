@@ -37,7 +37,7 @@ export function StorePage() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <Store size={32} className="text-primary" />
-          <h1 className="text-4xl font-bold">Loja do CACO</h1>
+          <h1 className="text-4xl font-bold">Loja do CACo</h1>
         </div>
         <p className="text-muted-foreground">
           Confira os produtos disponíveis para compra

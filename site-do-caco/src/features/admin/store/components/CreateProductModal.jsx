@@ -154,7 +154,7 @@ export function CreateProductModal({ open, onClose, onSave, loading, product, ca
               id="name"
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              placeholder="Ex: Camiseta CACO 2024"
+              placeholder="Ex: Camiseta CACo 2024"
               className={errors.name ? 'border-destructive' : ''}
             />
             {errors.name && (

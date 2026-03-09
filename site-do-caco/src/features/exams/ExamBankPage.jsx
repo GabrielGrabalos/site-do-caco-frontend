@@ -87,7 +87,7 @@ export function ExamBankPage() {
       {/* Link para adicionar prova */}
       <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 text-center">
         <a
-          href="https://forms.gle/YOUR_GOOGLE_FORM_ID"
+          href={import.meta.env.VITE_ADICIONAR_PROVA_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors"

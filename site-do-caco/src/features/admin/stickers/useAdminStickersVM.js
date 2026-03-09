@@ -81,7 +81,7 @@ export function useAdminStickersVM() {
       toast({
         variant: "destructive",
         title: "Erro ao carregar",
-        description: "Não foi possível buscar a lista de stickers.",
+        description: "Não foi possível buscar a lista de figurinhas.",
       });
     } finally {
       setLoading(false);
@@ -103,8 +103,8 @@ export function useAdminStickersVM() {
       setHasDraft(false);
 
       toast({
-        title: "Sticker criado!",
-        description: `O sticker "${stickerInstance.name}" foi salvo com sucesso.`,
+        title: "Figurinha criada!",
+        description: `A figurinha "${stickerInstance.name}" foi salva com sucesso.`,
       });
 
       return { success: true };
@@ -135,8 +135,8 @@ export function useAdminStickersVM() {
       setSelectedSticker(null);
 
       toast({
-        title: "Sticker atualizado!",
-        description: `O sticker "${stickerInstance.name}" foi atualizado com sucesso.`,
+        title: "Figurinha atualizada!",
+        description: `A figurinha "${stickerInstance.name}" foi atualizada com sucesso.`,
       });
 
       return { success: true };
@@ -161,7 +161,7 @@ export function useAdminStickersVM() {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Nenhum sticker selecionado.",
+        description: "Nenhuma figurinha selecionada.",
       });
       return { success: false };
     }

@@ -34,7 +34,7 @@ export function NewsListPage() {
           <h1 className="text-4xl md:text-5xl font-bold">Notícias</h1>
         </div>
         <p className="text-lg text-muted-foreground">
-          Fique por dentro das últimas novidades do CACO
+          Fique por dentro das últimas novidades do CACo
         </p>
       </div>
 

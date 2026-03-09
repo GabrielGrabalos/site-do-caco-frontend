@@ -43,7 +43,7 @@ export function ManualPage() {
           <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
             <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-primary" />
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold">Manual do Calouro</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">Manual dê Ingressante</h1>
               <p className="text-sm sm:text-base text-muted-foreground mt-1">
                 Tudo que você precisa saber sobre a vida universitária
               </p>
@@ -64,7 +64,7 @@ export function ManualPage() {
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
               <SheetHeader className="px-6 pt-6 pb-4 border-b">
-                <SheetTitle>Manual do Calouro</SheetTitle>
+                <SheetTitle>Manual dê Ingressante</SheetTitle>
               </SheetHeader>
               <div className="flex-1 overflow-y-auto px-6 py-4">
                 <ManualSidebar
@@ -117,7 +117,7 @@ export function ManualPage() {
                     </div>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-bold mb-2">
-                    Bem-vindo ao Manual do Calouro
+                    Bem-vinde ao Manual dê Ingressante
                   </h2>
                   <p className="text-sm sm:text-base text-muted-foreground">
                     Selecione uma categoria e artigo no menu lateral para começar a leitura.

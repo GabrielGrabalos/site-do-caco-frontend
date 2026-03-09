@@ -23,7 +23,7 @@ export function StickerClaimPage() {
             <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
               <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
             </div>
-            <CardTitle className="text-2xl">Sticker Resgatado!</CardTitle>
+            <CardTitle className="text-2xl">Figurinha Resgatada!</CardTitle>
             <CardDescription>
               Resgatado em {new Date(vm.claimedSticker.obtainedAt).toLocaleString('pt-BR')}
             </CardDescription>
@@ -84,7 +84,7 @@ export function StickerClaimPage() {
                 </Link>
               </Button>
               <Button variant="outline" onClick={vm.reset} className="w-full">
-                Resgatar Outro Sticker
+                Resgatar Outra Figurinha
               </Button>
             </div>
           </CardContent>
@@ -102,9 +102,9 @@ export function StickerClaimPage() {
           <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
             <Gift className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold">Resgatar Sticker</h1>
+          <h1 className="text-3xl font-bold">Resgatar Figurinha</h1>
           <p className="text-muted-foreground">
-            Digite o código ou escaneie o QR Code para adicionar um sticker à sua coleção
+            Digite o código ou escaneie o QR Code para adicionar uma figurinha à sua coleção
           </p>
         </div>
 

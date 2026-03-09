@@ -49,7 +49,7 @@ export function BannerCarousel({ banners = [] }) {
     return (
       <div className="relative w-full min-h-[200px] md:min-h-[300px] aspect-[21/9] rounded-none md:rounded-3xl overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
         <div className="text-center text-muted-foreground">
-          <h3 className="text-2xl font-bold mb-2">Bem-vindo ao CACo</h3>
+          <h3 className="text-2xl font-bold mb-2">Bem-vinde ao CACo</h3>
           <p className="text-sm">Os banners aparecerão aqui em breve</p>
         </div>
       </div>

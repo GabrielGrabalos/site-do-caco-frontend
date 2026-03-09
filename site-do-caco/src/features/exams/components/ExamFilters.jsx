@@ -66,10 +66,10 @@ export function ExamFilters({
       {/* Filtro de Disciplinas - Tags Coloridas */}
       <div>
         <label className="block text-xs font-medium mb-2 text-gray-600 dark:text-gray-400">Disciplina</label>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex gap-1.5 overflow-x-auto pb-2 px-0.5 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
           <button
             onClick={() => setSelectedSubject('all')}
-            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap flex-shrink-0 ${
               selectedSubject === 'all'
                 ? 'bg-blue-600 text-white shadow-md scale-105'
                 : 'bg-blue-600/20 text-blue-700 dark:bg-blue-600/30 dark:text-blue-400 hover:bg-blue-600/30 dark:hover:bg-blue-600/40'
@@ -80,49 +80,43 @@ export function ExamFilters({
           {subjects.map((subject, index) => {
             const color = getSubjectColor(index);
             const isSelected = selectedSubject === subject.subjectCode;
+            
+            // Mapeia cores para valores RGB
+            const colorMap = {
+              'bg-blue-600': '37, 99, 235',
+              'bg-green-600': '22, 163, 74',
+              'bg-purple-600': '147, 51, 234',
+              'bg-pink-600': '219, 39, 119',
+              'bg-indigo-600': '99, 102, 241',
+              'bg-teal-600': '20, 184, 166',
+              'bg-cyan-600': '8, 145, 178',
+              'bg-rose-600': '244, 63, 94',
+              'bg-amber-600': '217, 119, 6',
+              'bg-lime-600': '132, 204, 22',
+            };
+            
+            const rgb = colorMap[color] || '37, 99, 235';
+            
             return (
               <button
                 key={subject.subjectCode}
                 onClick={() => setSelectedSubject(subject.subjectCode)}
-                className={`px-2.5 py-1 rounded-full text-xs transition-all ${
+                className={`px-2.5 py-1 rounded-full text-xs transition-all whitespace-nowrap flex-shrink-0 font-mono font-semibold ${
                   isSelected
                     ? `${color} text-white shadow-md scale-105`
-                    : `${color}/20 hover:${color}/30`
+                    : ''
                 }`}
                 style={
                   !isSelected
                     ? {
-                        color: `rgb(${
-                          color.includes('blue')
-                            ? '37, 99, 235'
-                            : color.includes('green')
-                            ? '22, 163, 74'
-                            : color.includes('purple')
-                            ? '147, 51, 234'
-                            : color.includes('pink')
-                            ? '219, 39, 119'
-                            : color.includes('indigo')
-                            ? '99, 102, 241'
-                            : color.includes('teal')
-                            ? '20, 184, 166'
-                            : color.includes('cyan')
-                            ? '8, 145, 178'
-                            : color.includes('rose')
-                            ? '244, 63, 94'
-                            : color.includes('amber')
-                            ? '217, 119, 6'
-                            : '132, 204, 22'
-                        })`,
+                        backgroundColor: `rgba(${rgb}, 0.15)`,
+                        color: `rgb(${rgb})`,
                       }
                     : undefined
                 }
                 title={`${subject.subjectCode} - ${subject.name}`}
               >
-                <span className="font-mono font-semibold">{subject.subjectCode}</span>
-                <span className="mx-1">·</span>
-                <span className="max-w-[100px] inline-block truncate align-bottom">
-                  {subject.name}
-                </span>
+                {subject.subjectCode}
               </button>
             );
           })}
@@ -147,6 +141,19 @@ export function ExamFilters({
             </button>
             {EXAM_TYPES.map((type) => {
               const isSelected = selectedType === type.value;
+              
+              // Mapeia cores para valores RGB
+              const typeColorMap = {
+                'bg-blue-600': '37, 99, 235',
+                'bg-green-600': '22, 163, 74',
+                'bg-purple-600': '147, 51, 234',
+                'bg-red-600': '220, 38, 38',
+                'bg-orange-600': '234, 88, 12',
+                'bg-gray-600': '75, 85, 99',
+              };
+              
+              const rgb = typeColorMap[type.color] || '75, 85, 99';
+              
               return (
                 <button
                   key={type.value}
@@ -154,22 +161,13 @@ export function ExamFilters({
                   className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
                     isSelected
                       ? `${type.color} text-white shadow-md scale-105`
-                      : `${type.color}/20 hover:${type.color}/30`
+                      : ''
                   }`}
                   style={
                     !isSelected
                       ? {
-                          color: type.color.includes('blue')
-                            ? 'rgb(37, 99, 235)'
-                            : type.color.includes('green')
-                            ? 'rgb(22, 163, 74)'
-                            : type.color.includes('purple')
-                            ? 'rgb(147, 51, 234)'
-                            : type.color.includes('red')
-                            ? 'rgb(220, 38, 38)'
-                            : type.color.includes('orange')
-                            ? 'rgb(234, 88, 12)'
-                            : 'rgb(75, 85, 99)',
+                          backgroundColor: `rgba(${rgb}, 0.15)`,
+                          color: `rgb(${rgb})`,
                         }
                       : undefined
                   }

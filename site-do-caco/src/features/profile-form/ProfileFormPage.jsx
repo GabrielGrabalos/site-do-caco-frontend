@@ -54,7 +54,7 @@ function ProfileFormContent() {
               <GraduationCap className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Bem-vindo ao CACo!</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Bem-vinde ao CACo!</h1>
           <p className="text-muted-foreground text-sm">
             Antes de continuar, precisamos de algumas informações sobre você.
             Isso nos ajuda a personalizar sua experiência.

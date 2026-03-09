@@ -22,7 +22,7 @@ export function LoginPage() {
       const errorMessages = {
         'access_denied': {
           title: 'Acesso negado',
-          description: 'Você cancelou o login com o Google. Tente novamente quando estiver pronto.',
+          description: 'Você cancelou o login com o Google. Tente novamente quando estiver pronte.',
         },
         'invalid_account': {
           title: 'Conta inválida',
@@ -155,7 +155,25 @@ export function LoginPage() {
               </Button>
 
               <div className="text-center text-xs text-muted-foreground mt-4">
-                Ao fazer login, você concorda com nossos termos de uso e política de privacidade.
+                Ao utilizar o site, você concorda com nossos{' '}
+                <a
+                  href={import.meta.env.VITE_TERMS_OF_SERVICE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Termos de Serviço
+                </a>
+                {' '}e{' '}
+                <a
+                  href={import.meta.env.VITE_PRIVACY_POLICY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Política de Privacidade
+                </a>
+                .
               </div>
             </CardContent>
           </Card>

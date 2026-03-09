@@ -247,10 +247,10 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
         </button>
         <div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
-            {isEditMode ? 'Editar Sticker' : 'Novo Sticker'}
+            {isEditMode ? 'Editar Figurinha' : 'Nova Figurinha'}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
-            {isEditMode ? 'Atualize as informações do sticker' : 'Crie um novo sticker para o álbum'}
+            {isEditMode ? 'Atualize as informações da figurinha' : 'Crie uma nova figurinha para o álbum'}
           </p>
         </div>
       </div>
@@ -263,7 +263,7 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
             <CardHeader>
               <CardTitle className="text-base sm:text-lg">Informações Básicas</CardTitle>
               <CardDescription className="text-xs sm:text-sm">
-                Preencha os dados essenciais do sticker
+                Preencha os dados essenciais da figurinha
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -271,7 +271,7 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
                 {/* Left: Image Upload - Fixed Size */}
                 <div className="flex flex-col flex-shrink-0 mx-auto lg:mx-0">
                   <Label className="text-xs sm:text-sm font-semibold mb-3 sm:mb-4 text-foreground">
-                    Imagem do Sticker {!isEditMode && '*'}
+                    Imagem da Figurinha {!isEditMode && '*'}
                   </Label>
                   {!imageFile && !imagePreview ? (
                     <label
@@ -348,7 +348,7 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
                   {/* Name */}
                   <div className="space-y-3">
                     <Label htmlFor="name" className="text-sm font-semibold text-foreground">
-                      Nome do Sticker *
+                      Nome da Figurinha *
                     </Label>
                     <Input
                       id="name"
@@ -374,7 +374,7 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
                     <Textarea
                       id="description"
                       name="description"
-                      placeholder="Descrição opcional do sticker (máx 600 caracteres)"
+                      placeholder="Descrição opcional da figurinha (máx 600 caracteres)"
                       value={formData.description}
                       onChange={handleChange}
                       disabled={isSubmitting}
@@ -406,7 +406,7 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
             <CardHeader>
               <CardTitle className="text-base">Evento Relacionado (Opcional)</CardTitle>
               <CardDescription>
-                Escolha um evento para associar a este sticker
+                Escolha um evento para associar a esta figurinha
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -516,7 +516,7 @@ export function StickerForm({ initialData, onSubmit, onCancel, loading }) {
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                {isEditMode ? 'Salvar Alterações' : 'Criar Sticker'}
+                {isEditMode ? 'Salvar Alterações' : 'Criar Figurinha'}
               </>
             )}
           </Button>

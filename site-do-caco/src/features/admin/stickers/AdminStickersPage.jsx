@@ -38,16 +38,16 @@ export function AdminStickersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Gerenciar Stickers</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Gerenciar Figurinhas</h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">
             {vm.allStickers.length === 0
-              ? 'Nenhum sticker cadastrado ainda'
-              : `${vm.allStickers.length} sticker(s) cadastrado(s)`}
+              ? 'Nenhuma figurinha cadastrada ainda'
+              : `${vm.allStickers.length} figurinha(s) cadastrada(s)`}
           </p>
         </div>
         <Button onClick={vm.handleCreateClick} className="gap-2 w-full sm:w-auto">
           <Plus className="w-4 h-4" />
-          <span className="sm:inline">Novo Sticker</span>
+          <span className="sm:inline">Nova Figurinha</span>
         </Button>
       </div>
 
@@ -57,7 +57,7 @@ export function AdminStickersPage() {
           <PenTool className="h-4 w-4" />
           <AlertTitle className="text-sm sm:text-base">Rascunho encontrado!</AlertTitle>
           <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-2">
-            <span className="text-xs sm:text-sm">Você tem um sticker não finalizado salvo.</span>
+            <span className="text-xs sm:text-sm">Você tem uma figurinha não finalizada salva.</span>
             <div className="flex gap-2 w-full sm:w-auto">
               <Button
                 variant="outline"

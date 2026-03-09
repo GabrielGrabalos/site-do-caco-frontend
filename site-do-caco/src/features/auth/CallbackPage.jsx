@@ -48,7 +48,7 @@ export function CallbackPage() {
 
         toast({
           title: 'Login realizado com sucesso!',
-          description: 'Bem-vindo de volta ao CACo!',
+          description: 'Bem-vinde de volta ao CACo!',
         });
 
         // Busca o destino de redirecionamento usando o RedirectManager

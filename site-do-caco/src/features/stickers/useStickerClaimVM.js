@@ -52,20 +52,20 @@ export function useStickerClaimVM() {
       setClaimedSticker(result);
       
       toast({
-        title: 'Sticker resgatado!',
-        description: `Você ganhou: ${result?.sticker?.name || 'um novo sticker'}`,
+        title: 'Figurinha resgatada!',
+        description: `Você ganhou: ${result?.sticker?.name || 'uma nova figurinha'}`,
       });
     } catch (error) {
       console.error({error});
       
-      let errorMessage = 'Não foi possível resgatar o sticker.';
+      let errorMessage = 'Não foi possível resgatar a figurinha.';
 
       if (error?.message && error.message.trim() !== '') {
         errorMessage = error.message;
       }
 
       if (error.response?.status === 401) {
-        errorMessage = 'Você precisa estar logado para resgatar stickers.';
+        errorMessage = 'Você precisa estar logade para resgatar figurinhas.';
         setTimeout(() => navigate('/login'), 2000);
       }
 

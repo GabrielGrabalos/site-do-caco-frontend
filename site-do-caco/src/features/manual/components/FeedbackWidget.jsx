@@ -21,7 +21,7 @@ export function FeedbackWidget({ onSubmit, submitted }) {
       setLoading(true);
       await onSubmit(selected, comment);
       toast({
-        title: 'Obrigado pelo feedback!',
+        title: 'Obrigade pelo feedback!',
         description: 'Sua opinião nos ajuda a melhorar o manual.',
       });
     } catch (err) {
@@ -39,7 +39,7 @@ export function FeedbackWidget({ onSubmit, submitted }) {
     return (
       <Card className="p-6 bg-green-50 border-green-200">
         <p className="text-green-900 font-medium text-center">
-          ✓ Obrigado pelo seu feedback!
+          ✓ Obrigade pelo seu feedback!
         </p>
       </Card>
     );

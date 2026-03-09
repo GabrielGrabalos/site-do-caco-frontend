@@ -24,7 +24,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/manual" className="text-muted-foreground hover:text-primary">
-                  Manual do Calouro
+                  Manual dê Ingressante
                 </Link>
               </li>
               <li>
