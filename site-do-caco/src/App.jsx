@@ -8,6 +8,7 @@ import { UnderConstructionPage } from '@/shared/components/UnderConstructionPage
 import { Toaster } from '@/components/ui/use-toast.jsx';
 import { ThemeProvider } from '@/shared/contexts/ThemeContext';
 import { AuthProvider } from '@/shared/contexts/AuthContext';
+import { redirectManager } from '@/shared/services/redirectManager';
 
 // Pages
 import { HomePage } from '@/features/home/HomePage';
@@ -48,8 +49,11 @@ function FormRequiredRedirect() {
   useEffect(() => {
     const handler = () => {
       const currentPath = window.location.pathname + window.location.search;
+      
+      // Não salva se já estamos na página do formulário
       if (!currentPath.startsWith('/formulario-perfil')) {
-        sessionStorage.setItem('caco_form_redirect', currentPath);
+        // Salva o caminho atual para redirecionamento após o formulário
+        redirectManager.saveFormRedirect(currentPath);
         navigate('/formulario-perfil', { replace: true });
       }
     };

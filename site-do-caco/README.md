@@ -120,10 +120,24 @@ O projeto usa um tema customizado com **verde escuro** como cor primária:
 
 ## 🔒 Autenticação
 
-- Sistema de login com JWT
+- Sistema de login com OAuth2/Google (contas @dac.unicamp.br)
+- Sistema robusto de redirecionamento para usuários não autenticados
 - Rotas protegidas com `<ProtectedRoute>`
-- Níveis de permissão (usuário comum e admin)
-- Token armazenado em localStorage
+- Formulário de perfil obrigatório no primeiro login
+- Níveis de permissão (usuário comum, editor, admin e super-admin)
+- Token JWT armazenado em cookies com expiração
+- Sincronização de sessão entre abas
+
+### Sistema de Redirecionamento
+
+O projeto possui um sistema modularizado de redirecionamento que:
+- Salva automaticamente a página original quando usuário não autenticado tenta acessar conteúdo protegido
+- Redireciona para login mantendo contexto
+- Suporta formulário obrigatório de perfil no primeiro acesso
+- Retorna o usuário à página original após autenticação completa
+- Permite passar metadados entre páginas para ações específicas
+
+**Documentação completa:** [docs/REDIRECT_QUICK_START.md](docs/REDIRECT_QUICK_START.md)
 
 ## 📦 Scripts Disponíveis
 

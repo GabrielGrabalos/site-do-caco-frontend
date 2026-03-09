@@ -3,6 +3,7 @@ import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import loginImage from '@/assets/loginImage.png';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { authService } from '@/shared/services/authService';
+import { redirectManager } from '@/shared/services/redirectManager';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -50,18 +51,22 @@ export function LoginPage() {
         description: 'Ocorreu um erro durante o login. Código: ' + error,
       });
     }
-  }, [searchParams]);
+
+    // Salva o redirecionamento se vier do location.state
+    if (location.state?.from) {
+      redirectManager.saveRedirect(location.state.from, 'unauthenticated');
+    }
+
+    // Migra dados antigos se necessário
+    redirectManager.migrateOldRedirects();
+  }, [searchParams, location]);
 
   const handleGoogleLogin = () => {
     // Limpa o erro ao tentar novamente
     setErrorMessage(null);
     
-    // Salvar a página de origem no sessionStorage (se houver)
-    if (location.state?.from) {
-      sessionStorage.setItem('caco_login_redirect', location.state.from);
-    }
-    
-    // Redireciona para o endpoint OAuth do backend
+    // O redirecionamento já foi salvo no useEffect ou pelo ProtectedRoute
+    // Apenas redireciona para o OAuth
     authService.redirectToGoogleLogin();
   };
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { profileFormService } from '@/shared/services/profileFormService';
 import { apiClient } from '@/shared/services/apiClient';
 import { authService } from '@/shared/services/authService';
+import { redirectManager } from '@/shared/services/redirectManager';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -71,9 +72,9 @@ export function useProfileFormVM() {
         // Se falhar, não é crítico; o usuário já está autenticado
       }
 
-      // Redireciona para a página salva ou para a home
-      const redirectTo = sessionStorage.getItem('caco_form_redirect') || '/';
-      sessionStorage.removeItem('caco_form_redirect');
+      // Redireciona usando o RedirectManager
+      const redirectTo = redirectManager.getFormRedirectPath() || '/';
+      redirectManager.clearFormRedirect();
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err.message || 'Ocorreu um erro ao enviar o formulário. Tente novamente.');

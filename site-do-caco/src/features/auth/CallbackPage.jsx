@@ -1,18 +1,25 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '@/shared/services/authService';
+import { redirectManager } from '@/shared/services/redirectManager';
 import { useAuth } from '@/shared/contexts/AuthContext';
 import { useToast } from '@/components/ui/use-toast.jsx';
 
 export function CallbackPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
   const [processing, setProcessing] = useState(true);
+  const hasProcessedRef = useRef(false);
 
   useEffect(() => {
+    // Evita execução duplicada em desenvolvimento (React Strict Mode)
+    if (hasProcessedRef.current) {
+      return;
+    }
+    hasProcessedRef.current = true;
+
     const processCallback = async () => {
       try {
         const token = searchParams.get('token');
@@ -44,19 +51,23 @@ export function CallbackPage() {
           description: 'Bem-vindo de volta ao CACo!',
         });
 
-        // Redireciona para a página de origem (se houver no sessionStorage) ou para a home
-        const redirectTo = sessionStorage.getItem('caco_login_redirect') || location.state?.from || '/';
-        sessionStorage.removeItem('caco_login_redirect'); // Limpar após uso
+        // Busca o destino de redirecionamento usando o RedirectManager
+        const redirectTo = redirectManager.getFinalDestination('/');
+        redirectManager.clearRedirect(); // Limpa após obter o destino
+        
         navigate(redirectTo, { replace: true });
       } catch (error) {
         console.error('Erro no callback OAuth:', error);
 
         // Se o backend exige o preenchimento do formulário de perfil,
-        // armazena o destino e redireciona para o formulário
+        // salva o destino final e redireciona para o formulário
         if (error.code === 'form_required') {
-          const redirectTo = sessionStorage.getItem('caco_login_redirect') || location.state?.from || '/';
-          sessionStorage.removeItem('caco_login_redirect');
-          sessionStorage.setItem('caco_form_redirect', redirectTo);
+          // Obtém o destino original ou usa a home como fallback
+          const originalDestination = redirectManager.getRedirectPath() || '/';
+          
+          // Salva para redirecionamento após o formulário
+          redirectManager.saveFormRedirect(originalDestination);
+          
           navigate('/formulario-perfil', { replace: true });
           return;
         }

@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { userStickerService } from '@/shared/services/userStickerService';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/shared/contexts/AuthContext';
+import { redirectToLogin } from '@/shared/utils/redirectToLogin';
 
 export function useStickerClaimVM() {
   const { code: urlCode } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   const [code, setCode] = useState(urlCode || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +30,11 @@ export function useStickerClaimVM() {
         title: 'Código inválido',
         description: 'O código deve ter entre 8 e 12 caracteres.',
       });
+      return;
+    }
+
+    if (isAuthenticated === false) {
+      redirectToLogin(navigate, { from: '/figurinhas/resgatar/' + codeToUse });
       return;
     }
 
