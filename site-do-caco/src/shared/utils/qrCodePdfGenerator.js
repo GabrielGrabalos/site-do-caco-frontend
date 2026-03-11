@@ -26,7 +26,7 @@ const PDF_CONFIG = {
  */
 async function generateQRCodeImage(code) {
   try {
-    const url = `${PDF_CONFIG.baseUrl}/stickers/claim/${code}`;
+    const url = `${PDF_CONFIG.baseUrl}/figurinhas/resgatar/${code}`;
     const qrDataUrl = await QRCode.toDataURL(url, {
       errorCorrectionLevel: 'M',
       margin: 1,
