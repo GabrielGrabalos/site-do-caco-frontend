@@ -44,7 +44,7 @@ class AuthService {
 
   // Redireciona para o fluxo OAuth do Google no backend
   redirectToGoogleLogin() {
-    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const backendUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/api';
     window.location.href = `${backendUrl}/oauth2/authorization/google`;
   }
 
