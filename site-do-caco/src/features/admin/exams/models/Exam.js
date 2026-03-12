@@ -11,6 +11,8 @@ export class Exam {
     // Backend usa fileUrl, mantemos como pdfUrl internamente
     this.pdfUrl = data.fileUrl || data.pdfUrl || '';
     this.createdAt = data.createdAt ? new Date(data.createdAt) : null;
+    // Professor vinculado (pode ser null)
+    this.professor = data.professor || null; // { id, name }
   }
 
   /**
@@ -86,6 +88,7 @@ export class Exam {
       year: this.year,
       type: this.type,
       fileUrl: this.pdfUrl, // Backend espera fileUrl
+      professorId: this.professor?.id || null,
     };
   }
 

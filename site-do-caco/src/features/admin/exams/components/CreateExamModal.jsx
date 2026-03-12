@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast.jsx';
+import { ProfessorCombobox } from './ProfessorCombobox';
 
 const EXAM_TYPES = [
   { value: 'P1', label: 'P1' },
@@ -13,10 +14,12 @@ const EXAM_TYPES = [
   { value: 'OUTROS', label: 'OUTROS' },
 ];
 
-export function CreateExamModal({ open, onClose, onCreate, onUpdate, loading, selectedSubject, editingExam }) {
+export function CreateExamModal({ open, onClose, onCreate, onUpdate, loading, selectedSubject, editingExam, professors, onCreateProfessor, onUpdateProfessor, onDeleteProfessor }) {
   const [year, setYear] = useState(new Date().getFullYear());
   const [type, setType] = useState('P1');
   const [pdfUrl, setPdfUrl] = useState('');
+  const [selectedProfessorId, setSelectedProfessorId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -26,11 +29,13 @@ export function CreateExamModal({ open, onClose, onCreate, onUpdate, loading, se
         setYear(editingExam.year);
         setType(editingExam.type);
         setPdfUrl(editingExam.pdfUrl || '');
+        setSelectedProfessorId(editingExam.professor?.id || null);
       } else {
         // Modo criação - limpa campos
         setYear(new Date().getFullYear());
         setType('P1');
         setPdfUrl('');
+        setSelectedProfessorId(null);
       }
     }
   }, [open, editingExam]);
@@ -91,13 +96,25 @@ export function CreateExamModal({ open, onClose, onCreate, onUpdate, loading, se
       year: parseInt(year),
       type,
       fileUrl: pdfUrl.trim(), // Backend espera fileUrl
+      professorId: selectedProfessorId || null,
     };
 
+    // Se estava editando e agora não tem professor, remove o vínculo
+    if (editingExam && !selectedProfessorId && editingExam.professor?.id) {
+      examData.removeProfessor = true;
+      delete examData.professorId;
+    }
+
+    setSubmitting(true);
     let result;
-    if (editingExam) {
-      result = await onUpdate(editingExam.id, examData);
-    } else {
-      result = await onCreate(examData);
+    try {
+      if (editingExam) {
+        result = await onUpdate(editingExam.id, examData);
+      } else {
+        result = await onCreate(examData);
+      }
+    } finally {
+      setSubmitting(false);
     }
 
     if (result.success) {
@@ -165,6 +182,20 @@ export function CreateExamModal({ open, onClose, onCreate, onUpdate, loading, se
           </div>
 
           <div className="space-y-2">
+            <label className="text-sm font-medium">Professorie</label>
+            <ProfessorCombobox
+              professors={professors || []}
+              selectedProfessorId={selectedProfessorId}
+              onSelect={setSelectedProfessorId}
+              onCreateProfessor={onCreateProfessor}
+              onUpdateProfessor={onUpdateProfessor}
+              onDeleteProfessor={onDeleteProfessor}
+              loading={false}
+            />
+            <p className="text-xs text-gray-500">Opcional — busque ou cadastre ume professorie</p>
+          </div>
+
+          <div className="space-y-2">
             <label htmlFor="pdfUrl" className="text-sm font-medium">
               Link do PDF *
             </label>
@@ -186,13 +217,13 @@ export function CreateExamModal({ open, onClose, onCreate, onUpdate, loading, se
               type="button"
               variant="outline"
               onClick={onClose}
-              disabled={loading}
+              disabled={submitting || loading}
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading 
-                ? (editingExam ? 'Atualizando...' : 'Adicionando...') 
+            <Button type="submit" disabled={submitting || loading}>
+              {submitting || loading
+                ? (editingExam ? 'Atualizando...' : 'Adicionando...')
                 : (editingExam ? 'Atualizar Prova' : 'Adicionar Prova')
               }
             </Button>

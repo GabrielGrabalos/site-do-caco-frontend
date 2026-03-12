@@ -24,6 +24,9 @@ export function ExamItem({ exam, onDelete, onEdit }) {
           <h4 className="font-semibold text-sm">
             {exam.typeLabel} - {exam.year}
           </h4>
+          {exam.professor && (
+            <p className="text-xs text-blue-600 mt-0.5 truncate">{exam.professor.name}</p>
+          )}
           <p className="text-xs text-gray-500 mt-1">
             {exam.createdAt 
               ? `Adicionado em ${exam.createdAt.toLocaleDateString('pt-BR')}`

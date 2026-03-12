@@ -20,10 +20,12 @@ export const examService = {
   },
 
   createExam: async (examData) => {
+    // examData pode conter professorId (opcional)
     return apiClient.post('admin/exams', examData);
   },
 
   updateExam: async (examId, examData) => {
+    // examData pode conter professorId e/ou removeProfessor (opcional)
     return apiClient.put(`admin/exams/${examId}`, examData);
   },
 

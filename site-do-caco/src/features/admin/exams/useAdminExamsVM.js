@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { examService } from '@/shared/services/examService';
+import { professorService } from '@/shared/services/professorService';
 import { Subject } from './models/Subject';
 import { Exam } from './models/Exam';
+import { Professor } from './models/Professor';
 
 export function useAdminExamsVM() {
   const [subjects, setSubjects] = useState([]);
@@ -12,8 +14,12 @@ export function useAdminExamsVM() {
   const [error, setError] = useState(null);
   const [creating, setCreating] = useState(false);
 
+  const [professors, setProfessors] = useState([]);
+  const [loadingProfessors, setLoadingProfessors] = useState(false);
+
   useEffect(() => {
     loadSubjects();
+    loadProfessors();
   }, []);
 
   useEffect(() => {
@@ -151,6 +157,56 @@ export function useAdminExamsVM() {
     }
   };
 
+  // ── Professors ──────────────────────────────────────────────────────────────
+
+  const loadProfessors = async () => {
+    try {
+      setLoadingProfessors(true);
+      const data = await professorService.getAll();
+      setProfessors(Professor.fromDTOArray(data));
+    } catch {
+      // silencia — erros de professor não devem bloquear a página
+    } finally {
+      setLoadingProfessors(false);
+    }
+  };
+
+  const createProfessor = async (professorData) => {
+    try {
+      const dto = await professorService.create(professorData);
+      const newProfessor = Professor.fromDTO(dto);
+      setProfessors(prev => [...prev, newProfessor]);
+      return { success: true, professor: newProfessor };
+    } catch (err) {
+      return { success: false, error: err.message || 'Erro ao criar professorie' };
+    }
+  };
+
+  const updateProfessor = async (id, professorData) => {
+    try {
+      const dto = await professorService.update(id, professorData);
+      const updated = Professor.fromDTO(dto);
+      setProfessors(prev => prev.map(p => p.id === id ? updated : p));
+      return { success: true, professor: updated };
+    } catch (err) {
+      return { success: false, error: err.message || 'Erro ao atualizar professorie' };
+    }
+  };
+
+  const deleteProfessor = async (id) => {
+    try {
+      await professorService.delete(id);
+      setProfessors(prev => prev.filter(p => p.id !== id));
+      // Provas vinculadas ficam com professor = null (backend garante)
+      setExams(prev => prev.map(e =>
+        e.professor?.id === id ? { ...e, professor: null } : e
+      ));
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: err.message || 'Erro ao excluir professorie' };
+    }
+  };
+
   return {
     subjects,
     selectedSubject,
@@ -165,5 +221,10 @@ export function useAdminExamsVM() {
     createExam,
     updateExam,
     deleteExam,
+    professors,
+    loadingProfessors,
+    createProfessor,
+    updateProfessor,
+    deleteProfessor,
   };
 }

@@ -40,6 +40,18 @@ export function AdminExamBankPage() {
     }
   };
 
+  const handleDeleteProfessor = async (id) => {
+    const result = await examsVM.deleteProfessor(id);
+    if (!result.success) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao excluir professorie',
+        description: result.error,
+      });
+    }
+    return result;
+  };
+
   return (
     <div className="space-y-4 md:space-y-6">
       <h1 className="text-2xl md:text-3xl font-bold">Banco de Provas</h1>
@@ -57,6 +69,10 @@ export function AdminExamBankPage() {
         onCreateExam={examsVM.createExam}
         onUpdateExam={examsVM.updateExam}
         onDeleteExam={handleDeleteExam}
+        professors={examsVM.professors}
+        onCreateProfessor={examsVM.createProfessor}
+        onUpdateProfessor={examsVM.updateProfessor}
+        onDeleteProfessor={handleDeleteProfessor}
       />
     </div>
   );

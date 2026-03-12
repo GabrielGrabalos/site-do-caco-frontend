@@ -18,6 +18,10 @@ export function ExamsSection({
   onCreateExam,
   onUpdateExam,
   onDeleteExam,
+  professors,
+  onCreateProfessor,
+  onUpdateProfessor,
+  onDeleteProfessor,
 }) {
   const [subjectModalOpen, setSubjectModalOpen] = useState(false);
   const [examModalOpen, setExamModalOpen] = useState(false);
@@ -96,6 +100,10 @@ export function ExamsSection({
         loading={creating}
         selectedSubject={selectedSubject}
         editingExam={editingExam}
+        professors={professors}
+        onCreateProfessor={onCreateProfessor}
+        onUpdateProfessor={onUpdateProfessor}
+        onDeleteProfessor={onDeleteProfessor}
       />
 
       <ConfirmDeleteDialog
