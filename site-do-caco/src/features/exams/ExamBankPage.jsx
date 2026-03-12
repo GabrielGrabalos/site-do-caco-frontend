@@ -17,9 +17,13 @@ export function ExamBankPage() {
     setSelectedYear,
     selectedType,
     setSelectedType,
+    professors,
+    selectedProfessorId,
+    setSelectedProfessorId,
     availableYears,
     clearFilters,
     hasActiveFilters,
+    activeFilterCount,
   } = useExamBankVM();
 
   if (loading) {
@@ -53,8 +57,11 @@ export function ExamBankPage() {
 
       <ExamFilters
         subjects={subjects}
+        professors={professors}
         selectedSubject={selectedSubject}
         setSelectedSubject={setSelectedSubject}
+        selectedProfessorId={selectedProfessorId}
+        setSelectedProfessorId={setSelectedProfessorId}
         selectedYear={selectedYear}
         setSelectedYear={setSelectedYear}
         selectedType={selectedType}
@@ -62,6 +69,7 @@ export function ExamBankPage() {
         availableYears={availableYears}
         clearFilters={clearFilters}
         hasActiveFilters={hasActiveFilters}
+        activeFilterCount={activeFilterCount}
       />
 
       {exams.length === 0 ? (

@@ -1,34 +1,61 @@
-import { Button } from '@/components/ui/button';
-import { X, ChevronDown } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { ChevronDown, SlidersHorizontal, X } from 'lucide-react';
+import { ProfessorFilter } from './ProfessorFilter';
 
 const EXAM_TYPES = [
-  { value: 'P1', label: 'P1', color: 'bg-blue-600' },
-  { value: 'P2', label: 'P2', color: 'bg-green-600' },
-  { value: 'P3', label: 'P3', color: 'bg-purple-600' },
-  { value: 'EXAME', label: 'EXAME', color: 'bg-red-600' },
-  { value: 'SUB', label: 'SUB', color: 'bg-orange-600' },
-  { value: 'OUTROS', label: 'OUTROS', color: 'bg-gray-600' },
+  { value: 'P1',     label: 'P1',     rgb: '37, 99, 235' },
+  { value: 'P2',     label: 'P2',     rgb: '5, 150, 105' },
+  { value: 'P3',     label: 'P3',     rgb: '124, 58, 237' },
+  { value: 'EXAME',  label: 'EXAME',  rgb: '220, 38, 38' },
+  { value: 'SUB',    label: 'SUB',    rgb: '234, 88, 12' },
+  { value: 'OUTROS', label: 'OUTROS', rgb: '75, 85, 99' },
 ];
 
-// Gera cores diferentes para as matérias
-const SUBJECT_COLORS = [
-  'bg-blue-600',
-  'bg-green-600',
-  'bg-purple-600',
-  'bg-pink-600',
-  'bg-indigo-600',
-  'bg-teal-600',
-  'bg-cyan-600',
-  'bg-rose-600',
-  'bg-amber-600',
-  'bg-lime-600',
+// One RGB string per group — determines prefix pill colour
+const GROUP_COLORS = [
+  '37, 99, 235',    // blue-600
+  '5, 150, 105',    // emerald-600
+  '124, 58, 237',   // violet-600
+  '225, 29, 72',    // rose-600
+  '245, 158, 11',   // amber-500
+  '8, 145, 178',    // cyan-600
+  '219, 39, 119',   // pink-600
+  '79, 70, 229',    // indigo-600
+  '13, 148, 136',   // teal-600
+  '234, 88, 12',    // orange-600
+];
+
+// Rich palette that individual subject pills cycle through
+const PILL_PALETTE = [
+  '37, 99, 235',    // blue-600
+  '219, 39, 119',   // pink-600
+  '5, 150, 105',    // emerald-600
+  '245, 158, 11',   // amber-500
+  '124, 58, 237',   // violet-600
+  '8, 145, 178',    // cyan-600
+  '220, 38, 38',    // red-600
+  '13, 148, 136',   // teal-600
+  '79, 70, 229',    // indigo-600
+  '234, 88, 12',    // orange-600
+  '22, 163, 74',    // green-600
+  '225, 29, 72',    // rose-600
+  '14, 165, 233',   // sky-500
+  '202, 138, 4',    // yellow-600
+  '147, 51, 234',   // purple-600
+  '20, 184, 166',   // teal-500
+  '249, 115, 22',   // orange-500
+  '59, 130, 246',   // blue-500
+  '168, 85, 247',   // purple-400
+  '16, 185, 129',   // emerald-500
 ];
 
 export function ExamFilters({
   subjects,
+  professors,
   selectedSubject,
   setSelectedSubject,
+  selectedProfessorId,
+  setSelectedProfessorId,
   selectedYear,
   setSelectedYear,
   selectedType,
@@ -36,218 +63,303 @@ export function ExamFilters({
   availableYears,
   clearFilters,
   hasActiveFilters,
+  activeFilterCount,
 }) {
-  const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
-  const yearDropdownRef = useRef(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [expandedPrefix, setExpandedPrefix] = useState(null);
+  const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
+  const yearRef = useRef(null);
 
-  const getSubjectColor = (index) => {
-    return SUBJECT_COLORS[index % SUBJECT_COLORS.length];
-  };
+  // Group subjects by 2-letter prefix, sorted numerically within each group
+  const subjectGroups = useMemo(() => {
+    const groups = {};
+    subjects.forEach((subject) => {
+      const prefix = subject.subjectCode.slice(0, 2).toUpperCase();
+      if (!groups[prefix]) groups[prefix] = [];
+      groups[prefix].push(subject);
+    });
+    Object.values(groups).forEach((group) => {
+      group.sort((a, b) => {
+        const numA = parseInt(a.subjectCode.slice(2)) || 0;
+        const numB = parseInt(b.subjectCode.slice(2)) || 0;
+        return numA - numB;
+      });
+    });
+    return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
+  }, [subjects]);
 
-  // Fecha o dropdown ao clicar fora
+  // Close year dropdown on outside click
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (yearDropdownRef.current && !yearDropdownRef.current.contains(event.target)) {
-        setIsYearDropdownOpen(false);
-      }
+    const handler = (e) => {
+      if (yearRef.current && !yearRef.current.contains(e.target))
+        setYearDropdownOpen(false);
     };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const getYearLabel = () => {
-    if (selectedYear === 'all') return 'Todos os anos';
-    return selectedYear;
+  // Auto-expand the prefix group of the currently selected subject
+  useEffect(() => {
+    if (selectedSubject !== 'all') {
+      setExpandedPrefix(selectedSubject.slice(0, 2).toUpperCase());
+    }
+  }, [selectedSubject]);
+
+  const getGroupRgb = (index) => GROUP_COLORS[index % GROUP_COLORS.length];
+
+  // Each pill gets a colour offset by group so adjacent groups don't repeat the same sequence
+  const getPillRgb = (groupIndex, pillIndex) =>
+    PILL_PALETTE[(groupIndex * 4 + pillIndex) % PILL_PALETTE.length];
+
+  const handlePrefixClick = (prefix) => {
+    setExpandedPrefix((prev) => (prev === prefix ? null : prefix));
   };
 
-  return (
-    <div className="mb-6 space-y-4">
-      {/* Filtro de Disciplinas - Tags Coloridas */}
-      <div>
-        <label className="block text-xs font-medium mb-2 text-gray-600 dark:text-gray-400">Disciplina</label>
-        <div className="flex gap-1.5 overflow-x-auto pb-2 px-0.5 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
-          <button
-            onClick={() => setSelectedSubject('all')}
-            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap flex-shrink-0 ${
-              selectedSubject === 'all'
-                ? 'bg-blue-600 text-white shadow-md scale-105'
-                : 'bg-blue-600/20 text-blue-700 dark:bg-blue-600/30 dark:text-blue-400 hover:bg-blue-600/30 dark:hover:bg-blue-600/40'
-            }`}
-          >
-            Todas
-          </button>
-          {subjects.map((subject, index) => {
-            const color = getSubjectColor(index);
-            const isSelected = selectedSubject === subject.subjectCode;
-            
-            // Mapeia cores para valores RGB
-            const colorMap = {
-              'bg-blue-600': '37, 99, 235',
-              'bg-green-600': '22, 163, 74',
-              'bg-purple-600': '147, 51, 234',
-              'bg-pink-600': '219, 39, 119',
-              'bg-indigo-600': '99, 102, 241',
-              'bg-teal-600': '20, 184, 166',
-              'bg-cyan-600': '8, 145, 178',
-              'bg-rose-600': '244, 63, 94',
-              'bg-amber-600': '217, 119, 6',
-              'bg-lime-600': '132, 204, 22',
-            };
-            
-            const rgb = colorMap[color] || '37, 99, 235';
-            
-            return (
-              <button
-                key={subject.subjectCode}
-                onClick={() => setSelectedSubject(subject.subjectCode)}
-                className={`px-2.5 py-1 rounded-full text-xs transition-all whitespace-nowrap flex-shrink-0 font-mono font-semibold ${
-                  isSelected
-                    ? `${color} text-white shadow-md scale-105`
-                    : ''
-                }`}
-                style={
-                  !isSelected
-                    ? {
-                        backgroundColor: `rgba(${rgb}, 0.15)`,
-                        color: `rgb(${rgb})`,
-                      }
-                    : undefined
-                }
-                title={`${subject.subjectCode} - ${subject.name}`}
-              >
-                {subject.subjectCode}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+  const handleSubjectClick = (subjectCode) => {
+    setSelectedSubject(subjectCode === selectedSubject ? 'all' : subjectCode);
+  };
 
-      {/* Filtro de Tipo e Ano - Lado a lado */}
-      <div className="flex flex-col lg:flex-row gap-4 items-start">
-        {/* Filtro de Tipo - Tags Coloridas */}
-        <div className="flex-1">
-          <label className="block text-xs font-medium mb-2 text-gray-600 dark:text-gray-400">Tipo de Prova</label>
-          <div className="flex flex-wrap gap-1.5">
-            <button
-              onClick={() => setSelectedType('all')}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
-                selectedType === 'all'
-                  ? 'bg-gray-600 text-white shadow-md scale-105'
-                  : 'bg-gray-600/20 text-gray-700 dark:bg-gray-600/30 dark:text-gray-400 hover:bg-gray-600/30 dark:hover:bg-gray-600/40'
+  const expandedGroupIndex = subjectGroups.findIndex(([p]) => p === expandedPrefix);
+  const expandedSubjects = subjectGroups[expandedGroupIndex]?.[1] || [];
+  const expandedRgb = expandedGroupIndex >= 0 ? getGroupRgb(expandedGroupIndex) : null;
+
+  return (
+    <div className="mb-6">
+      {/* ── Toggle bar ─────────────────────────────────────── */}
+      <div className="flex items-center gap-2 mb-3">
+        <button
+          onClick={() => setFiltersOpen((v) => !v)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 transition-all select-none ${
+            filtersOpen
+              ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-500 dark:hover:border-blue-400'
+          }`}
+        >
+          <SlidersHorizontal size={15} />
+          <span>Filtros</span>
+          {activeFilterCount > 0 && (
+            <span
+              className={`min-w-[18px] h-[18px] text-[11px] font-bold rounded-full flex items-center justify-center px-1 ${
+                filtersOpen ? 'bg-white text-blue-600' : 'bg-blue-600 text-white'
               }`}
             >
-              Todos
-            </button>
-            {EXAM_TYPES.map((type) => {
-              const isSelected = selectedType === type.value;
-              
-              // Mapeia cores para valores RGB
-              const typeColorMap = {
-                'bg-blue-600': '37, 99, 235',
-                'bg-green-600': '22, 163, 74',
-                'bg-purple-600': '147, 51, 234',
-                'bg-red-600': '220, 38, 38',
-                'bg-orange-600': '234, 88, 12',
-                'bg-gray-600': '75, 85, 99',
-              };
-              
-              const rgb = typeColorMap[type.color] || '75, 85, 99';
-              
-              return (
-                <button
-                  key={type.value}
-                  onClick={() => setSelectedType(type.value)}
-                  className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
-                    isSelected
-                      ? `${type.color} text-white shadow-md scale-105`
-                      : ''
-                  }`}
-                  style={
-                    !isSelected
-                      ? {
-                          backgroundColor: `rgba(${rgb}, 0.15)`,
-                          color: `rgb(${rgb})`,
-                        }
-                      : undefined
-                  }
-                >
-                  {type.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+              {activeFilterCount}
+            </span>
+          )}
+          <ChevronDown
+            size={14}
+            className={`transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`}
+          />
+        </button>
 
-        {/* Filtro de Ano - Dropdown bonito */}
-        <div className="flex items-center gap-3">
-          <div className="relative" ref={yearDropdownRef}>
-            <label className="block text-xs font-medium mb-2 text-gray-600 dark:text-gray-400">Ano</label>
-            <button
-              onClick={() => setIsYearDropdownOpen(!isYearDropdownOpen)}
-              className="min-w-[160px] px-4 py-2 text-sm font-medium bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors flex items-center justify-between shadow-sm"
-            >
-              <span className="text-gray-700 dark:text-gray-300">{getYearLabel()}</span>
-              <ChevronDown
-                size={16}
-                className={`text-gray-500 dark:text-gray-400 transition-transform ${
-                  isYearDropdownOpen ? 'rotate-180' : ''
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 border-2 border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+          >
+            <X size={13} />
+            Limpar filtros
+          </button>
+        )}
+      </div>
+
+      {/* ── Filter panel ───────────────────────────────────── */}
+      {filtersOpen && (
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/70 p-4 shadow-sm space-y-4">
+
+          {/* ── Subject ── */}
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">
+              Disciplina
+            </p>
+
+            {/* Prefix pills */}
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => { setSelectedSubject('all'); setExpandedPrefix(null); }}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all hover:scale-105 ${
+                  selectedSubject === 'all'
+                    ? 'bg-gray-700 dark:bg-gray-200 text-white dark:text-gray-800 shadow-sm'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
-              />
-            </button>
+              >
+                Todas
+              </button>
 
-            {/* Dropdown Menu */}
-            {isYearDropdownOpen && (
-              <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                <button
-                  onClick={() => {
-                    setSelectedYear('all');
-                    setIsYearDropdownOpen(false);
-                  }}
-                  className={`w-full px-4 py-2 text-sm text-left hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors ${
-                    selectedYear === 'all'
-                      ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold'
-                      : 'text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  Todos os anos
-                </button>
-                {availableYears.map((year) => (
+              {subjectGroups.map(([prefix, groupSubjects], index) => {
+                const rgb = getGroupRgb(index);
+                const isExpanded = expandedPrefix === prefix;
+                const hasSelected = groupSubjects.some((s) => s.subjectCode === selectedSubject);
+                const active = hasSelected || isExpanded;
+
+                return (
                   <button
-                    key={year}
-                    onClick={() => {
-                      setSelectedYear(String(year));
-                      setIsYearDropdownOpen(false);
-                    }}
-                    className={`w-full px-4 py-2 text-sm text-left hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors ${
-                      selectedYear === String(year)
-                        ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold'
-                        : 'text-gray-700 dark:text-gray-300'
-                    }`}
+                    key={prefix}
+                    onClick={() => handlePrefixClick(prefix)}
+                    className="px-3 py-1 rounded-full text-xs font-mono font-bold flex items-center gap-1 transition-all hover:scale-105 hover:shadow-sm"
+                    style={
+                      active
+                        ? { backgroundColor: `rgb(${rgb})`, color: 'white' }
+                        : { backgroundColor: `rgba(${rgb}, 0.12)`, color: `rgb(${rgb})` }
+                    }
                   >
-                    {year}
+                    {prefix}
+                    <span className="text-[10px] opacity-70">{groupSubjects.length}</span>
+                    <ChevronDown
+                      size={9}
+                      className={`transition-transform duration-150 ${isExpanded ? 'rotate-180' : ''}`}
+                    />
                   </button>
-                ))}
+                );
+              })}
+            </div>
+
+            {/* Expanded subject pills — accent-bordered panel */}
+            {expandedPrefix && expandedSubjects.length > 0 && (
+              <div
+                className="mt-2.5 pl-3 pr-2 py-2.5 rounded-r-xl rounded-bl-xl flex flex-wrap gap-1.5"
+                style={{
+                  borderLeft: `3px solid rgb(${expandedRgb})`,
+                  background: `linear-gradient(to right, rgba(${expandedRgb}, 0.08), rgba(${expandedRgb}, 0.02))`,
+                }}
+              >
+                {expandedSubjects.map((subject, pillIndex) => {
+                  const isSelected = selectedSubject === subject.subjectCode;
+                  const pillRgb = getPillRgb(expandedGroupIndex, pillIndex);
+                  return (
+                    <button
+                      key={subject.subjectCode}
+                      onClick={() => handleSubjectClick(subject.subjectCode)}
+                      title={subject.name}
+                      className="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold transition-all hover:scale-[1.07] hover:shadow-md active:scale-100"
+                      style={
+                        isSelected
+                          ? {
+                              backgroundColor: `rgb(${pillRgb})`,
+                              color: 'white',
+                              boxShadow: `0 2px 8px rgba(${pillRgb}, 0.4)`,
+                            }
+                          : {
+                              backgroundColor: `rgba(${pillRgb}, 0.15)`,
+                              color: `rgb(${pillRgb})`,
+                            }
+                      }
+                    >
+                      {subject.subjectCode}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
 
-          {/* Botão de limpar filtros */}
-          {hasActiveFilters && (
-            <div className="mt-6">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={clearFilters}
-                className="flex items-center gap-1 text-xs"
-              >
-                <X size={14} />
-                Limpar
-              </Button>
+          {/* ── Divider ── */}
+          <div className="border-t border-gray-100 dark:border-gray-700/60" />
+
+          {/* ── Type · Year · Professor — all in one row ── */}
+          <div className="flex flex-wrap gap-x-6 gap-y-3 items-start">
+
+            {/* Type pills */}
+            <div className="flex-1 min-w-[200px]">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">
+                Tipo de prova
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  onClick={() => setSelectedType('all')}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all hover:scale-105 ${
+                    selectedType === 'all'
+                      ? 'bg-gray-700 dark:bg-gray-200 text-white dark:text-gray-800 shadow-sm'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  Todos
+                </button>
+                {EXAM_TYPES.map((type) => {
+                  const isSelected = selectedType === type.value;
+                  return (
+                    <button
+                      key={type.value}
+                      onClick={() => setSelectedType(type.value)}
+                      className="px-3 py-1 rounded-full text-xs font-semibold transition-all hover:scale-105 hover:shadow-sm"
+                      style={
+                        isSelected
+                          ? { backgroundColor: `rgb(${type.rgb})`, color: 'white' }
+                          : { backgroundColor: `rgba(${type.rgb}, 0.15)`, color: `rgb(${type.rgb})` }
+                      }
+                    >
+                      {type.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          )}
+
+            {/* Year dropdown */}
+            <div className="shrink-0 w-36">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">
+                Ano
+              </p>
+              <div className="relative" ref={yearRef}>
+                <button
+                  onClick={() => setYearDropdownOpen((v) => !v)}
+                  className="w-full flex items-center justify-between px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs font-medium bg-white dark:bg-gray-800 hover:border-blue-500 dark:hover:border-blue-400 focus:outline-none transition-colors"
+                >
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {selectedYear === 'all' ? 'Todos' : selectedYear}
+                  </span>
+                  <ChevronDown
+                    size={13}
+                    className={`text-gray-400 transition-transform ${yearDropdownOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {yearDropdownOpen && (
+                  <div className="absolute z-20 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    <button
+                      onClick={() => { setSelectedYear('all'); setYearDropdownOpen(false); }}
+                      className={`w-full px-3 py-1.5 text-xs text-left transition-colors ${
+                        selectedYear === 'all'
+                          ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      Todos os anos
+                    </button>
+                    {availableYears.map((year) => (
+                      <button
+                        key={year}
+                        onClick={() => { setSelectedYear(String(year)); setYearDropdownOpen(false); }}
+                        className={`w-full px-3 py-1.5 text-xs text-left transition-colors ${
+                          selectedYear === String(year)
+                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        {year}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Professor combobox */}
+            {professors && professors.length > 0 && (
+              <div className="shrink-0 w-48">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">
+                  Professor
+                </p>
+                <ProfessorFilter
+                  professors={professors}
+                  selectedProfessorId={selectedProfessorId}
+                  onSelect={setSelectedProfessorId}
+                />
+              </div>
+            )}
+
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

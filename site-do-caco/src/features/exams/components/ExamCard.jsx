@@ -57,10 +57,17 @@ export function ExamCard({ exam }) {
           </p>
         )}
         
-        {/* Ano */}
-        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
-          <Calendar size={16} />
-          <span className="font-medium">{exam.year}</span>
+        {/* Ano + Professor */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600 dark:text-gray-400 mb-4">
+          <div className="flex items-center gap-1.5">
+            <Calendar size={15} />
+            <span className="font-medium">{exam.year}</span>
+          </div>
+          {exam.professor?.name && (
+            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 truncate max-w-[140px]">
+              {exam.professor.name}
+            </span>
+          )}
         </div>
         
         {/* Botão de ação */}
