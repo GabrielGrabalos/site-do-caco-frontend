@@ -57,6 +57,7 @@ export function useExamBankVM() {
 
   const [professors, setProfessors] = useState([]);
   const [professorSearch, setProfessorSearch] = useState('');
+  const [professorSearchSettledTerm, setProfessorSearchSettledTerm] = useState('');
   const [loadingProfessors, setLoadingProfessors] = useState(false);
   const [loadingMoreProfessors, setLoadingMoreProfessors] = useState(false);
   const [hasMoreProfessors, setHasMoreProfessors] = useState(true);
@@ -209,14 +210,17 @@ export function useExamBankVM() {
     try {
       setHasMoreProfessors(true);
       await fetchProfessorsPage({ page: 0, append: false, searchTerm });
+
+      if (cycleId === professorSearchCycleRef.current) {
+        setProfessorSearchSettledTerm(searchTerm || '');
+        setLoadingProfessors(false);
+      }
     } catch {
       if (cycleId !== professorSearchCycleRef.current) return;
       setProfessors([]);
       setHasMoreProfessors(false);
-    } finally {
-      if (cycleId === professorSearchCycleRef.current) {
-        setLoadingProfessors(false);
-      }
+      setProfessorSearchSettledTerm(searchTerm || '');
+      setLoadingProfessors(false);
     }
   }, [fetchProfessorsPage]);
 
@@ -283,6 +287,7 @@ export function useExamBankVM() {
     error,
 
     professors,
+    professorSearchSettledTerm,
     loadingProfessors,
     loadingMoreProfessors,
     hasMoreProfessors,

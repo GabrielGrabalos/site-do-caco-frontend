@@ -23,10 +23,10 @@ export class Exam {
       'P1': 'P1',
       'P2': 'P2',
       'P3': 'P3',
-      'EXAME': 'EXAME',
+      'EXAME': 'Exame',
       'TESTINHO': 'Testinho',
-      'SUB': 'SUB',
-      'OUTROS': 'OUTROS',
+      'SUB': 'Sub',
+      'OUTROS': 'Outros',
     };
     return labels[this.type] || this.type;
   }

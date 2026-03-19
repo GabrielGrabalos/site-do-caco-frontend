@@ -135,7 +135,7 @@ export function EventPage() {
           <div className="bg-card rounded-xl p-6 shadow-sm border">
               <div className="flex flex-wrap gap-2 mb-3">
                 {getStatusBadge(event.status)}
-                <Badge variant="outline" className="capitalize flex items-center">
+                <Badge variant="outline" className="flex items-center">
                   {getTypeIcon(event.type)}
                   {event.type?.toLowerCase() === 'presencial' ? 'Presencial' : event.type?.toLowerCase() || 'Evento'}
                 </Badge>

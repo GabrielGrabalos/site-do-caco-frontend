@@ -9,10 +9,10 @@ const EXAM_TYPES = [
   { value: 'P1', label: 'P1' },
   { value: 'P2', label: 'P2' },
   { value: 'P3', label: 'P3' },
-  { value: 'EXAME', label: 'EXAME' },
+  { value: 'EXAME', label: 'Exame' },
   { value: 'TESTINHO', label: 'Testinho' },
-  { value: 'SUB', label: 'SUB' },
-  { value: 'OUTROS', label: 'OUTROS' },
+  { value: 'SUB', label: 'Sub' },
+  { value: 'OUTROS', label: 'Outros' },
 ];
 
 export function CreateExamModal({ open, onClose, onCreate, onUpdate, loading, selectedSubject, editingExam, professors, onCreateProfessor, onUpdateProfessor, onDeleteProfessor }) {

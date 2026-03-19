@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
  */
 export function ProfessorFilter({
   professors,
+  professorSearchSettledTerm,
   selectedProfessorId,
   onSelect,
   loading,
@@ -21,7 +22,8 @@ export function ProfessorFilter({
   const containerRef = useRef(null);
 
   const selectedProfessor = professors.find((p) => p.id === selectedProfessorId) || null;
-  const isSearching = search.trim().length > 0 && loading;
+  const isSearching =
+    search.trim().length > 0 && (loading || search !== (professorSearchSettledTerm || ''));
 
   useEffect(() => {
     const handleClickOutside = (e) => {

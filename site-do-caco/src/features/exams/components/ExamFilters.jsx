@@ -8,10 +8,10 @@ const EXAM_TYPES = [
   { value: 'P1',     label: 'P1',     rgb: '37, 99, 235' },
   { value: 'P2',     label: 'P2',     rgb: '5, 150, 105' },
   { value: 'P3',     label: 'P3',     rgb: '124, 58, 237' },
-  { value: 'EXAME',  label: 'EXAME',  rgb: '220, 38, 38' },
+  { value: 'EXAME',  label: 'Exame',  rgb: '220, 38, 38' },
   { value: 'TESTINHO', label: 'Testinho', rgb: '14, 116, 144' },
-  { value: 'SUB',    label: 'SUB',    rgb: '234, 88, 12' },
-  { value: 'OUTROS', label: 'OUTROS', rgb: '75, 85, 99' },
+  { value: 'SUB',    label: 'Sub',    rgb: '234, 88, 12' },
+  { value: 'OUTROS', label: 'Outros', rgb: '75, 85, 99' },
 ];
 
 // Color assigned to each subject-group prefix pill
@@ -67,6 +67,7 @@ function Divider() {
 export function ExamFilters({
   subjects,
   professors,
+  professorSearchSettledTerm,
   loadingProfessors,
   loadingMoreProfessors,
   hasMoreProfessors,
@@ -305,6 +306,7 @@ export function ExamFilters({
               <SectionLabel>Professor</SectionLabel>
               <ProfessorFilter
                 professors={professors}
+                professorSearchSettledTerm={professorSearchSettledTerm}
                 loading={loadingProfessors}
                 loadingMore={loadingMoreProfessors}
                 hasMore={hasMoreProfessors}

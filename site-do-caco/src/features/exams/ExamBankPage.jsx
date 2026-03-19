@@ -24,6 +24,7 @@ export function ExamBankPage() {
     selectedType,
     setSelectedType,
     professors,
+    professorSearchSettledTerm,
     loadingProfessors,
     loadingMoreProfessors,
     hasMoreProfessors,
@@ -88,6 +89,7 @@ export function ExamBankPage() {
       <ExamFilters
         subjects={subjects}
         professors={professors}
+        professorSearchSettledTerm={professorSearchSettledTerm}
         loadingProfessors={loadingProfessors}
         loadingMoreProfessors={loadingMoreProfessors}
         hasMoreProfessors={hasMoreProfessors}
