@@ -19,6 +19,7 @@ export function ExamCard({ exam }) {
       'P3': 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
       'EXAME': 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
       'SUB': 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
+      'TESTINHO': 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900 dark:text-cyan-300',
       'OUTROS': 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
     };
     return colors[type] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';

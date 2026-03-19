@@ -4,6 +4,8 @@ import { CreateExamModal } from './CreateExamModal';
 import { SubjectTabs } from './SubjectTabs';
 import { CreateSubjectModal } from './CreateSubjectModal';
 import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function ExamsSection({
   subjects,
@@ -22,6 +24,10 @@ export function ExamsSection({
   onCreateProfessor,
   onUpdateProfessor,
   onDeleteProfessor,
+  currentPage,
+  totalPages,
+  totalElements,
+  onGoToPage,
 }) {
   const [subjectModalOpen, setSubjectModalOpen] = useState(false);
   const [examModalOpen, setExamModalOpen] = useState(false);
@@ -76,14 +82,45 @@ export function ExamsSection({
         onDeleteSubject={onDeleteSubject}
       />
 
-      <ExamList
-        exams={exams}
-        loading={loadingExams}
-        onAddExam={() => setExamModalOpen(true)}
-        onDeleteExam={handleDeleteExam}
-        onEditExam={handleEditExam}
-        selectedSubject={selectedSubject}
-      />
+      <div className="space-y-4">
+        <ExamList
+          exams={exams}
+          loading={loadingExams}
+          onAddExam={() => setExamModalOpen(true)}
+          onDeleteExam={handleDeleteExam}
+          onEditExam={handleEditExam}
+          selectedSubject={selectedSubject}
+        />
+
+        {/* Paginação */}
+        {totalPages && totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="text-sm text-muted-foreground">
+              Página {(currentPage || 0) + 1} de {totalPages} ({totalElements} provas)
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onGoToPage((currentPage || 0) - 1)}
+                disabled={(currentPage || 0) === 0 || loadingExams}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Anterior
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onGoToPage((currentPage || 0) + 1)}
+                disabled={(currentPage || 0) >= totalPages - 1 || loadingExams}
+              >
+                Próxima
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
 
       <CreateSubjectModal
         open={subjectModalOpen}
