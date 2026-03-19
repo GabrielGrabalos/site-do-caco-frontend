@@ -1,8 +1,9 @@
+import { useEffect, useRef } from 'react';
 import { useExamBankVM } from './useExamBankVM';
 import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import { ExamFilters } from './components/ExamFilters';
 import { ExamCard } from './components/ExamCard';
-import { FileQuestion, Plus } from 'lucide-react';
+import { FileQuestion } from 'lucide-react';
 
 export function ExamBankPage() {
   usePageTitle('Banco de Provas');
@@ -10,6 +11,11 @@ export function ExamBankPage() {
     subjects,
     exams,
     loading,
+    loadingExams,
+    loadingMoreExams,
+    hasMoreExams,
+    loadMoreExams,
+    hasLoadedExamsOnce,
     error,
     selectedSubject,
     setSelectedSubject,
@@ -18,6 +24,11 @@ export function ExamBankPage() {
     selectedType,
     setSelectedType,
     professors,
+    loadingProfessors,
+    loadingMoreProfessors,
+    hasMoreProfessors,
+    loadMoreProfessors,
+    setProfessorSearch,
     selectedProfessorId,
     setSelectedProfessorId,
     availableYears,
@@ -25,6 +36,25 @@ export function ExamBankPage() {
     hasActiveFilters,
     activeFilterCount,
   } = useExamBankVM();
+
+  const loadMoreTriggerRef = useRef(null);
+
+  useEffect(() => {
+    if (!loadMoreTriggerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          loadMoreExams();
+        }
+      },
+      { rootMargin: '200px 0px' }
+    );
+
+    observer.observe(loadMoreTriggerRef.current);
+
+    return () => observer.disconnect();
+  }, [loadMoreExams]);
 
   if (loading) {
     return (
@@ -58,6 +88,11 @@ export function ExamBankPage() {
       <ExamFilters
         subjects={subjects}
         professors={professors}
+        loadingProfessors={loadingProfessors}
+        loadingMoreProfessors={loadingMoreProfessors}
+        hasMoreProfessors={hasMoreProfessors}
+        loadMoreProfessors={loadMoreProfessors}
+        setProfessorSearch={setProfessorSearch}
         selectedSubject={selectedSubject}
         setSelectedSubject={setSelectedSubject}
         selectedProfessorId={selectedProfessorId}
@@ -72,7 +107,15 @@ export function ExamBankPage() {
         activeFilterCount={activeFilterCount}
       />
 
-      {exams.length === 0 ? (
+      {loadingExams && (
+        <div className="mb-4 text-sm text-muted-foreground">Atualizando resultados...</div>
+      )}
+
+      {!hasLoadedExamsOnce || (loadingExams && exams.length === 0) ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
+      ) : exams.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <FileQuestion size={64} className="text-gray-300 dark:text-gray-600 mb-4" />
           <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
@@ -90,6 +133,16 @@ export function ExamBankPage() {
             <ExamCard key={exam.id} exam={exam} />
           ))}
         </div>
+      )}
+
+      <div ref={loadMoreTriggerRef} className="h-8" aria-hidden />
+
+      {loadingMoreExams && (
+        <div className="text-center text-sm text-muted-foreground mt-2">Carregando mais provas...</div>
+      )}
+
+      {!hasMoreExams && exams.length > 0 && (
+        <div className="text-center text-xs text-muted-foreground mt-3">Você chegou ao fim da lista.</div>
       )}
 
       {/* Link para adicionar prova */}

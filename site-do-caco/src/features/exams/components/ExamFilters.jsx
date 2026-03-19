@@ -9,6 +9,7 @@ const EXAM_TYPES = [
   { value: 'P2',     label: 'P2',     rgb: '5, 150, 105' },
   { value: 'P3',     label: 'P3',     rgb: '124, 58, 237' },
   { value: 'EXAME',  label: 'EXAME',  rgb: '220, 38, 38' },
+  { value: 'TESTINHO', label: 'Testinho', rgb: '14, 116, 144' },
   { value: 'SUB',    label: 'SUB',    rgb: '234, 88, 12' },
   { value: 'OUTROS', label: 'OUTROS', rgb: '75, 85, 99' },
 ];
@@ -38,6 +39,17 @@ const pillStyle = (rgb, active) =>
     ? { backgroundColor: `rgb(${rgb})`, color: 'white' }
     : { backgroundColor: `rgba(${rgb}, 0.15)`, color: `rgb(${rgb})` };
 
+const getSubjectPrefix = (subjectCode = '') => {
+  const normalized = String(subjectCode).trim().toUpperCase();
+
+  if (!normalized) return '#';
+
+  const match = normalized.match(/^[^\d\s]+/);
+  if (match && match[0]) return match[0];
+
+  return normalized;
+};
+
 function SectionLabel({ children }) {
   return (
     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">
@@ -55,6 +67,11 @@ function Divider() {
 export function ExamFilters({
   subjects,
   professors,
+  loadingProfessors,
+  loadingMoreProfessors,
+  hasMoreProfessors,
+  loadMoreProfessors,
+  setProfessorSearch,
   selectedSubject,
   setSelectedSubject,
   selectedProfessorId,
@@ -73,15 +90,15 @@ export function ExamFilters({
   const [yearOpen, setYearOpen]             = useState(false);
   const yearRef = useRef(null);
 
-  // Group + sort subjects by 2-letter prefix
+  // Group + sort subjects by alpha prefix before first number or whitespace
   const subjectGroups = useMemo(() => {
     const map = {};
     subjects.forEach((s) => {
-      const prefix = s.subjectCode.slice(0, 2).toUpperCase();
+      const prefix = getSubjectPrefix(s.subjectCode);
       (map[prefix] ??= []).push(s);
     });
     Object.values(map).forEach((g) =>
-      g.sort((a, b) => (parseInt(a.subjectCode.slice(2)) || 0) - (parseInt(b.subjectCode.slice(2)) || 0))
+      g.sort((a, b) => a.subjectCode.localeCompare(b.subjectCode, 'pt-BR'))
     );
     return Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
   }, [subjects]);
@@ -98,7 +115,7 @@ export function ExamFilters({
   // Auto-expand the group that contains the active subject
   useEffect(() => {
     if (selectedSubject !== 'all')
-      setExpandedPrefix(selectedSubject.slice(0, 2).toUpperCase());
+      setExpandedPrefix(getSubjectPrefix(selectedSubject));
   }, [selectedSubject]);
 
   const expandedIdx      = subjectGroups.findIndex(([p]) => p === expandedPrefix);
@@ -284,16 +301,19 @@ export function ExamFilters({
             </div>
 
             {/* Professor */}
-            {professors?.length > 0 && (
-              <div>
-                <SectionLabel>Professor</SectionLabel>
-                <ProfessorFilter
-                  professors={professors}
-                  selectedProfessorId={selectedProfessorId}
-                  onSelect={setSelectedProfessorId}
-                />
-              </div>
-            )}
+            <div>
+              <SectionLabel>Professor</SectionLabel>
+              <ProfessorFilter
+                professors={professors}
+                loading={loadingProfessors}
+                loadingMore={loadingMoreProfessors}
+                hasMore={hasMoreProfessors}
+                onLoadMore={loadMoreProfessors}
+                onSearchChange={setProfessorSearch}
+                selectedProfessorId={selectedProfessorId}
+                onSelect={setSelectedProfessorId}
+              />
+            </div>
 
           </div>
         </div>

@@ -7,7 +7,7 @@ export class Exam {
     // Backend retorna subject como objeto, extraímos o subjectCode
     this.subjectCode = data.subject?.subjectCode || data.subjectCode || '';
     this.year = data.year;
-    this.type = data.type; // 'P1', 'P2', 'P3', 'EXAME', 'SUB', 'OUTROS'
+    this.type = data.type; // 'P1', 'P2', 'P3', 'EXAME', 'TESTINHO', 'SUB', 'OUTROS'
     // Backend usa fileUrl, mantemos como pdfUrl internamente
     this.pdfUrl = data.fileUrl || data.pdfUrl || '';
     this.createdAt = data.createdAt ? new Date(data.createdAt) : null;
@@ -24,6 +24,7 @@ export class Exam {
       'P2': 'P2',
       'P3': 'P3',
       'EXAME': 'EXAME',
+      'TESTINHO': 'Testinho',
       'SUB': 'SUB',
       'OUTROS': 'OUTROS',
     };
@@ -60,7 +61,7 @@ export class Exam {
       errors.push('Tipo de prova é obrigatório');
     }
 
-    const validTypes = ['P1', 'P2', 'P3', 'EXAME', 'SUB', 'OUTROS'];
+    const validTypes = ['P1', 'P2', 'P3', 'EXAME', 'TESTINHO', 'SUB', 'OUTROS'];
     if (this.type && !validTypes.includes(this.type)) {
       errors.push('Tipo de prova inválido');
     }

@@ -1,21 +1,27 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, Loader2, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 /**
  * Combobox de professor somente-leitura para a página pública.
  * Sem opções de criação/edição/exclusão.
  */
-export function ProfessorFilter({ professors, selectedProfessorId, onSelect }) {
+export function ProfessorFilter({
+  professors,
+  selectedProfessorId,
+  onSelect,
+  loading,
+  loadingMore,
+  hasMore,
+  onLoadMore,
+  onSearchChange,
+}) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const containerRef = useRef(null);
 
   const selectedProfessor = professors.find((p) => p.id === selectedProfessorId) || null;
-
-  const filtered = professors.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const isSearching = search.trim().length > 0 && loading;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -26,6 +32,10 @@ export function ProfessorFilter({ professors, selectedProfessorId, onSelect }) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    onSearchChange(search);
+  }, [search, onSearchChange]);
 
   const handleSelect = (professor) => {
     onSelect(professor.id === selectedProfessorId ? null : professor.id);
@@ -38,7 +48,14 @@ export function ProfessorFilter({ professors, selectedProfessorId, onSelect }) {
     onSelect(null);
   };
 
-  if (professors.length === 0) return null;
+  const handleScroll = (e) => {
+    const element = e.currentTarget;
+    const reachedBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 24;
+
+    if (reachedBottom && hasMore && !loadingMore && !loading) {
+      onLoadMore();
+    }
+  };
 
   return (
     <div ref={containerRef} className="relative">
@@ -85,13 +102,25 @@ export function ProfessorFilter({ professors, selectedProfessorId, onSelect }) {
               onClick={(e) => e.stopPropagation()}
             />
           </div>
-          <ul className="max-h-48 overflow-y-auto py-1">
-            {filtered.length === 0 ? (
+          <ul className="max-h-48 overflow-y-auto py-1" onScroll={handleScroll}>
+            {isSearching ? (
+              <li className="px-3 py-4 text-center">
+                <Loader2
+                  size={16}
+                  className="inline-block text-gray-400 animate-spin"
+                  aria-label="Carregando"
+                />
+              </li>
+            ) : loading && professors.length === 0 ? (
+              <li className="px-3 py-2 text-sm text-gray-400 dark:text-gray-500 text-center">
+                Carregando professores...
+              </li>
+            ) : professors.length === 0 ? (
               <li className="px-3 py-2 text-sm text-gray-400 dark:text-gray-500 text-center">
                 Nenhum professor encontrado
               </li>
             ) : (
-              filtered.map((professor) => (
+              professors.map((professor) => (
                 <li
                   key={professor.id}
                   onClick={() => handleSelect(professor)}
@@ -104,6 +133,18 @@ export function ProfessorFilter({ professors, selectedProfessorId, onSelect }) {
                   {professor.name}
                 </li>
               ))
+            )}
+
+            {loadingMore && (
+              <li className="px-3 py-2 text-xs text-gray-400 dark:text-gray-500 text-center">
+                Carregando mais...
+              </li>
+            )}
+
+            {!hasMore && professors.length > 0 && !loadingMore && !loading && (
+              <li className="px-3 py-2 text-xs text-gray-400 dark:text-gray-500 text-center">
+                Fim da lista
+              </li>
             )}
           </ul>
         </div>

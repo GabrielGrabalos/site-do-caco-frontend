@@ -10,6 +10,7 @@ const EXAM_TYPES = [
   { value: 'P2', label: 'P2' },
   { value: 'P3', label: 'P3' },
   { value: 'EXAME', label: 'EXAME' },
+  { value: 'TESTINHO', label: 'Testinho' },
   { value: 'SUB', label: 'SUB' },
   { value: 'OUTROS', label: 'OUTROS' },
 ];
