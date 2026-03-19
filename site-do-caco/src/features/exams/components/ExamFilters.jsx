@@ -10,7 +10,6 @@ const EXAM_TYPES = [
   { value: 'P3',     label: 'P3',     rgb: '124, 58, 237' },
   { value: 'EXAME',  label: 'EXAME',  rgb: '220, 38, 38' },
   { value: 'SUB',    label: 'SUB',    rgb: '234, 88, 12' },
-  { value: 'TESTINHO', label: 'TESTINHO', rgb: '14, 165, 233' },
   { value: 'OUTROS', label: 'OUTROS', rgb: '75, 85, 99' },
 ];
 
@@ -31,19 +30,6 @@ const PILL_PALETTE = [
 ];
 
 // ── Small helpers ─────────────────────────────────────────────────────────────
-
-const extractSubjectPrefix = (subjectCode) => {
-  // Extrai todas as letras antes dos números
-  // Ex: "MC102" -> "MC", "f 355" -> "f", "f245" -> "f"
-  const match = subjectCode.match(/^([a-zA-Z\s]+)/);
-  return match ? match[1].trim().toUpperCase() : subjectCode.toUpperCase();
-};
-
-const extractNumericPart = (subjectCode) => {
-  // Extrai a parte numérica
-  const match = subjectCode.match(/(\d+)/);
-  return match ? parseInt(match[1]) : 0;
-};
 
 const groupRgb  = (i) => GROUP_COLORS[i % GROUP_COLORS.length];
 const pillRgb   = (gi, pi) => PILL_PALETTE[(gi * 4 + pi) % PILL_PALETTE.length];
@@ -81,26 +67,21 @@ export function ExamFilters({
   clearFilters,
   hasActiveFilters,
   activeFilterCount,
-  onLoadMoreProfessors,
-  hasMoreProfessors,
-  loadingMoreProfessors,
-  onSearchProfessors,
 }) {
   const [filtersOpen, setFiltersOpen]       = useState(false);
   const [expandedPrefix, setExpandedPrefix] = useState(null);
   const [yearOpen, setYearOpen]             = useState(false);
   const yearRef = useRef(null);
-  const filtersRef = useRef(null);
 
-  // Group + sort subjects by letter prefix (todas as letras antes dos números)
+  // Group + sort subjects by 2-letter prefix
   const subjectGroups = useMemo(() => {
     const map = {};
     subjects.forEach((s) => {
-      const prefix = extractSubjectPrefix(s.subjectCode);
+      const prefix = s.subjectCode.slice(0, 2).toUpperCase();
       (map[prefix] ??= []).push(s);
     });
     Object.values(map).forEach((g) =>
-      g.sort((a, b) => extractNumericPart(a.subjectCode) - extractNumericPart(b.subjectCode))
+      g.sort((a, b) => (parseInt(a.subjectCode.slice(2)) || 0) - (parseInt(b.subjectCode.slice(2)) || 0))
     );
     return Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
   }, [subjects]);
@@ -114,30 +95,10 @@ export function ExamFilters({
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Close filters panel only on outside click (não fecha ao clicar dentro do painel)
-  useEffect(() => {
-    const handler = (e) => {
-      // Só fecha se clicar fora do filtersRef (o stopPropagation no painel previne eventos internos)
-      if (filtersRef.current && !filtersRef.current.contains(e.target)) {
-        setFiltersOpen(false);
-      }
-    };
-    
-    // Delay para garantir que o evento mousedown é completamente processado
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('mousedown', handler);
-    }, 0);
-    
-    return () => {
-      clearTimeout(timeoutId);
-      document.removeEventListener('mousedown', handler);
-    };
-  }, []);
-
   // Auto-expand the group that contains the active subject
   useEffect(() => {
     if (selectedSubject !== 'all')
-      setExpandedPrefix(extractSubjectPrefix(selectedSubject));
+      setExpandedPrefix(selectedSubject.slice(0, 2).toUpperCase());
   }, [selectedSubject]);
 
   const expandedIdx      = subjectGroups.findIndex(([p]) => p === expandedPrefix);
@@ -145,7 +106,7 @@ export function ExamFilters({
   const expandedRgb      = expandedIdx >= 0 ? groupRgb(expandedIdx) : null;
 
   return (
-    <div ref={filtersRef} className="mb-6">
+    <div className="mb-6">
       {/* Toggle bar */}
       <div className="flex items-center gap-2 mb-3">
         <button
@@ -181,10 +142,7 @@ export function ExamFilters({
 
       {/* Filter panel */}
       {filtersOpen && (
-        <div 
-          onMouseDown={(e) => e.stopPropagation()}
-          className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/70 p-5 md:p-6 shadow-sm space-y-6"
-        >
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/70 p-5 md:p-6 shadow-sm space-y-6">
 
           {/* Disciplina */}
           <div>
@@ -333,10 +291,6 @@ export function ExamFilters({
                   professors={professors}
                   selectedProfessorId={selectedProfessorId}
                   onSelect={setSelectedProfessorId}
-                  onLoadMore={onLoadMoreProfessors}
-                  hasMoreProfessors={hasMoreProfessors}
-                  loadingMore={loadingMoreProfessors}
-                  onSearch={onSearchProfessors}
                 />
               </div>
             )}

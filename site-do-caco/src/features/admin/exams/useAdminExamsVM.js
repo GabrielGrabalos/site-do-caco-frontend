@@ -1,11 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { examService } from '@/shared/services/examService';
 import { professorService } from '@/shared/services/professorService';
 import { Subject } from './models/Subject';
 import { Exam } from './models/Exam';
 import { Professor } from './models/Professor';
-
-const PAGE_SIZE = 12;
 
 export function useAdminExamsVM() {
   const [subjects, setSubjects] = useState([]);
@@ -15,11 +13,6 @@ export function useAdminExamsVM() {
   const [loadingExams, setLoadingExams] = useState(false);
   const [error, setError] = useState(null);
   const [creating, setCreating] = useState(false);
-
-  // Paginação
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
 
   const [professors, setProfessors] = useState([]);
   const [loadingProfessors, setLoadingProfessors] = useState(false);
@@ -31,7 +24,7 @@ export function useAdminExamsVM() {
 
   useEffect(() => {
     if (selectedSubject) {
-      loadExams(selectedSubject.subjectCode, 0);
+      loadExams(selectedSubject.subjectCode);
     }
   }, [selectedSubject]);
 
@@ -41,9 +34,7 @@ export function useAdminExamsVM() {
       setError(null);
       
       const data = await examService.getSubjects();
-      // Garante que data é sempre um array
-      const dataArray = Array.isArray(data) ? data : [];
-      const subjectInstances = Subject.fromDTOArray(dataArray);
+      const subjectInstances = Subject.fromDTOArray(data);
       setSubjects(subjectInstances);
       
       // Seleciona a primeira matéria automaticamente se houver
@@ -52,13 +43,12 @@ export function useAdminExamsVM() {
       }
     } catch (err) {
       setError(err.message || 'Erro ao carregar disciplinas');
-      setSubjects([]); // Define como array vazio em caso de erro
     } finally {
       setLoading(false);
     }
   };
 
-  const loadExams = useCallback(async (subjectCode, page = 0) => {
+  const loadExams = async (subjectCode) => {
     try {
       setLoadingExams(true);
       setError(null);
@@ -66,22 +56,12 @@ export function useAdminExamsVM() {
       const data = await examService.getExamsBySubject(subjectCode);
       const examInstances = Exam.fromDTOArray(data);
       setExams(examInstances);
-      setCurrentPage(page);
-      
-      // Se o backend retornar paginação, atualizar. Caso contrário, calcular local
-      if (data && typeof data === 'object' && 'totalPages' in data) {
-        setTotalPages(data.totalPages);
-        setTotalElements(data.totalElements);
-      } else if (Array.isArray(data)) {
-        setTotalPages(Math.ceil(data.length / PAGE_SIZE));
-        setTotalElements(data.length);
-      }
     } catch (err) {
       setError(err.message || 'Erro ao carregar provas');
     } finally {
       setLoadingExams(false);
     }
-  }, []);
+  };
 
   const createSubject = async (subjectData) => {
     try {
@@ -227,12 +207,6 @@ export function useAdminExamsVM() {
     }
   };
 
-  const goToPage = (newPage) => {
-    if (newPage >= 0 && newPage < totalPages && selectedSubject) {
-      loadExams(selectedSubject.subjectCode, newPage);
-    }
-  };
-
   return {
     subjects,
     selectedSubject,
@@ -252,11 +226,5 @@ export function useAdminExamsVM() {
     createProfessor,
     updateProfessor,
     deleteProfessor,
-    // Paginação
-    currentPage,
-    totalPages,
-    totalElements,
-    goToPage,
-    pageSize: PAGE_SIZE,
   };
 }

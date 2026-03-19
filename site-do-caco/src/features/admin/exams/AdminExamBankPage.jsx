@@ -73,10 +73,6 @@ export function AdminExamBankPage() {
         onCreateProfessor={examsVM.createProfessor}
         onUpdateProfessor={examsVM.updateProfessor}
         onDeleteProfessor={handleDeleteProfessor}
-        currentPage={examsVM.currentPage}
-        totalPages={examsVM.totalPages}
-        totalElements={examsVM.totalElements}
-        onGoToPage={examsVM.goToPage}
       />
     </div>
   );
