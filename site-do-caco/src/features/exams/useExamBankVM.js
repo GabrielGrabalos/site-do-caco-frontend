@@ -53,6 +53,7 @@ export function useExamBankVM() {
   const [loadingMoreExams, setLoadingMoreExams] = useState(false);
   const [hasMoreExams, setHasMoreExams] = useState(true);
   const [examsPage, setExamsPage] = useState(0);
+  const [examsTotalPages, setExamsTotalPages] = useState(0);
   const [hasLoadedExamsOnce, setHasLoadedExamsOnce] = useState(false);
 
   const [professors, setProfessors] = useState([]);
@@ -91,7 +92,7 @@ export function useExamBankVM() {
 
     // Requisição antiga, ignora resultado
     if (requestId !== examsRequestIdRef.current) {
-      return;
+      return null;
     }
 
     const normalized = normalizePageResponse(response);
@@ -108,7 +109,9 @@ export function useExamBankVM() {
       return uniqueById([...prev, ...dedupedMapped]);
     });
     setExamsPage(normalized.number ?? page);
+    setExamsTotalPages(normalized.totalPages ?? 0);
     setHasMoreExams(!normalized.last);
+    return normalized;
   }, [selectedYear, selectedProfessorId, selectedSubject, selectedType]);
 
   const loadInitialData = useCallback(async () => {
@@ -161,6 +164,21 @@ export function useExamBankVM() {
       setLoadingMoreExams(false);
     }
   }, [initialized, loadingExams, loadingMoreExams, hasMoreExams, fetchExamsPage, examsPage]);
+
+  const goToExamsPage = useCallback(async (page) => {
+    if (page < 0) return;
+
+    try {
+      setLoadingExams(true);
+      setError(null);
+      await fetchExamsPage({ page, append: false, applyTypeFilter: true });
+    } catch (err) {
+      setError(err.message || 'Erro ao carregar provas');
+    } finally {
+      setLoadingExams(false);
+      setHasLoadedExamsOnce(true);
+    }
+  }, [fetchExamsPage]);
 
   const fetchProfessorsPage = useCallback(async ({ page, append, searchTerm }) => {
     const requestId = ++professorsRequestIdRef.current;
@@ -282,7 +300,12 @@ export function useExamBankVM() {
     loadingExams,
     loadingMoreExams,
     hasMoreExams,
+    examsPage,
+    examsTotalPages,
+    hasPreviousExamsPage: examsPage > 0,
+    hasNextExamsPage: examsTotalPages > 0 ? examsPage < examsTotalPages - 1 : false,
     loadMoreExams,
+    goToExamsPage,
     hasLoadedExamsOnce,
     error,
 

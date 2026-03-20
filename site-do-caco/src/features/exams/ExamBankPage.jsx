@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useExamBankVM } from './useExamBankVM';
 import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import { ExamFilters } from './components/ExamFilters';
 import { ExamCard } from './components/ExamCard';
-import { FileQuestion } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight, FileQuestion } from 'lucide-react';
 
 export function ExamBankPage() {
   usePageTitle('Banco de Provas');
@@ -14,7 +15,12 @@ export function ExamBankPage() {
     loadingExams,
     loadingMoreExams,
     hasMoreExams,
+    examsPage,
+    examsTotalPages,
+    hasPreviousExamsPage,
+    hasNextExamsPage,
     loadMoreExams,
+    goToExamsPage,
     hasLoadedExamsOnce,
     error,
     selectedSubject,
@@ -39,8 +45,58 @@ export function ExamBankPage() {
   } = useExamBankVM();
 
   const loadMoreTriggerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const shouldUseInfiniteScroll = isMobile && hasActiveFilters;
+  const shouldUseMobileLoadMoreButton = isMobile && !hasActiveFilters;
+  const shouldUseDesktopPagination = !isMobile;
+
+  const handleDesktopPageChange = (nextPage) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    goToExamsPage(nextPage);
+  };
+
+  const renderDesktopPagination = () => {
+    if (!shouldUseDesktopPagination || examsTotalPages <= 1 || exams.length === 0) return null;
+
+    return (
+      <div className="flex items-center justify-between gap-3">
+        <div className="text-sm text-muted-foreground">
+          Página {examsPage + 1} de {examsTotalPages}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleDesktopPageChange(examsPage - 1)}
+            disabled={!hasPreviousExamsPage || loadingExams}
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Anterior
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleDesktopPageChange(examsPage + 1)}
+            disabled={!hasNextExamsPage || loadingExams}
+          >
+            Próxima
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    if (!shouldUseInfiniteScroll) return;
     if (!loadMoreTriggerRef.current) return;
 
     const observer = new IntersectionObserver(
@@ -55,7 +111,7 @@ export function ExamBankPage() {
     observer.observe(loadMoreTriggerRef.current);
 
     return () => observer.disconnect();
-  }, [loadMoreExams]);
+  }, [shouldUseInfiniteScroll, loadMoreExams]);
 
   if (loading) {
     return (
@@ -113,6 +169,10 @@ export function ExamBankPage() {
         <div className="mb-4 text-sm text-muted-foreground">Atualizando resultados...</div>
       )}
 
+      {shouldUseDesktopPagination && examsTotalPages > 1 && exams.length > 0 && (
+        <div className="mb-6">{renderDesktopPagination()}</div>
+      )}
+
       {!hasLoadedExamsOnce || (loadingExams && exams.length === 0) ? (
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -137,13 +197,23 @@ export function ExamBankPage() {
         </div>
       )}
 
-      <div ref={loadMoreTriggerRef} className="h-8" aria-hidden />
+      {shouldUseInfiniteScroll && <div ref={loadMoreTriggerRef} className="h-8" aria-hidden />}
 
-      {loadingMoreExams && (
+      {shouldUseInfiniteScroll && loadingMoreExams && (
         <div className="text-center text-sm text-muted-foreground mt-2">Carregando mais provas...</div>
       )}
 
-      {!hasMoreExams && exams.length > 0 && (
+      {shouldUseMobileLoadMoreButton && exams.length > 0 && hasMoreExams && (
+        <div className="mt-6 flex justify-center">
+          <Button onClick={loadMoreExams} disabled={loadingMoreExams || loadingExams}>
+            {loadingMoreExams ? 'Carregando...' : 'Carregar mais'}
+          </Button>
+        </div>
+      )}
+
+      <div className="mt-6">{renderDesktopPagination()}</div>
+
+      {!hasMoreExams && exams.length > 0 && !loadingMoreExams && !loadingExams && (
         <div className="text-center text-xs text-muted-foreground mt-3">Você chegou ao fim da lista.</div>
       )}
 
