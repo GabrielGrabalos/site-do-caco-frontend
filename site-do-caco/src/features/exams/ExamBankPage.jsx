@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useExamBankVM } from './useExamBankVM';
 import { usePageTitle } from '@/shared/hooks/usePageTitle';
 import { ExamFilters } from './components/ExamFilters';
 import { ExamCard } from './components/ExamCard';
+import { SubjectBlock } from './components/SubjectBlock';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, FileQuestion } from 'lucide-react';
 
@@ -57,6 +58,20 @@ export function ExamBankPage() {
   const shouldUseInfiniteScroll = isMobile && hasActiveFilters;
   const shouldUseMobileLoadMoreButton = isMobile && !hasActiveFilters;
   const shouldUseDesktopPagination = !isMobile;
+  const shouldShowSubjectFolders = !hasActiveFilters && selectedSubject === 'all';
+
+  const examsBySubject = useMemo(() => {
+    const grouped = exams.reduce((acc, exam) => {
+      const subjectCode = exam?.subjectCode || 'SEM_DISCIPLINA';
+      if (!acc[subjectCode]) {
+        acc[subjectCode] = [];
+      }
+      acc[subjectCode].push(exam);
+      return acc;
+    }, {});
+
+    return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b, 'pt-BR'));
+  }, [exams]);
 
   const handleDesktopPageChange = (nextPage) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -181,13 +196,28 @@ export function ExamBankPage() {
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <FileQuestion size={64} className="text-gray-300 dark:text-gray-600 mb-4" />
           <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
-            Nenhuma prova encontrada
+            {shouldShowSubjectFolders ? 'Nenhuma disciplina encontrada' : 'Nenhuma prova encontrada'}
           </h3>
           <p className="text-gray-500 dark:text-gray-500 mb-4">
             {hasActiveFilters
               ? 'Tente ajustar os filtros para ver mais resultados'
-              : 'Ainda não há provas cadastradas'}
+              : shouldShowSubjectFolders
+                ? 'Ainda não há disciplinas com provas cadastradas'
+                : 'Ainda não há provas cadastradas'}
           </p>
+        </div>
+      ) : shouldShowSubjectFolders ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {examsBySubject.map(([subjectCode, subjectExams]) => {
+            return (
+              <SubjectBlock
+                key={subjectCode}
+                subjectCode={subjectCode}
+                examsCount={subjectExams.length}
+                onOpen={() => setSelectedSubject(subjectCode)}
+              />
+            );
+          })}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
