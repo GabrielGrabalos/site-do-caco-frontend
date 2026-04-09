@@ -2,6 +2,12 @@ import { Download, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function ExamList({ exams }) {
+  const buildExamUrl = (url) => {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `https://${url}`;
+  };
+
   return (
     <div className="space-y-2">
       {exams.map((exam) => (
@@ -11,11 +17,11 @@ export function ExamList({ exams }) {
         >
           <div className="flex-1">
             <div className="font-medium">
-              {exam.year}/{exam.semester}º Semestre
+              {exam.year}
             </div>
-            {exam.professor && (
+            {exam.professor?.name && (
               <div className="text-sm text-muted-foreground">
-                Prof. {exam.professor}
+                Prof. {exam.professor.name}
               </div>
             )}
           </div>
@@ -25,7 +31,7 @@ export function ExamList({ exams }) {
             asChild
           >
             <a
-              href={exam.fileUrl}
+              href={buildExamUrl(exam.pdfUrl)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"

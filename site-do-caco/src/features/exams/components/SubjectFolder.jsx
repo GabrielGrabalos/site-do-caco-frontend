@@ -20,7 +20,10 @@ export function SubjectFolder({ subject, exams }) {
     P1: 'P1',
     P2: 'P2',
     P3: 'P3',
-    FINAL: 'Final',
+    EXAME: 'Exame',
+    TESTINHO: 'Testinho',
+    SUB: 'Sub',
+    OUTROS: 'Outros',
   };
 
   return (
@@ -47,7 +50,7 @@ export function SubjectFolder({ subject, exams }) {
         <div className="border-t p-6 space-y-6">
           {Object.entries(examsByType).map(([type, typeExams]) => (
             <div key={type}>
-              <h4 className="font-semibold mb-3">{typeLabels[type]}</h4>
+              <h4 className="font-semibold mb-3">{typeLabels[type] || type}</h4>
               <ExamList exams={typeExams} />
             </div>
           ))}
