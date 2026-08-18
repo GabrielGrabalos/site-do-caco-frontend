@@ -11,8 +11,6 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: 
-      'https://hypertonic-diagrammatically-mechelle.ngrok-free.dev'
-    
+    allowedHosts: ['hypertonic-diagrammatically-mechelle.ngrok-free.dev'],
   }
 })

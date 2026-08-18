@@ -11,7 +11,7 @@
  * @property {string} name - Nome do usuário
  * @property {string} email - Email do usuário
  * @property {string} avatarUrl - URL do avatar
- * @property {'USER' | 'ADMIN'} role - Role do usuário
+ * @property {'STUDENT' | 'EDITOR' | 'ADMIN' | 'SUPER_ADMIN'} role - Role do usuário
  */
 
 /**
@@ -242,9 +242,9 @@
  * @property {string} endDate - Data de término (ISO string)
  * @property {string} location - Local do evento
  * @property {string} coverImage - URL da imagem de capa
- * @property {'ACADEMIC' | 'SOCIAL' | 'SPORTS' | 'CULTURAL' | 'OTHER'} type - Tipo do evento
- * @property {'NORMAL' | 'IMPORTANT' | 'HIGHLIGHT'} importance - Importância do evento
- * @property {'DRAFT' | 'PUBLISHED' | 'CANCELLED'} status - Status do evento
+ * @property {'CACO' | 'IC' | 'FERIADO'} type - Tipo do evento
+ * @property {'MAJOR' | 'MINOR'} importance - Importância do evento
+ * @property {'SCHEDULED' | 'HAPPENING' | 'ENDED'} status - Status do evento
  */
 
 /**

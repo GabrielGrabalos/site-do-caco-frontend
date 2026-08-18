@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { contentService } from '@/shared/services/contentService';
+import { homeService } from '@/shared/services/homeService';
 import { eventService } from '@/shared/services/eventService';
 
 const EVENTS_PAGE_SIZE = 6;
@@ -28,7 +28,7 @@ export function useHomeVM() {
     try {
       setLoading(true);
       setError(null);
-      const dashboardData = await contentService.getDashboard();
+      const dashboardData = await homeService.getDashboard();
       
       // Não filtrar warnings dismissed - quando atualizar a página, voltam a aparecer
       setData(dashboardData);

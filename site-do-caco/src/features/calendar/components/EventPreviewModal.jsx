@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Calendar, Clock, ExternalLink, Globe, Video } from 'lucide-react';
+import { MapPin, Calendar, Clock, ExternalLink, GraduationCap, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function EventPreviewModal({ event, open, onClose }) {
@@ -49,10 +49,10 @@ export function EventPreviewModal({ event, open, onClose }) {
   
   const getTypeLabel = (type) => {
     switch (type) {
-      case 'ONLINE': return <span className="flex items-center gap-1"><Globe className="w-3 h-3"/> Online</span>;
-      case 'IN_PERSON': return <span className="flex items-center gap-1"><MapPin className="w-3 h-3"/> Presencial</span>;
-      case 'HYBRID': return <span className="flex items-center gap-1"><Video className="w-3 h-3"/> Híbrido</span>;
-      default: return type.replace('_', ' ');
+      case 'CACO': return <span className="flex items-center gap-1"><GraduationCap className="w-3 h-3"/> CACo</span>;
+      case 'IC': return <span className="flex items-center gap-1"><Landmark className="w-3 h-3"/> IC</span>;
+      case 'FERIADO': return <span className="flex items-center gap-1"><Calendar className="w-3 h-3"/> Feriado</span>;
+      default: return type?.replace('_', ' ');
     }
   };
 

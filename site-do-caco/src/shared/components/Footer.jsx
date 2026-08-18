@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Mail, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { env } from '@/shared/config/env';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
-  const email = import.meta.env.VITE_EMAIL;
-  const instagramUrl = import.meta.env.VITE_INSTAGRAM_URL;
-  const whatsappUrl = import.meta.env.VITE_WHATSAPP_COMMUNITY_URL;
+  const email = env.email;
+  const instagramUrl = env.instagramUrl;
+  const whatsappUrl = env.whatsappCommunityUrl;
 
   return (
     <footer className="border-t bg-muted/40 mt-auto">

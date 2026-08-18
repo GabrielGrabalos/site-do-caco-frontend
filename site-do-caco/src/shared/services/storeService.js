@@ -223,7 +223,7 @@ class StoreService {
      * @returns {Promise<ProductSummaryDTO[]>}
      */
     async searchPublicProducts(keyword) {
-        return await apiClient.get(`/public/store/search`, { keyword });
+        return await apiClient.get(`/public/store/search?keyword=${encodeURIComponent(keyword)}`);
     }
 }
 

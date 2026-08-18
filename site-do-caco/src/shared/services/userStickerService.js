@@ -21,9 +21,7 @@ export const userStickerService = {
      * @returns {Promise<{content: Array, totalPages: number, totalElements: number}>}
      */
     async getMyStickers(page = 0, size = 20) {
-        const response = await apiClient.get('/user/stickers', {
-            params: { page, size }
-        });
+        const response = await apiClient.get(`/user/stickers?page=${page}&size=${size}`);
         return response;
     },
 };

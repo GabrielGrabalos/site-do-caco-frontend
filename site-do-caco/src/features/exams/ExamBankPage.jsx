@@ -5,6 +5,7 @@ import { ExamFilters } from './components/ExamFilters';
 import { ExamCard } from './components/ExamCard';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, FileQuestion } from 'lucide-react';
+import { env } from '@/shared/config/env';
 
 export function ExamBankPage() {
   usePageTitle('Banco de Provas');
@@ -220,7 +221,7 @@ export function ExamBankPage() {
       {/* Link para adicionar prova */}
       <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 text-center">
         <a
-          href={import.meta.env.VITE_ADICIONAR_PROVA_URL}
+          href={env.adicionarProvaUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors"

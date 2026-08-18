@@ -291,13 +291,11 @@ export function ManageProductImagesModal({
         ));
         
         // Adiciona a imagem com os dados reais do backend
-        const newImage = {
+        setImages(prev => [...prev, {
           id: result.data.id,
           url: result.data.imageUrl,
           order: result.data.displayOrder !== undefined ? result.data.displayOrder : prev.length
-        };
-        
-        setImages(prev => [...prev, newImage]);
+        }]);
       } else {
         setUploadStatus(prev => prev.map((item, idx) => 
           idx === i ? { ...item, status: 'error', progress: 0 } : item

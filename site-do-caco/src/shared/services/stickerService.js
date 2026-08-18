@@ -116,17 +116,6 @@ class StickerService {
   }
 
   /**
-   * GET /api/private/stickers
-   * Obtém stickers do usuário autenticado
-   * @param {number} page - Número da página (default: 0)
-   * @param {number} size - Tamanho da página (default: 100)
-   * @returns {Promise<Object>} Page<StickerPublicDTO>
-   */
-  async getUserStickers(page = 0, size = 100) {
-    return apiClient.get(`private/stickers?page=${page}&size=${size}`);
-  }
-
-  /**
    * POST /api/private/stickers/redeem
    * Resgata código de sticker
    * @param {string} code - Código a resgatar

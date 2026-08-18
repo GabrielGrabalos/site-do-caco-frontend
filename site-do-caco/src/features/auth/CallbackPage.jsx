@@ -25,20 +25,12 @@ export function CallbackPage() {
         const token = searchParams.get('token');
         const expiresIn = searchParams.get('expiresIn');
 
-        console.log('[CallbackPage] Token recebido:', token ? 'SIM' : 'NÃO');
-        console.log('[CallbackPage] expiresIn raw:', expiresIn);
-
         if (!token) {
           throw new Error('Token não recebido');
         }
 
         // Converte expiresIn para número (milissegundos)
         const expiresInMs = expiresIn ? parseInt(expiresIn, 10) : undefined;
-        console.log('[CallbackPage] expiresInMs convertido:', expiresInMs);
-        if (expiresInMs) {
-          const hours = expiresInMs / (1000 * 60 * 60);
-          console.log('[CallbackPage] Tempo de expiração em horas:', hours.toFixed(2));
-        }
 
         // Processa o login com o token recebido
         const { user } = await authService.loginWithToken(token, expiresInMs);

@@ -146,7 +146,7 @@ export function StoreSection({
       <CreateCategoryModal
         open={categoryModalOpen}
         onClose={handleCloseCategoryModal}
-        onSave={handleSaveCategory}
+        onSubmit={handleSaveCategory}
         loading={creating}
         category={editingCategory}
       />
