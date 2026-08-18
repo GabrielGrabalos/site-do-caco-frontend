@@ -1,4 +1,4 @@
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 class ProfileFormService {
   /**
@@ -7,7 +7,7 @@ class ProfileFormService {
    * @returns {Promise<{ course: string, otherCourseName: string|null, entryYear: number }>}
    */
   async submitProfileForm(data) {
-    return apiClient.post('user/profile-form', data);
+    return httpClient.post('user/profile-form', data);
   }
 
   /**
@@ -15,7 +15,7 @@ class ProfileFormService {
    * @returns {Promise<{ course: string, otherCourseName: string|null, entryYear: number }>}
    */
   async getProfileForm() {
-    return apiClient.get('user/profile-form');
+    return httpClient.get('user/profile-form');
   }
 }
 

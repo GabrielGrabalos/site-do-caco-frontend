@@ -1,23 +1,23 @@
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 export const professorService = {
   getAll: async () => {
-    return apiClient.get('admin/professors');
+    return httpClient.get('admin/professors');
   },
 
   getById: async (id) => {
-    return apiClient.get(`admin/professors/${id}`);
+    return httpClient.get(`admin/professors/${id}`);
   },
 
   create: async (data) => {
-    return apiClient.post('admin/professors', data);
+    return httpClient.post('admin/professors', data);
   },
 
   update: async (id, data) => {
-    return apiClient.put(`admin/professors/${id}`, data);
+    return httpClient.put(`admin/professors/${id}`, data);
   },
 
   delete: async (id) => {
-    return apiClient.delete(`admin/professors/${id}`);
+    return httpClient.delete(`admin/professors/${id}`);
   },
 };

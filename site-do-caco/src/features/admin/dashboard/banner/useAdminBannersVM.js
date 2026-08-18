@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { apiClient } from '@/shared/services/apiClient';
+import { httpClient } from '@/shared/lib/http';
+import { uploadClient } from '@/shared/lib/upload';
 import { Banner } from './Banner';
 
 export function useAdminBannersVM() {
@@ -19,8 +20,8 @@ export function useAdminBannersVM() {
       setError(null);
       
       const [activeData, inactiveData] = await Promise.all([
-        apiClient.get('admin/banners/active'),
-        apiClient.get('admin/banners/inactive'),
+        httpClient.get('admin/banners/active'),
+        httpClient.get('admin/banners/inactive'),
       ]);
       
       // Converte DTOs para instâncias de Banner
@@ -67,7 +68,7 @@ export function useAdminBannersVM() {
         );
       };
       
-      const newBannerDTO = await apiClient.postFormDataWithProgress(
+      const newBannerDTO = await uploadClient.postFormDataWithProgress(
         'admin/banners', 
         formData, 
         onProgress
@@ -101,7 +102,7 @@ export function useAdminBannersVM() {
       
       // Envia para o backend
       const bannerIds = newOrder.map(b => b.id);
-      await apiClient.put('admin/banners/reorder', { bannerIds });
+      await httpClient.put('admin/banners/reorder', { bannerIds });
       
       return { success: true };
     } catch (err) {
@@ -113,7 +114,7 @@ export function useAdminBannersVM() {
 
   const toggleBannerStatus = async (bannerId, isCurrentlyActive) => {
     try {
-      await apiClient.put(`admin/banners/${bannerId}/toggle`);
+      await httpClient.put(`admin/banners/${bannerId}/toggle`);
       
       if (isCurrentlyActive) {
         // Move de ativo para inativo
@@ -141,7 +142,7 @@ export function useAdminBannersVM() {
 
   const deleteBanner = async (id) => {
     try {
-      await apiClient.delete(`admin/banners/${id}`);
+      await httpClient.delete(`admin/banners/${id}`);
       setActiveBanners(activeBanners.filter(b => b.id !== id));
       setInactiveBanners(inactiveBanners.filter(b => b.id !== id));
       return { success: true };
@@ -162,7 +163,7 @@ export function useAdminBannersVM() {
       }
       // Senão, não precisa enviar a imagem (mantém a existente no backend)
       
-      const updatedBannerDTO = await apiClient.putFormData(`admin/banners/${id}`, formData);
+      const updatedBannerDTO = await httpClient.putFormData(`admin/banners/${id}`, formData);
       
       // Converte DTO para instância de Banner
       const updatedBanner = Banner.fromDTO(updatedBannerDTO);

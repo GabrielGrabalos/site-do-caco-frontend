@@ -3,7 +3,7 @@
  * Endpoints: GET /api/public/stickers, POST /api/admin/stickers, etc.
  */
 
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 class StickerService {
   /**
@@ -14,7 +14,7 @@ class StickerService {
    * @returns {Promise<Object>} Page<StickerPublicDTO>
    */
   async getAllStickers(page = 0, size = 100) {
-    return apiClient.get(`public/stickers?page=${page}&size=${size}`);
+    return httpClient.get(`public/stickers?page=${page}&size=${size}`);
   }
 
   /**
@@ -42,7 +42,7 @@ class StickerService {
       formData.append('originEventId', dto.originEventId);
     }
 
-    return apiClient.postFormData('admin/stickers', formData);
+    return httpClient.postFormData('admin/stickers', formData);
   }
 
   /**
@@ -73,7 +73,7 @@ class StickerService {
       formData.append('originEventId', dto.originEventId || '');
     }
 
-    return apiClient.putFormData(`admin/stickers/${stickerId}`, formData);
+    return httpClient.putFormData(`admin/stickers/${stickerId}`, formData);
   }
 
   /**
@@ -84,7 +84,7 @@ class StickerService {
    * @returns {Promise<Object>} { stickerId, codes[], ... }
    */
   async generateCodes(stickerId, dto) {
-    return apiClient.post(`admin/stickers/${stickerId}/codes`, dto);
+    return httpClient.post(`admin/stickers/${stickerId}/codes`, dto);
   }
 
   /**
@@ -94,7 +94,7 @@ class StickerService {
    * @returns {Promise<Array>} Lista de RedemptionCodeDTO
    */
   async getStickerCodes(stickerId) {
-    return apiClient.get(`admin/stickers/${stickerId}/codes`);
+    return httpClient.get(`admin/stickers/${stickerId}/codes`);
   }
 
   /**
@@ -104,8 +104,8 @@ class StickerService {
    */
   async getEventsForSelection() {
     const [upcoming, past] = await Promise.all([
-      apiClient.get('public/events/upcoming?size=50'),
-      apiClient.get('public/events/past?size=20')
+      httpClient.get('public/events/upcoming?size=50'),
+      httpClient.get('public/events/past?size=20')
     ]);
 
     // Combina e retorna eventos
@@ -122,7 +122,7 @@ class StickerService {
    * @returns {Promise<Object>} Resultado do resgate
    */
   async redeemSticker(code) {
-    return apiClient.post('private/stickers/redeem', { code });
+    return httpClient.post('private/stickers/redeem', { code });
   }
 }
 

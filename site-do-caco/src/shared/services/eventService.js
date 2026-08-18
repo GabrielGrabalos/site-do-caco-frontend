@@ -2,7 +2,7 @@
  * Serviço para gerenciar eventos
  */
 
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 class EventService {
   // ==================== ENDPOINTS PÚBLICOS ====================
@@ -26,7 +26,7 @@ class EventService {
     queryParams.append('page', params.page || 0);
     queryParams.append('size', params.size || 100);
     
-    return apiClient.get(`/public/events/month?${queryParams.toString()}`);
+    return httpClient.get(`public/events/month?${queryParams.toString()}`);
   }
 
   /**
@@ -36,7 +36,7 @@ class EventService {
    * @returns {Promise<Object>} Página de eventos futuros
    */
   async getUpcomingEvents(page = 0, size = 20) {
-    return apiClient.get(`/public/events/upcoming?page=${page}&size=${size}`);
+    return httpClient.get(`public/events/upcoming?page=${page}&size=${size}`);
   }
 
   /**
@@ -46,7 +46,7 @@ class EventService {
    * @returns {Promise<Object>} Página de eventos passados
    */
   async getPastEvents(page = 0, size = 20) {
-    return apiClient.get(`/public/events/past?page=${page}&size=${size}`);
+    return httpClient.get(`public/events/past?page=${page}&size=${size}`);
   }
 
   /**
@@ -55,7 +55,7 @@ class EventService {
    * @returns {Promise<Object>} Detalhes completos do evento (EventResponseDTO)
    */
   async getEventById(eventId) {
-    return apiClient.get(`/public/events/${eventId}`);
+    return httpClient.get(`public/events/${eventId}`);
   }
 
   /**
@@ -64,7 +64,7 @@ class EventService {
    * @returns {Promise<Object>} Detalhes completos do evento (EventResponseDTO)
    */
   async getEventBySlug(slug) {
-    return apiClient.get(`/public/events/slug/${slug}`);
+    return httpClient.get(`public/events/slug/${slug}`);
   }
 
   // ==================== ENDPOINTS PRIVADOS (Autenticação Requerida) ====================
@@ -76,7 +76,7 @@ class EventService {
    * @returns {Promise<Object>} Dados da participação
    */
   async saveParticipation(eventId, status) {
-    return apiClient.post(`/private/user/events/${eventId}/save`, { status });
+    return httpClient.post(`private/user/events/${eventId}/save`, { status });
   }
 
   /**
@@ -85,7 +85,7 @@ class EventService {
    * @returns {Promise<void>}
    */
   async removeParticipation(eventId) {
-    return apiClient.delete(`/private/user/events/${eventId}/save`);
+    return httpClient.delete(`private/user/events/${eventId}/save`);
   }
 
   /**
@@ -95,7 +95,7 @@ class EventService {
    * @returns {Promise<Object>} Página de eventos salvos
    */
   async getSavedEvents(page = 0, size = 20) {
-    return apiClient.get(`/private/user/events/saved?page=${page}&size=${size}`);
+    return httpClient.get(`private/user/events/saved?page=${page}&size=${size}`);
   }
 
   /**
@@ -104,7 +104,7 @@ class EventService {
    * @returns {Promise<Object>} Detalhes da participação
    */
   async getUserParticipationDetails(eventId) {
-    return apiClient.get(`/private/user/events/${eventId}/details`);
+    return httpClient.get(`private/user/events/${eventId}/details`);
   }
 
   /**
@@ -114,7 +114,7 @@ class EventService {
    * @returns {Promise<Object>} Participação atualizada
    */
   async updateParticipationStatus(eventId, status) {
-    return apiClient.put(`/private/user/events/${eventId}/status`, { status });
+    return httpClient.put(`private/user/events/${eventId}/status`, { status });
   }
 
   // ==================== ENDPOINTS ADMINISTRATIVOS (Papel ADMIN Requerido) ====================
@@ -125,7 +125,7 @@ class EventService {
    * @returns {Promise<Object>} Evento criado
    */
   async createEvent(formData) {
-    return apiClient.postFormData('admin/events', formData);
+    return httpClient.postFormData('admin/events', formData);
   }
 
   /**
@@ -135,7 +135,7 @@ class EventService {
    * @returns {Promise<Object>} Evento atualizado
    */
   async updateEvent(eventId, formData) {
-    return apiClient.putFormData(`admin/events/${eventId}`, formData);
+    return httpClient.putFormData(`admin/events/${eventId}`, formData);
   }
 
   /**
@@ -144,7 +144,7 @@ class EventService {
    * @returns {Promise<void>}
    */
   async deleteEvent(eventId) {
-    return apiClient.delete(`/admin/events/${eventId}`);
+    return httpClient.delete(`admin/events/${eventId}`);
   }
 
   /**
@@ -154,7 +154,7 @@ class EventService {
    * @returns {Promise<Object>} Item criado
    */
   async createGalleryItem(eventId, formData) {
-    return apiClient.postFormData(`/admin/events/${eventId}/gallery`, formData);
+    return httpClient.postFormData(`admin/events/${eventId}/gallery`, formData);
   }
 
   /**
@@ -165,7 +165,7 @@ class EventService {
    * @returns {Promise<Object>} Item atualizado
    */
   async updateGalleryItemCaption(eventId, itemId, data) {
-    return apiClient.put(`/admin/events/${eventId}/gallery/${itemId}`, data);
+    return httpClient.put(`admin/events/${eventId}/gallery/${itemId}`, data);
   }
 
   /**
@@ -175,7 +175,7 @@ class EventService {
    * @returns {Promise<void>}
    */
   async deleteGalleryItem(eventId, itemId) {
-    return apiClient.delete(`/admin/events/${eventId}/gallery/${itemId}`);
+    return httpClient.delete(`admin/events/${eventId}/gallery/${itemId}`);
   }
 }
 

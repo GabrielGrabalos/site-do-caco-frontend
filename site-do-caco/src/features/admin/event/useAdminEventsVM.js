@@ -31,15 +31,6 @@ export function useAdminEventsVM() {
     checkForDraft();
   }, []);
 
-  // Helper para extrair mensagem de erro do backend
-  const getErrorMessage = (err) => {
-    if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
-      // Formato comum de validação do Spring (BindingResult)
-      return err.response.data.errors.map(e => e.defaultMessage || e.message).join(' | ');
-    }
-    return err.response?.data?.message || err.message || "Ocorreu um erro inesperado.";
-  };
-
   const checkForDraft = () => {
     const draft = localStorage.getItem(DRAFT_KEY);
     setHasDraft(!!draft);
@@ -103,7 +94,7 @@ export function useAdminEventsVM() {
       toast({
         variant: "destructive",
         title: "Erro ao criar",
-        description: getErrorMessage(err),
+        description: err.message || "Ocorreu um erro inesperado.",
       });
       return { success: false, error: err.message };
     } finally {
@@ -130,7 +121,7 @@ export function useAdminEventsVM() {
       toast({
         variant: "destructive",
         title: "Erro ao atualizar",
-        description: getErrorMessage(err),
+        description: err.message || "Ocorreu um erro inesperado.",
       });
       return { success: false, error: err.message };
     } finally {
@@ -158,7 +149,7 @@ export function useAdminEventsVM() {
       toast({
         variant: "destructive",
         title: "Erro ao excluir",
-        description: getErrorMessage(err),
+        description: err.message || "Ocorreu um erro inesperado.",
       });
     } finally {
       setLoading(false);

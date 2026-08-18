@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { apiClient } from '@/shared/services/apiClient';
+import { httpClient } from '@/shared/lib/http';
+import { uploadClient } from '@/shared/lib/upload';
 import { authService } from '@/shared/services/authService';
 
 export function useProfileVM() {
@@ -17,7 +18,7 @@ export function useProfileVM() {
         try {
             setLoading(true);
             setError(null);
-            const userData = await apiClient.get('user/me');
+            const userData = await httpClient.get('user/me');
             setUser(userData);
         } catch (err) {
             setError(err.message || 'Erro ao carregar perfil');
@@ -49,7 +50,7 @@ export function useProfileVM() {
                 setUploadProgress(percentual);
             };
 
-            updatedUser = await apiClient.putFormDataWithProgress('user/me', formData, onProgress);
+            updatedUser = await uploadClient.putFormDataWithProgress('user/me', formData, onProgress);
 
 
             // Atualiza o usuário no localStorage

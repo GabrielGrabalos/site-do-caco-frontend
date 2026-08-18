@@ -1,13 +1,13 @@
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 export const examService = {
   // Public (Exam Bank)
   getPublicSubjectsAll: async () => {
-    return apiClient.get('public/exams/subjects/all');
+    return httpClient.get('public/exams/subjects/all');
   },
 
   getPublicYears: async () => {
-    return apiClient.get('public/exams/years');
+    return httpClient.get('public/exams/years');
   },
 
   getPublicExams: async ({ year, professorId, subjectCode, page = 0, size = 20, sort = 'year,desc' } = {}) => {
@@ -21,7 +21,7 @@ export const examService = {
     params.set('size', String(size));
     params.set('sort', String(sort));
 
-    return apiClient.get(`public/exams?${params.toString()}`);
+    return httpClient.get(`public/exams?${params.toString()}`);
   },
 
   getPublicProfessors: async ({ name, page = 0, size = 20, sort = 'name' } = {}) => {
@@ -32,38 +32,38 @@ export const examService = {
     params.set('size', String(size));
     params.set('sort', String(sort));
 
-    return apiClient.get(`public/exams/professors?${params.toString()}`);
+    return httpClient.get(`public/exams/professors?${params.toString()}`);
   },
 
   // Subjects
   getSubjects: async () => {
-    return apiClient.get('admin/exams/subjects');
+    return httpClient.get('admin/exams/subjects');
   },
 
   createSubject: async (subjectData) => {
-    return apiClient.post('admin/exams/subjects', subjectData);
+    return httpClient.post('admin/exams/subjects', subjectData);
   },
 
   deleteSubject: async (subjectCode) => {
-    return apiClient.delete(`admin/exams/subjects/${subjectCode}`);
+    return httpClient.delete(`admin/exams/subjects/${subjectCode}`);
   },
 
   // Exams
   getExamsBySubject: async (subjectCode) => {
-    return apiClient.get(`admin/exams/subject/${subjectCode}`);
+    return httpClient.get(`admin/exams/subject/${subjectCode}`);
   },
 
   createExam: async (examData) => {
     // examData pode conter professorId (opcional)
-    return apiClient.post('admin/exams', examData);
+    return httpClient.post('admin/exams', examData);
   },
 
   updateExam: async (examId, examData) => {
     // examData pode conter professorId e/ou removeProfessor (opcional)
-    return apiClient.put(`admin/exams/${examId}`, examData);
+    return httpClient.put(`admin/exams/${examId}`, examData);
   },
 
   deleteExam: async (examId) => {
-    return apiClient.delete(`admin/exams/${examId}`);
+    return httpClient.delete(`admin/exams/${examId}`);
   }
 };

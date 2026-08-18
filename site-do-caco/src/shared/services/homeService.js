@@ -1,7 +1,7 @@
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 export const homeService = {
   async getDashboard() {
-    return apiClient.get('public/home');
+    return httpClient.get('public/home');
   },
 };

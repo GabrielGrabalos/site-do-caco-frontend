@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { profileFormService } from '@/shared/services/profileFormService';
-import { apiClient } from '@/shared/services/apiClient';
+import { httpClient } from '@/shared/lib/http';
 import { authService } from '@/shared/services/authService';
 import { redirectManager } from '@/shared/services/redirectManager';
 
@@ -66,7 +66,7 @@ export function useProfileFormVM() {
 
       // Busca dados do usuário agora que o formulário está preenchido
       try {
-        const user = await apiClient.get('user/me');
+        const user = await httpClient.get('user/me');
         authService.setUser(user);
       } catch {
         // Se falhar, não é crítico; o usuário já está autenticado

@@ -1,4 +1,4 @@
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 class NewsService {
   // ==================== PUBLIC ENDPOINTS ====================
@@ -11,7 +11,7 @@ class NewsService {
    * @returns {Promise<Object>} Response com paginação Spring
    */
   async getNewsList(page = 0, size = 10, sort = 'publishedAt,desc') {
-    return apiClient.get(`public/news?page=${page}&size=${size}&sort=${sort}`);
+    return httpClient.get(`public/news?page=${page}&size=${size}&sort=${sort}`);
   }
 
   /**
@@ -20,7 +20,7 @@ class NewsService {
    * @returns {Promise<Object>} NewsDetailDTO
    */
   async getNewsBySlug(slug) {
-    return apiClient.get(`public/news/${slug}`);
+    return httpClient.get(`public/news/${slug}`);
   }
 
   // ==================== EDITOR ENDPOINTS ====================
@@ -33,7 +33,7 @@ class NewsService {
   async createNews(data) {
     // Se já é um FormData, envia diretamente
     if (data instanceof FormData) {
-      return apiClient.postFormData('editor/news', data);
+      return httpClient.postFormData('editor/news', data);
     }
     
     // Caso contrário, constrói um novo FormData
@@ -46,7 +46,7 @@ class NewsService {
       formData.append('coverImage', data.coverImage);
     }
 
-    return apiClient.postFormData('editor/news', formData);
+    return httpClient.postFormData('editor/news', formData);
   }
 
   /**
@@ -58,7 +58,7 @@ class NewsService {
   async updateNews(id, data) {
     // Se já é um FormData, envia diretamente
     if (data instanceof FormData) {
-      return apiClient.putFormData(`editor/news/${id}`, data);
+      return httpClient.putFormData(`editor/news/${id}`, data);
     }
     
     // Caso contrário, constrói um novo FormData
@@ -74,7 +74,7 @@ class NewsService {
       formData.append('coverImage', data.coverImage);
     }
 
-    return apiClient.putFormData(`editor/news/${id}`, formData);
+    return httpClient.putFormData(`editor/news/${id}`, formData);
   }
 
   /**
@@ -83,7 +83,7 @@ class NewsService {
    * @returns {Promise<void>}
    */
   async deleteNews(id) {
-    return apiClient.delete(`editor/news/${id}`);
+    return httpClient.delete(`editor/news/${id}`);
   }
 
   // ==================== ADMIN ENDPOINTS ====================
@@ -96,7 +96,7 @@ class NewsService {
   async createNewsAsAdmin(data) {
     // Se já é um FormData, envia diretamente
     if (data instanceof FormData) {
-      return apiClient.postFormData('admin/news', data);
+      return httpClient.postFormData('admin/news', data);
     }
     
     // Caso contrário, constrói um novo FormData
@@ -109,7 +109,7 @@ class NewsService {
       formData.append('coverImage', data.coverImage);
     }
 
-    return apiClient.postFormData('admin/news', formData);
+    return httpClient.postFormData('admin/news', formData);
   }
 
   /**
@@ -121,7 +121,7 @@ class NewsService {
   async updateNewsAsAdmin(id, data) {
     // Se já é um FormData, envia diretamente
     if (data instanceof FormData) {
-      return apiClient.putFormData(`admin/news/${id}`, data);
+      return httpClient.putFormData(`admin/news/${id}`, data);
     }
     
     // Caso contrário, constrói um novo FormData
@@ -137,7 +137,7 @@ class NewsService {
       formData.append('coverImage', data.coverImage);
     }
 
-    return apiClient.putFormData(`admin/news/${id}`, formData);
+    return httpClient.putFormData(`admin/news/${id}`, formData);
   }
 
   /**
@@ -146,7 +146,7 @@ class NewsService {
    * @returns {Promise<void>}
    */
   async deleteNewsAsAdmin(id) {
-    return apiClient.delete(`admin/news/${id}`);
+    return httpClient.delete(`admin/news/${id}`);
   }
 
   /**
@@ -157,7 +157,7 @@ class NewsService {
    * @returns {Promise<Object>} Response com paginação Spring
    */
   async getNewsListAdmin(page = 0, size = 10, sort = 'publishedAt,desc') {
-    return apiClient.get(`admin/news?page=${page}&size=${size}&sort=${sort}`);
+    return httpClient.get(`admin/news?page=${page}&size=${size}&sort=${sort}`);
   }
 
   /**
@@ -166,7 +166,7 @@ class NewsService {
    * @returns {Promise<Object>} NewsDetailDTO
    */
   async getNewsById(id) {
-    return apiClient.get(`admin/news/${id}`);
+    return httpClient.get(`admin/news/${id}`);
   }
 
   /**
@@ -175,7 +175,7 @@ class NewsService {
    * @returns {Promise<Object>} NewsDetailDTO
    */
   async getNewsDetailBySlug(slug) {
-    return apiClient.get(`editor/news/${slug}`);
+    return httpClient.get(`editor/news/${slug}`);
   }
 
   /**
@@ -184,7 +184,7 @@ class NewsService {
    * @returns {Promise<Object>} NewsDetailDTO
    */
   async getNewsDetailById(slug) {
-    return apiClient.get(`editor/news/${slug}`);
+    return httpClient.get(`editor/news/${slug}`);
   }
 
   /**
@@ -195,7 +195,7 @@ class NewsService {
    * @returns {Promise<Object>} Response com paginação Spring
    */
   async getEditorNews(page = 0, size = 10, sort = 'publishedAt,desc') {
-    return apiClient.get(`editor/news?page=${page}&size=${size}&sort=${sort}`);
+    return httpClient.get(`editor/news?page=${page}&size=${size}&sort=${sort}`);
   }
 
   /**
@@ -206,7 +206,7 @@ class NewsService {
   async createEditorNews(data) {
     // Se já é um FormData, envia diretamente
     if (data instanceof FormData) {
-      return apiClient.postFormData('editor/news', data);
+      return httpClient.postFormData('editor/news', data);
     }
     
     // Caso contrário, constrói um novo FormData
@@ -219,7 +219,7 @@ class NewsService {
       formData.append('coverImage', data.coverImage);
     }
 
-    return apiClient.postFormData('editor/news', formData);
+    return httpClient.postFormData('editor/news', formData);
   }
 
   /**
@@ -231,7 +231,7 @@ class NewsService {
   async updateEditorNews(id, data) {
     // Se já é um FormData, envia diretamente
     if (data instanceof FormData) {
-      return apiClient.putFormData(`editor/news/${id}`, data);
+      return httpClient.putFormData(`editor/news/${id}`, data);
     }
     
     // Caso contrário, constrói um novo FormData
@@ -247,7 +247,7 @@ class NewsService {
       formData.append('coverImage', data.coverImage);
     }
 
-    return apiClient.putFormData(`editor/news/${id}`, formData);
+    return httpClient.putFormData(`editor/news/${id}`, formData);
   }
 
   /**
@@ -256,7 +256,7 @@ class NewsService {
    * @returns {Promise<void>}
    */
   async deleteEditorNews(id) {
-    return apiClient.delete(`editor/news/${id}`);
+    return httpClient.delete(`editor/news/${id}`);
   }
 
   /**
@@ -269,7 +269,7 @@ class NewsService {
     if (params.search) queryParams.append('search', params.search);
     if (params.limit) queryParams.append('limit', params.limit);
     
-    return apiClient.get(`public/news/search?${queryParams.toString()}`);
+    return httpClient.get(`public/news/search?${queryParams.toString()}`);
   }
 }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { apiClient } from '@/shared/services/apiClient';
+import { httpClient } from '@/shared/lib/http';
 import { authService } from '@/shared/services/authService';
 
 const PENDING_FEEDBACK_KEY = 'caco_pending_feedback';
@@ -74,7 +74,7 @@ export function useManualVM() {
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get('public/manual/categories');
+      const data = await httpClient.get('public/manual/categories');
       setCategories(data);
     } catch (err) {
       setError(err.message);
@@ -91,7 +91,7 @@ export function useManualVM() {
         return;
       }
       
-      const data = await apiClient.get(`public/manual/chapters/category/${categoryId}`);
+      const data = await httpClient.get(`public/manual/chapters/category/${categoryId}`);
       setChapters(data);
       
       // Armazenar no cache
@@ -112,7 +112,7 @@ export function useManualVM() {
         return;
       }
       
-      const data = await apiClient.get(`public/manual/articles/chapter/${chapterId}`);
+      const data = await httpClient.get(`public/manual/articles/chapter/${chapterId}`);
       setArticles(data);
       
       // Armazenar no cache
@@ -129,7 +129,7 @@ export function useManualVM() {
     try {
       setLoadingArticle(true);
       setFeedbackSubmitted(false);
-      const data = await apiClient.get(`public/manual/articles/slug/${articleSlug}`);
+      const data = await httpClient.get(`public/manual/articles/slug/${articleSlug}`);
       setSelectedArticle(data);
       
       // Verificar se há feedback pendente para este artigo
@@ -199,7 +199,7 @@ export function useManualVM() {
     }
     
     try {
-      await apiClient.post(`article-feedback/articles/${selectedArticle.id}/feedback`, {
+      await httpClient.post(`article-feedback/articles/${selectedArticle.id}/feedback`, {
         isHelpful: helpful,
         comment,
       });
