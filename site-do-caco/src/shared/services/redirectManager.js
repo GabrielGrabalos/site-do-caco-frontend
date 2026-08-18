@@ -50,11 +50,9 @@ class RedirectManager {
     };
 
     this.storageType.setItem(REDIRECT_STORAGE_KEY, JSON.stringify(redirectInfo));
-    
+
     // Mantém compatibilidade com sistema antigo
     this.storageType.setItem(LOGIN_REDIRECT_KEY, path);
-    
-    console.log('[RedirectManager] Redirecionamento salvo:', redirectInfo);
   }
 
   /**
@@ -111,7 +109,6 @@ class RedirectManager {
   clearRedirect() {
     this.storageType.removeItem(REDIRECT_STORAGE_KEY);
     this.storageType.removeItem(LOGIN_REDIRECT_KEY);
-    console.log('[RedirectManager] Redirecionamento limpo');
   }
 
   /**
@@ -133,8 +130,6 @@ class RedirectManager {
 
     this.storageType.setItem(REDIRECT_STORAGE_KEY, JSON.stringify(redirectInfo));
     this.storageType.setItem(FORM_REDIRECT_KEY, path); // Compatibilidade
-    
-    console.log('[RedirectManager] Form redirect salvo:', redirectInfo);
   }
 
   /**

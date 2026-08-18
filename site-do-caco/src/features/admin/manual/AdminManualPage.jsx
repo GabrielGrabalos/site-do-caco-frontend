@@ -930,9 +930,9 @@ export function AdminManualPage() {
       {/* Modais e Dialogs */}
       <CreateCategoryModal
         open={categoryModalOpen}
-        onOpenChange={setCategoryModalOpen}
+        onClose={() => setCategoryModalOpen(false)}
         onSubmit={handleCreateCategory}
-        editingCategory={editingCategory}
+        category={editingCategory}
         loading={creating}
       />
 

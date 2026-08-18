@@ -96,9 +96,9 @@ class ApiClient {
    */
   async get(endpoint, options = {}) {
     const response = await fetch(this.buildUrl(endpoint), {
+      ...options,
       method: 'GET',
       headers: this.getHeaders(options.headers),
-      ...options,
     });
 
     return this.handleResponse(response);
@@ -109,10 +109,10 @@ class ApiClient {
    */
   async post(endpoint, data = null, options = {}) {
     const response = await fetch(this.buildUrl(endpoint), {
+      ...options,
       method: 'POST',
       headers: this.getHeaders(options.headers),
       body: data ? JSON.stringify(data) : undefined,
-      ...options,
     });
 
     return this.handleResponse(response);
@@ -123,10 +123,10 @@ class ApiClient {
    */
   async postFormData(endpoint, formData, options = {}) {
     const response = await fetch(this.buildUrl(endpoint), {
+      ...options,
       method: 'POST',
       headers: this.getHeaders(options.headers, true), // true indica FormData
       body: formData,
-      ...options,
     });
 
     return this.handleResponse(response);
@@ -137,10 +137,10 @@ class ApiClient {
    */
   async putFormData(endpoint, formData, options = {}) {
     const response = await fetch(this.buildUrl(endpoint), {
+      ...options,
       method: 'PUT',
       headers: this.getHeaders(options.headers, true), // true indica FormData
       body: formData,
-      ...options,
     });
 
     return this.handleResponse(response);
@@ -286,10 +286,10 @@ class ApiClient {
    */
   async put(endpoint, data = null, options = {}) {
     const response = await fetch(this.buildUrl(endpoint), {
+      ...options,
       method: 'PUT',
       headers: this.getHeaders(options.headers),
       body: data ? JSON.stringify(data) : undefined,
-      ...options,
     });
 
     return this.handleResponse(response);
@@ -300,10 +300,10 @@ class ApiClient {
    */
   async patch(endpoint, data = null, options = {}) {
     const response = await fetch(this.buildUrl(endpoint), {
+      ...options,
       method: 'PATCH',
       headers: this.getHeaders(options.headers),
       body: data ? JSON.stringify(data) : undefined,
-      ...options,
     });
 
     return this.handleResponse(response);
@@ -314,9 +314,9 @@ class ApiClient {
    */
   async delete(endpoint, options = {}) {
     const response = await fetch(this.buildUrl(endpoint), {
+      ...options,
       method: 'DELETE',
       headers: this.getHeaders(options.headers),
-      ...options,
     });
 
     return this.handleResponse(response);

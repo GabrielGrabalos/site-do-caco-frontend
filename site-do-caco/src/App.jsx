@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { MainLayout } from '@/shared/components/MainLayout';
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute';
 import { SessionExpiryWarning } from '@/shared/components/SessionExpiryWarning';
@@ -10,7 +10,7 @@ import { ThemeProvider } from '@/shared/contexts/ThemeContext';
 import { AuthProvider } from '@/shared/contexts/AuthContext';
 import { redirectManager } from '@/shared/services/redirectManager';
 
-// Pages
+// Pages públicas (carregadas eagerly)
 import { HomePage } from '@/features/home/HomePage';
 import { NewsListPage } from '@/features/news/NewsListPage';
 import { NewsDetailPage } from '@/features/news/NewsDetailPage';
@@ -24,20 +24,28 @@ import { ProfilePage } from '@/features/profile/ProfilePage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { CallbackPage } from '@/features/auth/CallbackPage';
 import { ProfileFormPage } from '@/features/profile-form/ProfileFormPage';
-import { AdminLayout } from '@/features/admin/AdminLayout';
-import { AdminDashboard } from '@/features/admin/dashboard/AdminDashboard';
-import { AdminNewsPage } from '@/features/admin/news/AdminNewsPage';
-import { AdminManualPage } from '@/features/admin/manual/AdminManualPage';
-import { AdminExamBankPage } from '@/features/admin/exams/AdminExamBankPage';
-import { AdminWhatsAppGroupsPage } from '@/features/admin/whatsapp-groups/AdminWhatsAppGroupsPage';
-import { AdminStorePage } from '@/features/admin/store/AdminStorePage';
-import { AdminEventsPage } from '@/features/admin/event/AdminEventsPage';
-import { AdminStickersPage } from '@/features/admin/stickers/AdminStickersPage';
-import { SuperAdminPage } from '@/features/admin/super-admin/SuperAdminPage';
-import { StorePage } from '@/features/store/StorePage';
-import { ProductDetailPage } from '@/features/store/ProductDetailPage';
-import { EditorLayout } from '@/features/editor/EditorLayout';
-import { EditorNewsPage } from '@/features/editor/news/EditorNewsPage';
+
+// Pages administrativas e de editor (code-split: só baixadas por quem acessa /admin ou /editor)
+const AdminLayout = lazy(() => import('@/features/admin/AdminLayout').then((m) => ({ default: m.AdminLayout })));
+const AdminDashboard = lazy(() => import('@/features/admin/dashboard/AdminDashboard').then((m) => ({ default: m.AdminDashboard })));
+const AdminNewsPage = lazy(() => import('@/features/admin/news/AdminNewsPage').then((m) => ({ default: m.AdminNewsPage })));
+const AdminManualPage = lazy(() => import('@/features/admin/manual/AdminManualPage').then((m) => ({ default: m.AdminManualPage })));
+const AdminExamBankPage = lazy(() => import('@/features/admin/exams/AdminExamBankPage').then((m) => ({ default: m.AdminExamBankPage })));
+const AdminWhatsAppGroupsPage = lazy(() => import('@/features/admin/whatsapp-groups/AdminWhatsAppGroupsPage').then((m) => ({ default: m.AdminWhatsAppGroupsPage })));
+const AdminStorePage = lazy(() => import('@/features/admin/store/AdminStorePage').then((m) => ({ default: m.AdminStorePage })));
+const AdminEventsPage = lazy(() => import('@/features/admin/event/AdminEventsPage').then((m) => ({ default: m.AdminEventsPage })));
+const AdminStickersPage = lazy(() => import('@/features/admin/stickers/AdminStickersPage').then((m) => ({ default: m.AdminStickersPage })));
+const SuperAdminPage = lazy(() => import('@/features/admin/super-admin/SuperAdminPage').then((m) => ({ default: m.SuperAdminPage })));
+const EditorLayout = lazy(() => import('@/features/editor/EditorLayout').then((m) => ({ default: m.EditorLayout })));
+const EditorNewsPage = lazy(() => import('@/features/editor/news/EditorNewsPage').then((m) => ({ default: m.EditorNewsPage })));
+
+function RouteLoadingFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+    </div>
+  );
+}
 
 /**
  * Componente interno que escuta o evento global 'caco:form-required' emitido pelo
@@ -121,7 +129,9 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute requireAdmin>
-              <AdminLayout />
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <AdminLayout />
+              </Suspense>
             </ProtectedRoute>
           }
         >
@@ -141,7 +151,9 @@ function App() {
           path="/editor"
           element={
             <ProtectedRoute requireEditor>
-              <EditorLayout />
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <EditorLayout />
+              </Suspense>
             </ProtectedRoute>
           }
         >

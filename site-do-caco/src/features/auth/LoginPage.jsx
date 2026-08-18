@@ -4,6 +4,7 @@ import loginImage from '@/assets/loginImage.png';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { authService } from '@/shared/services/authService';
 import { redirectManager } from '@/shared/services/redirectManager';
+import { env } from '@/shared/config/env';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -157,7 +158,7 @@ export function LoginPage() {
               <div className="text-center text-xs text-muted-foreground mt-4">
                 Ao utilizar o site, você concorda com nossos{' '}
                 <a
-                  href={import.meta.env.VITE_TERMS_OF_SERVICE_URL}
+                  href={env.termsOfServiceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
@@ -166,7 +167,7 @@ export function LoginPage() {
                 </a>
                 {' '}e{' '}
                 <a
-                  href={import.meta.env.VITE_PRIVACY_POLICY_URL}
+                  href={env.privacyPolicyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"

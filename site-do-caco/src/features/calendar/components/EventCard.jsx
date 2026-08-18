@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Video, Globe } from 'lucide-react';
+import { Calendar, MapPin, GraduationCap, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function EventCard({ event, className }) {
@@ -26,10 +26,12 @@ export function EventCard({ event, className }) {
 
   const getTypeIcon = (type) => {
     switch (type) {
-      case 'ONLINE':
-        return <Globe className="h-3 w-3" />;
-      case 'HYBRID':
-        return <Video className="h-3 w-3" />;
+      case 'CACO':
+        return <GraduationCap className="h-3 w-3" />;
+      case 'IC':
+        return <Landmark className="h-3 w-3" />;
+      case 'FERIADO':
+        return <Calendar className="h-3 w-3" />;
       default:
         return <MapPin className="h-3 w-3" />;
     }
@@ -37,9 +39,9 @@ export function EventCard({ event, className }) {
 
   const getTypeLabel = (type) => {
     switch (type) {
-      case 'ONLINE': return 'Online';
-      case 'IN_PERSON': return 'Presencial';
-      case 'HYBRID': return 'Híbrido';
+      case 'CACO': return 'CACo';
+      case 'IC': return 'IC';
+      case 'FERIADO': return 'Feriado';
       default: return type;
     }
   };

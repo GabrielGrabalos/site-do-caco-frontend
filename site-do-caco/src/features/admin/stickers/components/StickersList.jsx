@@ -115,18 +115,15 @@ export function StickersList({
                   <div className="flex gap-1">
                     {sticker.originEvent.importance && (
                       <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                        {sticker.originEvent.importance === 'HIGHLIGHT' && '⭐ Destaque'}
-                        {sticker.originEvent.importance === 'IMPORTANT' && '🔔 Importante'}
-                        {sticker.originEvent.importance === 'NORMAL' && '📌 Normal'}
+                        {sticker.originEvent.importance === 'MAJOR' && '⭐ Destaque'}
+                        {sticker.originEvent.importance === 'MINOR' && '📌 Normal'}
                       </Badge>
                     )}
                     {sticker.originEvent.type && (
                       <Badge variant="outline" className="text-xs px-1.5 py-0">
-                        {sticker.originEvent.type === 'ACADEMIC' && '🎓 Acadêmico'}
-                        {sticker.originEvent.type === 'SOCIAL' && '🎉 Social'}
-                        {sticker.originEvent.type === 'SPORTS' && '⚽ Esportivo'}
-                        {sticker.originEvent.type === 'CULTURAL' && '🎭 Cultural'}
-                        {sticker.originEvent.type === 'OTHER' && '📋 Outro'}
+                        {sticker.originEvent.type === 'CACO' && '🎓 CACo'}
+                        {sticker.originEvent.type === 'IC' && '🏫 IC'}
+                        {sticker.originEvent.type === 'FERIADO' && '📅 Feriado'}
                       </Badge>
                     )}
                   </div>

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Clock, Share2, Globe, Video, Bookmark, Users, Check, X, Heart, ExternalLink } from 'lucide-react';
+import { Calendar, MapPin, Clock, Share2, Globe, Bookmark, Users, Check, X, Heart, ExternalLink } from 'lucide-react';
 import { useEventVM } from './useEventVM';
 import { EventGallery } from './components/EventGallery';
 import { Button } from '@/components/ui/button';
@@ -92,7 +92,7 @@ export function EventPage() {
     switch (status) {
       case 'HAPPENING':
         return <Badge variant="default" className="bg-green-600 hover:bg-green-700 animate-pulse">Acontecendo Agora</Badge>;
-      case 'UPCOMING':
+      case 'SCHEDULED':
         return <Badge variant="outline" className="border-blue-500 text-blue-500">Em Breve</Badge>;
       case 'ENDED':
         return <Badge variant="secondary">Encerrado</Badge>;
@@ -103,9 +103,19 @@ export function EventPage() {
 
   const getTypeIcon = (type) => {
     switch (type) {
-      case 'ONLINE': return <Globe className="w-4 h-4 mr-1" />;
-      case 'HIBRIDO': return <Video className="w-4 h-4 mr-1" />;
+      case 'CACO': return <Users className="w-4 h-4 mr-1" />;
+      case 'IC': return <Globe className="w-4 h-4 mr-1" />;
+      case 'FERIADO': return <Calendar className="w-4 h-4 mr-1" />;
       default: return <Users className="w-4 h-4 mr-1" />;
+    }
+  };
+
+  const getTypeLabel = (type) => {
+    switch (type) {
+      case 'CACO': return 'CACo';
+      case 'IC': return 'IC';
+      case 'FERIADO': return 'Feriado';
+      default: return 'Evento';
     }
   };
 
@@ -137,7 +147,7 @@ export function EventPage() {
                 {getStatusBadge(event.status)}
                 <Badge variant="outline" className="flex items-center">
                   {getTypeIcon(event.type)}
-                  {event.type?.toLowerCase() === 'presencial' ? 'Presencial' : event.type?.toLowerCase() || 'Evento'}
+                  {getTypeLabel(event.type)}
                 </Badge>
               </div>
               
