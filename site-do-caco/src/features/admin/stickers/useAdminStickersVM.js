@@ -33,18 +33,6 @@ export function useAdminStickersVM() {
   }, []);
 
   /**
-   * Extrai mensagem de erro amigável
-   */
-  const getErrorMessage = (err) => {
-    if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
-      return err.response.data.errors
-        .map(e => e.defaultMessage || e.message)
-        .join(' | ');
-    }
-    return err.response?.data?.message || err.message || "Ocorreu um erro inesperado.";
-  };
-
-  /**
    * Verifica se existe rascunho salvo
    */
   const checkForDraft = () => {
@@ -113,7 +101,7 @@ export function useAdminStickersVM() {
       toast({
         variant: "destructive",
         title: "Erro ao criar",
-        description: getErrorMessage(err),
+        description: err.message || "Ocorreu um erro inesperado.",
       });
       return { success: false, error: err.message };
     } finally {
@@ -145,7 +133,7 @@ export function useAdminStickersVM() {
       toast({
         variant: "destructive",
         title: "Erro ao atualizar",
-        description: getErrorMessage(err),
+        description: err.message || "Ocorreu um erro inesperado.",
       });
       return { success: false, error: err.message };
     } finally {
@@ -189,7 +177,7 @@ export function useAdminStickersVM() {
       toast({
         variant: "destructive",
         title: "Erro ao gerar códigos",
-        description: getErrorMessage(err),
+        description: err.message || "Ocorreu um erro inesperado.",
       });
       return { success: false, error: err.message };
     } finally {

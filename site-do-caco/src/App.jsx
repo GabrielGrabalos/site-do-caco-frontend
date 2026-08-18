@@ -49,7 +49,7 @@ function RouteLoadingFallback() {
 
 /**
  * Componente interno que escuta o evento global 'caco:form-required' emitido pelo
- * apiClient sempre que o backend retorna 403 com error="form_required".
+ * httpClient sempre que o backend retorna 403 com error="form_required".
  * Precisa ficar dentro de BrowserRouter para ter acesso ao useNavigate.
  */
 function FormRequiredRedirect() {

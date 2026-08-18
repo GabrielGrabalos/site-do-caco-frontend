@@ -1,4 +1,4 @@
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 import { setCookie, getCookie, deleteCookie, setCookieWithTimestamp } from '@/shared/utils/cookies';
 
 const AUTH_TOKEN_KEY = 'caco_auth_token';
@@ -23,11 +23,11 @@ class AuthService {
       
       const expiryTimestamp = Date.now() + expiryMilliseconds;
       
-      // Salva o token temporariamente para que apiClient possa usá-lo
+      // Salva o token temporariamente para que httpClient possa usá-lo
       this.setToken(token, expiryTimestamp);
       
       // Busca dados do usuário usando o token
-      const user = await apiClient.get('user/me');
+      const user = await httpClient.get('user/me');
       
       // Salva o usuário
       this.setUser(user);

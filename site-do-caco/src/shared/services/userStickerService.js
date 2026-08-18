@@ -1,4 +1,4 @@
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 /**
  * Serviço para gerenciar stickers do usuário
@@ -10,7 +10,7 @@ export const userStickerService = {
      * @returns {Promise<{sticker: Object, obtainedAt: string}>}
      */
     async claimSticker(code) {
-        const response = await apiClient.post('/user/stickers/claim', { code });
+        const response = await httpClient.post('user/stickers/claim', { code });
         return response;
     },
 
@@ -21,7 +21,7 @@ export const userStickerService = {
      * @returns {Promise<{content: Array, totalPages: number, totalElements: number}>}
      */
     async getMyStickers(page = 0, size = 20) {
-        const response = await apiClient.get(`/user/stickers?page=${page}&size=${size}`);
+        const response = await httpClient.get(`user/stickers?page=${page}&size=${size}`);
         return response;
     },
 };

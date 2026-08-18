@@ -3,7 +3,7 @@
  * Base URL: /api/super-admin
  */
 
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 class SuperAdminService {
   /**
@@ -15,7 +15,7 @@ class SuperAdminService {
    * @returns {Promise<Object>} Page<UserResponseDTO>
    */
   async getUsers(page = 0, size = 10, sort = 'createdAt,desc') {
-    return apiClient.get(
+    return httpClient.get(
       `super-admin/users?page=${page}&size=${size}&sort=${encodeURIComponent(sort)}`
     );
   }
@@ -27,7 +27,7 @@ class SuperAdminService {
    * @returns {Promise<Object>} UserResponseDTO
    */
   async getUserById(userId) {
-    return apiClient.get(`super-admin/users/${userId}`);
+    return httpClient.get(`super-admin/users/${userId}`);
   }
 
   /**
@@ -38,7 +38,7 @@ class SuperAdminService {
    * @returns {Promise<Object>} UserResponseDTO
    */
   async changeUserRole(userId, role) {
-    return apiClient.put(`super-admin/users/${userId}/role`, { role });
+    return httpClient.put(`super-admin/users/${userId}/role`, { role });
   }
 
   /**
@@ -48,7 +48,7 @@ class SuperAdminService {
    * @returns {Promise<Object>} UserResponseDTO
    */
   async suspendUser(userId) {
-    return apiClient.put(`super-admin/users/${userId}/suspend`);
+    return httpClient.put(`super-admin/users/${userId}/suspend`);
   }
 
   /**
@@ -58,7 +58,7 @@ class SuperAdminService {
    * @returns {Promise<Object>} UserResponseDTO
    */
   async unsuspendUser(userId) {
-    return apiClient.put(`super-admin/users/${userId}/unsuspend`);
+    return httpClient.put(`super-admin/users/${userId}/unsuspend`);
   }
 }
 

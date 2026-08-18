@@ -2,28 +2,28 @@
  * Serviço para gerenciamento de Warnings (Avisos)
  */
 
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 class WarningService {
   /**
    * Busca todos os avisos ativos
    */
   async getActiveWarnings() {
-    return apiClient.get('/admin/warnings/active');
+    return httpClient.get('admin/warnings/active');
   }
 
   /**
    * Busca todos os avisos (admin)
    */
   async getAllWarnings() {
-    return apiClient.get('/admin/warnings');
+    return httpClient.get('admin/warnings');
   }
 
   /**
    * Busca um aviso por ID (admin)
    */
   async getWarningById(id) {
-    return apiClient.get(`/admin/warnings/${id}`);
+    return httpClient.get(`admin/warnings/${id}`);
   }
 
   /**
@@ -31,28 +31,28 @@ class WarningService {
    * @param {Object} createDTO - { markdownText, severityLevel, startsAt, expiresAt }
    */
   async createWarning(createDTO) {
-    return apiClient.post('/admin/warnings', createDTO);
+    return httpClient.post('admin/warnings', createDTO);
   }
 
   /**
    * Atualiza um aviso (admin)
    */
   async updateWarning(id, updateDTO) {
-    return apiClient.put(`/admin/warnings/${id}`, updateDTO);
+    return httpClient.put(`admin/warnings/${id}`, updateDTO);
   }
 
   /**
    * Exclui um aviso (admin)
    */
   async deleteWarning(id) {
-    return apiClient.delete(`/admin/warnings/${id}`);
+    return httpClient.delete(`admin/warnings/${id}`);
   }
 
   /**
    * Força um aviso a expirar (admin)
    */
   async expireWarning(id) {
-    return apiClient.put(`/admin/warnings/${id}/expire`);
+    return httpClient.put(`admin/warnings/${id}/expire`);
   }
 }
 // Instância singleton do serviço

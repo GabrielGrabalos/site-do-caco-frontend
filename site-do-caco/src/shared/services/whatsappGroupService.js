@@ -1,19 +1,19 @@
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 export const whatsappGroupService = {
   getAll: async () => {
-    return apiClient.get('admin/whatsapp-groups');
+    return httpClient.get('admin/whatsapp-groups');
   },
 
   create: async (data) => {
-    return apiClient.post('admin/whatsapp-groups', data);
+    return httpClient.post('admin/whatsapp-groups', data);
   },
 
   update: async (id, data) => {
-    return apiClient.put(`admin/whatsapp-groups/${id}`, data);
+    return httpClient.put(`admin/whatsapp-groups/${id}`, data);
   },
 
   remove: async (id) => {
-    return apiClient.delete(`admin/whatsapp-groups/${id}`);
+    return httpClient.delete(`admin/whatsapp-groups/${id}`);
   },
 };

@@ -2,7 +2,8 @@
  * Serviço para upload de imagens
  */
 
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
+import { uploadClient } from '@/shared/lib/upload';
 
 class ImageUploadService {
   /**
@@ -16,7 +17,7 @@ class ImageUploadService {
       formData.append('image', imageFile);
 
       // Usa o método postFormData específico para upload de arquivos
-      const response = await apiClient.postFormData('/admin/images', formData);
+      const response = await httpClient.postFormData('admin/images', formData);
 
       // O backend retorna a URL da imagem
       if (!response || !response.url) {
@@ -44,8 +45,8 @@ class ImageUploadService {
       formData.append('image', imageFile);
 
       // Usa o método com progresso
-      const response = await apiClient.postFormDataWithProgress(
-        '/admin/images',
+      const response = await uploadClient.postFormDataWithProgress(
+        'admin/images',
         formData,
         onProgress
       );

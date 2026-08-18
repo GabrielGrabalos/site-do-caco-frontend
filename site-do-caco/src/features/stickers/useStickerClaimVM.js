@@ -64,7 +64,7 @@ export function useStickerClaimVM() {
         errorMessage = error.message;
       }
 
-      if (error.response?.status === 401) {
+      if (error.status === 401) {
         errorMessage = 'Você precisa estar logade para resgatar figurinhas.';
         setTimeout(() => navigate('/login'), 2000);
       }

@@ -3,7 +3,7 @@
  * Endpoints para categorias, produtos e variações
  */
 
-import { apiClient } from './apiClient';
+import { httpClient } from '@/shared/lib/http';
 
 /**
  * @typedef {import('../types/dtos').StoreCategoryDTO} StoreCategoryDTO
@@ -27,7 +27,7 @@ class StoreService {
      * @returns {Promise<StoreCategoryDTO[]>}
      */
     async getAllCategories() {
-        return await apiClient.get('/admin/store/categories');
+        return await httpClient.get('admin/store/categories');
     }
 
     /**
@@ -36,7 +36,7 @@ class StoreService {
      * @returns {Promise<StoreCategoryDTO>}
      */
     async createCategory(data) {
-        return await apiClient.post('/admin/store/categories', data);
+        return await httpClient.post('admin/store/categories', data);
     }
 
     /**
@@ -46,7 +46,7 @@ class StoreService {
      * @returns {Promise<StoreCategoryDTO>}
      */
     async updateCategory(id, data) {
-        return await apiClient.put(`/admin/store/categories/${id}`, data);
+        return await httpClient.put(`admin/store/categories/${id}`, data);
     }
 
     /**
@@ -55,7 +55,7 @@ class StoreService {
      * @returns {Promise<void>}
      */
     async deleteCategory(id) {
-        return await apiClient.delete(`/admin/store/categories/${id}`);
+        return await httpClient.delete(`admin/store/categories/${id}`);
     }
 
     /**
@@ -64,7 +64,7 @@ class StoreService {
      * @returns {Promise<void>}
      */
     async reorderCategories(categoryIds) {
-        return await apiClient.post('/admin/store/categories/reorder', categoryIds);
+        return await httpClient.post('admin/store/categories/reorder', categoryIds);
     }
 
     // ============= ADMIN - PRODUTOS =============
@@ -74,7 +74,7 @@ class StoreService {
      * @returns {Promise<ProductDetailAdminDTO[]>}
      */
     async getAllProducts() {
-        return await apiClient.get('/admin/store/products');
+        return await httpClient.get('admin/store/products');
     }
 
     /**
@@ -83,7 +83,7 @@ class StoreService {
      * @returns {Promise<ProductDetailAdminDTO>}
      */
     async getProductById(id) {
-        return await apiClient.get(`/admin/store/products/${id}`);
+        return await httpClient.get(`admin/store/products/${id}`);
     }
 
     /**
@@ -93,7 +93,7 @@ class StoreService {
      * @returns {Promise<ProductDetailAdminDTO>}
      */
     async createProduct(data) {
-        return await apiClient.post('/admin/store/products', data);
+        return await httpClient.post('admin/store/products', data);
     }
 
     /**
@@ -104,7 +104,7 @@ class StoreService {
      * @returns {Promise<ProductDetailAdminDTO>}
      */
     async updateProduct(id, data) {
-        return await apiClient.put(`/admin/store/products/${id}`, data);
+        return await httpClient.put(`admin/store/products/${id}`, data);
     }
 
     /**
@@ -113,7 +113,7 @@ class StoreService {
      * @returns {Promise<void>}
      */
     async deleteProduct(id) {
-        return await apiClient.delete(`/admin/store/products/${id}`);
+        return await httpClient.delete(`admin/store/products/${id}`);
     }
 
     // ============= IMAGENS DO PRODUTO =============
@@ -127,7 +127,7 @@ class StoreService {
     async addProductImage(productId, imageFile) {
         const formData = new FormData();
         formData.append('image', imageFile);
-        return await apiClient.postFormData(`/admin/store/products/${productId}/images`, formData);
+        return await httpClient.postFormData(`admin/store/products/${productId}/images`, formData);
     }
 
     /**
@@ -136,7 +136,7 @@ class StoreService {
      * @returns {Promise<Array>} Lista de imagens
      */
     async getProductImages(productId) {
-        return await apiClient.get(`/admin/store/products/${productId}/images`);
+        return await httpClient.get(`admin/store/products/${productId}/images`);
     }
 
     /**
@@ -145,7 +145,7 @@ class StoreService {
      * @returns {Promise<void>}
      */
     async deleteProductImage(imageId) {
-        return await apiClient.delete(`/admin/store/images/${imageId}`);
+        return await httpClient.delete(`admin/store/images/${imageId}`);
     }
 
     /**
@@ -155,7 +155,7 @@ class StoreService {
      * @returns {Promise<void>}
      */
     async reorderProductImages(productId, imageIds) {
-        return await apiClient.post(`/admin/store/products/${productId}/images/reorder`, imageIds);
+        return await httpClient.post(`admin/store/products/${productId}/images/reorder`, imageIds);
     }
 
     // ============= ADMIN - VARIAÇÕES =============
@@ -167,7 +167,7 @@ class StoreService {
      * @returns {Promise<ProductVariationDTO>}
      */
     async createVariation(productId, data) {
-        return await apiClient.post(`/admin/store/products/${productId}/variations`, data);
+        return await httpClient.post(`admin/store/products/${productId}/variations`, data);
     }
 
     /**
@@ -177,7 +177,7 @@ class StoreService {
      * @returns {Promise<ProductVariationDTO>}
      */
     async updateVariation(variationId, data) {
-        return await apiClient.put(`/admin/store/variations/${variationId}`, data);
+        return await httpClient.put(`admin/store/variations/${variationId}`, data);
     }
 
     /**
@@ -186,7 +186,7 @@ class StoreService {
      * @returns {Promise<void>}
      */
     async deleteVariation(variationId) {
-        return await apiClient.delete(`/admin/store/variations/${variationId}`);
+        return await httpClient.delete(`admin/store/variations/${variationId}`);
     }
 
     // ============= PÚBLICOS =============
@@ -196,7 +196,7 @@ class StoreService {
      * @returns {Promise<StoreCategoryDTO[]>}
      */
     async getPublicCategories() {
-        return await apiClient.get('/public/store/categories');
+        return await httpClient.get('public/store/categories');
     }
 
     /**
@@ -205,7 +205,7 @@ class StoreService {
      * @returns {Promise<ProductSummaryDTO[]>}
      */
     async getPublicProductsByCategory(categorySlug) {
-        return await apiClient.get(`/public/store/categories/${categorySlug}/products`);
+        return await httpClient.get(`public/store/categories/${categorySlug}/products`);
     }
 
     /**
@@ -214,7 +214,7 @@ class StoreService {
      * @returns {Promise<ProductDetailDTO>}
      */
     async getPublicProductBySlug(productSlug) {
-        return await apiClient.get(`/public/store/products/slug/${productSlug}`);
+        return await httpClient.get(`public/store/products/slug/${productSlug}`);
     }
 
     /**
@@ -223,7 +223,7 @@ class StoreService {
      * @returns {Promise<ProductSummaryDTO[]>}
      */
     async searchPublicProducts(keyword) {
-        return await apiClient.get(`/public/store/search?keyword=${encodeURIComponent(keyword)}`);
+        return await httpClient.get(`public/store/search?keyword=${encodeURIComponent(keyword)}`);
     }
 }
 
